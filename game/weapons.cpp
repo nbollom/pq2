@@ -50,7 +50,7 @@ namespace data {
             {"Bandyclef",     15}
     };
 
-    const Item get_random_weapon(random_device *engine) {
+    const Item get_random_weapon(mt19937_64 *engine) {
         static uniform_int_distribution<unsigned long> distribution(0, weapons.size() - 1);
         unsigned long value = distribution(*engine);
         return weapons[value];

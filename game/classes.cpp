@@ -30,7 +30,7 @@ namespace data {
             {"Vermineer",        {"INT"}}
     };
 
-    const Class get_random_class(random_device *engine) {
+    const Class get_random_class(mt19937_64 *engine) {
         static uniform_int_distribution<unsigned long> distribution(0, classes.size() - 1);
         unsigned long value = distribution(*engine);
         return classes[value];

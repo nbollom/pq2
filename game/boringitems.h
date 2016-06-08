@@ -10,7 +10,7 @@
 
 namespace data {
 
-    const std::string get_random_boring_item(std::random_device *engine);
+    const std::string get_random_boring_item(std::mt19937_64 *engine);
 
 }
 

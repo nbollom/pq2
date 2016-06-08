@@ -11,7 +11,7 @@
 
 namespace data {
 
-    const Item get_random_armor(std::random_device *engine);
+    const Item get_random_armor(std::mt19937_64 *engine);
 
 }
 

@@ -10,17 +10,17 @@
 
 typedef struct {
     std::string label;
-    int value;
+    int8_t value;
 } Attribute;
 
 typedef struct {
     std::string label;
-    int level;
+    int8_t level;
 } Item;
 
 typedef struct {
     std::string name;
-    int level;
+    int8_t level;
     std::string drop;
 } Monster;
 
@@ -33,5 +33,18 @@ typedef struct {
     std::string name;
     std::list<std::string> attributes;
 } Class;
+
+typedef struct {
+    std::string name;
+    int count;
+} Stack;
+
+enum Color{
+    Gray = 1,
+    Silver,
+    White,
+    Yellow,
+    Red
+};
 
 #endif //PQ2_TYPES_H

@@ -10,9 +10,9 @@
 
 namespace data {
 
-    const std::string get_random_title(std::random_device *engine);
+    const std::string get_random_title(std::mt19937_64 *engine);
 
-    const std::string get_random_impressive_title(std::random_device *engine);
+    const std::string get_random_impressive_title(std::mt19937_64 *engine);
 
 }
 

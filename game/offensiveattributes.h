@@ -10,9 +10,9 @@
 
 namespace data {
 
-    const Attribute get_random_good_offensive_attribute(std::random_device *engine);
+    const Attribute get_random_good_offensive_attribute(std::mt19937_64 *engine);
 
-    const Attribute get_random_bad_offensive_attribute(std::random_device *engine);
+    const Attribute get_random_bad_offensive_attribute(std::mt19937_64 *engine);
 
 }
 

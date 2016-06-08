@@ -33,7 +33,7 @@ namespace data {
             {"Land Squid",           {"STR",    "HP Max"}}
     };
 
-    const Race get_random_race(random_device *engine) {
+    const Race get_random_race(mt19937_64 *engine) {
         static uniform_int_distribution<unsigned long> distribution(0, races.size() - 1);
         unsigned long value = distribution(*engine);
         return races[value];

@@ -10,7 +10,7 @@
 
 namespace data {
 
-    const std::string get_random_item_attribute(std::random_device *engine);
+    const std::string get_random_item_attribute(std::mt19937_64 *engine);
 
 }
 

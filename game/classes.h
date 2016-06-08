@@ -11,7 +11,7 @@
 
 namespace data {
 
-    const Class get_random_class(std::random_device *engine);
+    const Class get_random_class(std::mt19937_64 *engine);
 
 //const std::list<Class> get_class_list();
     const std::vector<Class> get_class_list();

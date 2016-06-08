@@ -83,6 +83,8 @@ int main(int argc, const char * const *argv) {
         cout << "Running webserver on port " << port << endl;
     }
     Game *g = new Game();
-    g->tick(23);
+    for (int i = 0; i < 10; ++i) {
+        g->StartNewGame();
+    }
     return 0;
 }

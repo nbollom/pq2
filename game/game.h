@@ -7,14 +7,17 @@
 
 #include <cstdint>
 #include <random>
+#include <memory>
+#include "newgame.h"
 
 class Game {
 
 private:
-    std::random_device random;
+    std::shared_ptr<std::mt19937_64> engine;
 
 public:
     Game();
+    std::shared_ptr<NewGame> StartNewGame();
     void tick(uint64_t ms); //advances the game clock by the specified milliseconds;
 
 };

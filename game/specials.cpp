@@ -49,7 +49,7 @@ namespace data {
             "Vulpeculum"
     };
 
-    const string get_random_special(random_device *engine) {
+    const string get_random_special(mt19937_64 *engine) {
         static uniform_int_distribution<unsigned long> distribution(0, specials.size() - 1);
         unsigned long value = distribution(*engine);
         return specials[value];

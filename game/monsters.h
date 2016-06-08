@@ -11,7 +11,7 @@
 
 namespace data {
 
-    const Monster get_random_monster(std::random_device *engine);
+    const Monster get_random_monster(std::mt19937_64 *engine);
 
 }
 

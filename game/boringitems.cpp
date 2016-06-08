@@ -54,7 +54,7 @@ namespace data {
             "writ"
     };
 
-    const string get_random_boring_item(random_device *engine) {
+    const string get_random_boring_item(mt19937_64 *engine) {
         static uniform_int_distribution<unsigned long> distribution(0, boring_items.size() - 1);
         unsigned long value = distribution(*engine);
         return boring_items[value];

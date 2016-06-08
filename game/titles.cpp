@@ -21,7 +21,7 @@ namespace data {
             "Saint"
     };
 
-    const string get_random_title(random_device *engine) {
+    const string get_random_title(mt19937_64 *engine) {
         static uniform_int_distribution<unsigned long> distribution(0, titles.size() - 1);
         unsigned long value = distribution(*engine);
         return titles[value];
@@ -41,7 +41,7 @@ namespace data {
             "Archbishop"
     };
 
-    const string get_random_impressive_title(random_device *engine) {
+    const string get_random_impressive_title(mt19937_64 *engine) {
         static uniform_int_distribution<unsigned long> distribution(0, impressive_titles.size() - 1);
         unsigned long value = distribution(*engine);
         return impressive_titles[value];

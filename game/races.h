@@ -11,7 +11,7 @@
 
 namespace data {
 
-    const Race get_random_race(std::random_device *engine);
+    const Race get_random_race(std::mt19937_64 *engine);
 
 //const std::list<Race> get_race_list();
     const std::vector<Race> get_race_list();
