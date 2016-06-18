@@ -11,6 +11,8 @@ static std::string MODE_NAME[] = {"None", "QT", "GTK", "WinForms", "Cocoa", "NCu
 
 #define DEFAULT_GUI_LIBRARY @DEFAULT_GUI_LIBRARY@
 
+#cmakedefine GUI_ENABLED
+
 #cmakedefine QT_ENABLED
 #cmakedefine GTK_ENABLED
 #cmakedefine COCOA_ENABLED

@@ -33,17 +33,11 @@ option(QT_ENABLED "Enable QT interface" ON)
 option(GTK_ENABLED "Enable GTK interface" ON)
 option(WEBSERVER_ENABLED "Enable Webserver interface" OFF)
 
-configure_file(config.h.in config.h @ONLY)
-
-set(SOURCE_FILES main.cpp commandline.cpp commandline.h commandlineexeptions.cpp commandlineexeptions.h commandlineoptions.h commandlineoptions.cpp)
-add_executable(pq2 ${SOURCE_FILES})
-
-add_subdirectory(game)
-
 if(${QT_ENABLED} OR ${GTK_ENABLED} OR ${WINFORMS_ENABLED} OR ${COCOA_ENABLED} OR ${NCURSES_ENABLED})
     add_subdirectory(gui)
     set(GUI_LIBS pq2gui)
     set(GUI_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/gui)
+    set(GUI_ENABLED ON)
     if (${QT_ENABLED})
 #        add_subdirectory(pq2qt)
 #        set(GUI_LIBS ${GUI_LIBS} pq2qt)
@@ -67,8 +61,10 @@ if(${QT_ENABLED} OR ${GTK_ENABLED} OR ${WINFORMS_ENABLED} OR ${COCOA_ENABLED} OR
     if(${NCURSES_ENABLED})
         add_subdirectory(ncurses)
         set(GUI_LIBS pq2ncurses)
-        set(GUI_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/ncurses)
+        set(GUI_INCLUDES ${GUI_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/ncurses)
     endif ()
+else()
+    set(GUI_ENABLED OFF)
 endif()
 
 # make sure the default gui is enabled
@@ -90,5 +86,12 @@ if(${WEBSERVER_ENABLED})
 #    set(WEBSERVER_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/pq2webserver)
 endif()
 
+configure_file(config.h.in config.h @ONLY)
+
+set(SOURCE_FILES main.cpp commandline.cpp commandline.h commandlineexeptions.cpp commandlineexeptions.h commandlineoptions.h commandlineoptions.cpp)
+add_executable(pq2 ${SOURCE_FILES})
+
+add_subdirectory(game)
+
 target_link_libraries(pq2 pq2game ${GUI_LIBS} ${WEBSERVER_LIBS})
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/includes ${GUI_INCLUDES} ${WEBSERVER_INCLUDES})
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/game ${CMAKE_CURRENT_SOURCE_DIR}/includes ${GUI_INCLUDES} ${WEBSERVER_INCLUDES})
