@@ -5,16 +5,20 @@
 #ifndef PQ2_PQ2GUI_H
 #define PQ2_PQ2GUI_H
 
+#include <memory>
+#include "../game/game.h"
+
 class GUI {
 
 private:
 
 protected:
-    GUI(); //cannot directly instantiate base class
+    std::shared_ptr<Game> _game;
+
+    GUI(std::shared_ptr<Game> game); //cannot directly instantiate base class
 
 public:
-    virtual void ShowMainWindow() = 0; //called if there is no game in progress (no filename passed to command-line)
-    virtual void ShowGameWindow() = 0; //called if there is a game in progress
+    virtual void Run() = 0;
 
 };
 

@@ -10,25 +10,17 @@
 #include "types.h"
 
 using namespace std;
+using namespace data;
+using namespace ui;
 
-NewGame::NewGame(shared_ptr<mt19937_64> engine) {
+NewGame::NewGame(shared_ptr<mt19937_64> engine, std::function<void(std::shared_ptr<Character> character)>callback) {
     _engine = engine;
+    _callback = callback;
     _character = make_shared<Character>();
     GenerateName();
     _character->CharacterRace = data::get_random_race(_engine.get());
     _character->CharacterClass = data::get_random_class(_engine.get());
     RollEm();
-    cout << "Name: " << GetName() << endl;
-    cout << "Race: " << GetRace() << endl;
-    cout << "Class: " << GetClass() << endl;
-    cout << "STR: " << GetSTR() << endl;
-    cout << "CON: " << GetCON() << endl;
-    cout << "DEX: " << GetDEX() << endl;
-    cout << "INT: " << GetINT() << endl;
-    cout << "WIS: " << GetWIS() << endl;
-    cout << "CHA: " << GetCHA() << endl;
-    cout << "Total: " << GetTotal() << endl;
-    cout << "Color: " << GetTotalColor() << endl;
 }
 
 void NewGame::RollEm() {
@@ -187,19 +179,23 @@ Color NewGame::GetTotalColor() {
     uint64_t total = GetTotal();
     Color color;
     if (total >= 81) {
-        color = Red;
+        color = ColorRed;
     }
     else if (total >= 73) {
-        color = Yellow;
+        color = ColorYellow;
     }
     else if (total <= 45) {
-        color = Gray;
+        color = ColorGray;
     }
     else if (total <= 53) {
-        color = Silver;
+        color = ColorSilver;
     }
     else {
-        color = White;
+        color = ColorWhite;
     }
     return color;
+}
+
+void NewGame::ConfirmCharacter() {
+    _callback(_character);
 }

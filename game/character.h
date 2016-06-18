@@ -15,8 +15,8 @@ class Character {
 public:
     std::string Name;
 
-    Race CharacterRace;
-    Class CharacterClass;
+    data::Race CharacterRace;
+    data::Class CharacterClass;
 
     uint64_t STR;
     uint64_t CON;
@@ -27,8 +27,8 @@ public:
 
     uint64_t Gold;
 
-    std::list<Stack> Spells;
-    std::list<Stack> Inventory;
+    std::list<data::Stack> Spells;
+    std::list<data::Stack> Inventory;
 
 };
 

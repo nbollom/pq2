@@ -8,17 +8,24 @@
 #include <cstdint>
 #include <random>
 #include <memory>
+#include "types.h"
 #include "newgame.h"
 
 class Game {
 
 private:
-    std::shared_ptr<std::mt19937_64> engine;
+    std::shared_ptr<std::mt19937_64> _engine;
+    std::string _filename;
+    game::GameState _state;
+    std::shared_ptr<Character> _character;
 
 public:
     Game();
+    file::LoadError LoadGame(std::string filename);
     std::shared_ptr<NewGame> StartNewGame();
-    void tick(uint64_t ms); //advances the game clock by the specified milliseconds;
+    void Tick(uint64_t ms); //advances the game clock by the specified milliseconds;
+
+    game::GameState GetState();
 
 };
 
