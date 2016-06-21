@@ -33,16 +33,12 @@ namespace data {
             {"Land Squid",           {"STR",    "HP Max"}}
     };
 
+    static uniform_int_distribution<unsigned long> distribution(0, races.size() - 1);
+
     const Race get_random_race(mt19937_64 *engine) {
-        static uniform_int_distribution<unsigned long> distribution(0, races.size() - 1);
         unsigned long value = distribution(*engine);
         return races[value];
     }
-
-//const list<Race> get_race_list() {
-//    list<Race> raceList(races.begin(), races.end());
-//    return raceList;
-//}
 
     const vector<Race> get_race_list() {
         return races;

@@ -28,8 +28,9 @@ namespace data {
             {"Magnetic Field",  18}
     };
 
+    static uniform_int_distribution<unsigned long> distribution(0, shields.size() - 1);
+
     const Item get_random_shield(mt19937_64 *engine) {
-        static uniform_int_distribution<unsigned long> distribution(0, shields.size() - 1);
         unsigned long value = distribution(*engine);
         return shields[value];
     }

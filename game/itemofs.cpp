@@ -63,8 +63,9 @@ namespace data {
             "Hydragyrum"
     };
 
+    static uniform_int_distribution<unsigned long> distribution(0, item_ofs.size() - 1);
+
     const string get_random_item_of(mt19937_64 *engine) {
-        static uniform_int_distribution<unsigned long> distribution(0, item_ofs.size() - 1);
         unsigned long value = distribution(*engine);
         return item_ofs[value];
     }

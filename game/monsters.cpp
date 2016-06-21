@@ -243,8 +243,9 @@ namespace data {
             {"Hogbird",           3,  "curl"}
     };
 
+    static uniform_int_distribution<unsigned long> distribution(0, monsters.size() - 1);
+
     const Monster get_random_monster(mt19937_64 *engine) {
-        static uniform_int_distribution<unsigned long> distribution(0, monsters.size() - 1);
         unsigned long value = distribution(*engine);
         return monsters[value];
     }

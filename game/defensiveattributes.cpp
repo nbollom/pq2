@@ -21,9 +21,10 @@ namespace data {
             {"Custom",     3}
     };
 
+    static uniform_int_distribution<unsigned long> g_distribution(0, good_defensive_attributes.size() - 1);
+
     const Attribute get_random_good_defensive_attribute(mt19937_64 *engine) {
-        static uniform_int_distribution<unsigned long> distribution(0, good_defensive_attributes.size() - 1);
-        unsigned long value = distribution(*engine);
+        unsigned long value = g_distribution(*engine);
         return good_defensive_attributes[value];
     }
 
@@ -44,9 +45,10 @@ namespace data {
             {"Corroded",   -3}
     };
 
+    static uniform_int_distribution<unsigned long> b_distribution(0, bad_defensive_attributes.size() - 1);
+
     const Attribute get_random_bad_defensive_attribute(mt19937_64 *engine) {
-        static uniform_int_distribution<unsigned long> distribution(0, bad_defensive_attributes.size() - 1);
-        unsigned long value = distribution(*engine);
+        unsigned long value = b_distribution(*engine);
         return bad_defensive_attributes[value];
     }
 

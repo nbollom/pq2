@@ -32,8 +32,9 @@ namespace data {
             {"Plasma",       30}
     };
 
+    static uniform_int_distribution<unsigned long> distribution(0, armors.size() - 1);
+
     const Item get_random_armor(mt19937_64 *engine) {
-        static uniform_int_distribution<unsigned long> distribution(0, armors.size() - 1);
         unsigned long value = distribution(*engine);
         return armors[value];
     }

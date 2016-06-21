@@ -21,9 +21,10 @@ namespace data {
             "Saint"
     };
 
+    static uniform_int_distribution<unsigned long> t_distribution(0, titles.size() - 1);
+
     const string get_random_title(mt19937_64 *engine) {
-        static uniform_int_distribution<unsigned long> distribution(0, titles.size() - 1);
-        unsigned long value = distribution(*engine);
+        unsigned long value = t_distribution(*engine);
         return titles[value];
     }
 
@@ -41,9 +42,10 @@ namespace data {
             "Archbishop"
     };
 
+    static uniform_int_distribution<unsigned long> it_distribution(0, impressive_titles.size() - 1);
+
     const string get_random_impressive_title(mt19937_64 *engine) {
-        static uniform_int_distribution<unsigned long> distribution(0, impressive_titles.size() - 1);
-        unsigned long value = distribution(*engine);
+        unsigned long value = it_distribution(*engine);
         return impressive_titles[value];
     }
 
