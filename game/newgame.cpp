@@ -13,28 +13,28 @@ using namespace std;
 using namespace data;
 using namespace ui;
 
-NewGame::NewGame(shared_ptr<mt19937_64> engine, std::function<void(std::shared_ptr<Character> character)>callback) {
-    _engine = engine;
-    _callback = callback;
-    _character = make_shared<Character>();
+NewGame::NewGame(shared_ptr<mt19937_64> randomengine, std::function<void(std::shared_ptr<Character> character)> complete_callback) {
+    engine = randomengine;
+    callback = complete_callback;
+    character = make_shared<Character>();
     GenerateName();
-    _character->CharacterRace = data::get_random_race(_engine.get());
-    _character->CharacterClass = data::get_random_class(_engine.get());
+    character->CharacterRace = data::get_random_race(engine.get());
+    character->CharacterClass = data::get_random_class(engine.get());
     RollEm();
 }
 
 void NewGame::RollEm() {
-    RollStat(&_character->STR);
-    RollStat(&_character->CON);
-    RollStat(&_character->DEX);
-    RollStat(&_character->INT);
-    RollStat(&_character->WIS);
-    RollStat(&_character->CHA);
+    RollStat(&character->STR);
+    RollStat(&character->CON);
+    RollStat(&character->DEX);
+    RollStat(&character->INT);
+    RollStat(&character->WIS);
+    RollStat(&character->CHA);
 }
 
 void NewGame::RollStat(uint64_t *stat) {
     static uniform_int_distribution<uint64_t> distribution(0, 5);
-    *stat = 3 + distribution(*_engine) + distribution(*_engine) + distribution(*_engine);
+    *stat = 3 + distribution(*engine) + distribution(*engine) + distribution(*engine);
 }
 
 void NewGame::GenerateName() {
@@ -49,27 +49,27 @@ void NewGame::GenerateName() {
         string part;
         switch (i % 3) {
             case 0:
-                part = parts1[distribution1(*_engine)];
+                part = parts1[distribution1(*engine)];
                 break;
             case 1:
-                part = parts2[distribution2(*_engine)];
+                part = parts2[distribution2(*engine)];
                 break;
             case 2:
-                part = parts3[distribution3(*_engine)];
+                part = parts3[distribution3(*engine)];
                 break;
         }
         result.append(part);
     }
     result[0] = result[0] - (char)32;
-    _character->Name = result;
+    character->Name = result;
 }
 
 string NewGame::GetName() {
-    return _character->Name;
+    return character->Name;
 }
 
 void NewGame::SetName(string name) {
-    _character->Name = name;
+    character->Name = name;
 }
 
 typedef vector<Race>::iterator RI;
@@ -85,7 +85,7 @@ vector<string> NewGame::GetAvailableRaces() {
 }
 
 string NewGame::GetRace() {
-    return _character->CharacterRace.name;
+    return character->CharacterRace.name;
 }
 
 void NewGame::SetRace(string name) {
@@ -93,7 +93,7 @@ void NewGame::SetRace(string name) {
     for (RI i = races.begin(); i != races.end(); i++) {
         Race r = *i;
         if (r.name == name) {
-            _character->CharacterRace = r;
+            character->CharacterRace = r;
         }
     }
 }
@@ -111,7 +111,7 @@ vector<string> NewGame::GetAvailableClasses() {
 }
 
 string NewGame::GetClass() {
-    return _character->CharacterClass.name;
+    return character->CharacterClass.name;
 }
 
 void NewGame::SetClass(string name) {
@@ -119,60 +119,60 @@ void NewGame::SetClass(string name) {
     for (CI i = classes.begin(); i != classes.end(); i++) {
         Class c = *i;
         if (c.name == name) {
-            _character->CharacterClass = c;
+            character->CharacterClass = c;
         }
     }
 }
 
 void NewGame::ReRoll() {
-    array<uint64_t, 6> values = {_character->STR, _character->CON, _character->DEX, _character->INT, _character->WIS, _character->CHA};
-    _unrollBuffer.push(values);
+    array<uint64_t, 6> values = {character->STR, character->CON, character->DEX, character->INT, character->WIS, character->CHA};
+    unrollBuffer.push(values);
     RollEm();
 }
 
 bool NewGame::CanUnroll() {
-    return _unrollBuffer.size() > 0;
+    return unrollBuffer.size() > 0;
 }
 
 void NewGame::UnRoll() {
-    if (!_unrollBuffer.empty()) {
-        array<uint64_t, 6> values = _unrollBuffer.top();
-        _character->STR = values[0];
-        _character->CON = values[1];
-        _character->DEX = values[2];
-        _character->INT = values[3];
-        _character->WIS = values[4];
-        _character->CHA = values[5];
-        _unrollBuffer.pop();
+    if (!unrollBuffer.empty()) {
+        array<uint64_t, 6> values = unrollBuffer.top();
+        character->STR = values[0];
+        character->CON = values[1];
+        character->DEX = values[2];
+        character->INT = values[3];
+        character->WIS = values[4];
+        character->CHA = values[5];
+        unrollBuffer.pop();
     }
 }
 
 uint64_t NewGame::GetSTR() {
-    return _character->STR;
+    return character->STR;
 }
 
 uint64_t NewGame::GetCON() {
-    return _character->CON;
+    return character->CON;
 }
 
 uint64_t NewGame::GetDEX() {
-    return _character->DEX;
+    return character->DEX;
 }
 
 uint64_t NewGame::GetINT() {
-    return _character->INT;
+    return character->INT;
 }
 
 uint64_t NewGame::GetWIS() {
-    return _character->WIS;
+    return character->WIS;
 }
 
 uint64_t NewGame::GetCHA() {
-    return _character->CHA;
+    return character->CHA;
 }
 
 uint64_t NewGame::GetTotal() {
-    return _character->STR + _character->CON + _character->DEX + _character->INT + _character->WIS + _character->CHA;
+    return character->STR + character->CON + character->DEX + character->INT + character->WIS + character->CHA;
 }
 
 Color NewGame::GetTotalColor() {
@@ -197,5 +197,5 @@ Color NewGame::GetTotalColor() {
 }
 
 void NewGame::ConfirmCharacter() {
-    _callback(_character);
+    callback(character);
 }

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <memory>
-#include <stdlib.h>
+#include <thread>
 #include "config.h"
 #include "commandline.h"
 #include "game.h"
@@ -25,6 +25,9 @@
 #endif //GUI_ENABLED
 
 using namespace std;
+
+typedef std::chrono::steady_clock Clock;
+typedef std::chrono::steady_clock::time_point TimePoint;
 
 int main(int argc, const char * const *argv) {
     bool runWebServer = false;
@@ -76,7 +79,7 @@ int main(int argc, const char * const *argv) {
         }
         if (cmdProcessor.IsSet('s')) {
             runWebServer = true;
-            port = atoi(cmdProcessor.GetOptionValue('s').c_str());
+            port = stoi(cmdProcessor.GetOptionValue('s'));
         }
         filename = cmdProcessor.GetValueOnlyOptionValue("Filename");
     }
@@ -97,10 +100,30 @@ int main(int argc, const char * const *argv) {
     shared_ptr<Game> game = make_shared<Game>();
     if (filename.length()) {
         file::LoadError error = game->LoadGame(filename);
+        if (error != file::LoadErrorNone) {
+            cout << "Error loading save " << filename << endl;
+            if (gui == GUI_NONE) {
+                return 1; //Daemon mode requires an existing save to run
+            }
+        }
     }
     if (gui == GUI_NONE) {
         cout << "Running in daemon mode" << endl;
-#warning TODO: add game loop for daemon
+        if (game->GetState() == game::GameStateReady) {
+            TimePoint start = Clock::now();
+            TimePoint now;
+            while (game->GetState() != game::GameStateFinished) {
+                now = Clock::now();
+                uint64_t milliseconds = (uint64_t)abs(chrono::duration_cast<chrono::milliseconds>(now - start).count());
+                game->Tick(milliseconds);
+                this_thread::sleep_for(chrono::seconds(1));
+            }
+        }
+        else {
+            cout << "Daemon mode can only be run with an existing save" << endl;
+            cout << "Please re-run with a valid save or create a new game with a GUI interface." << endl;
+            return 1;
+        }
     }
 #ifdef GUI_ENABLED
     else {
@@ -132,6 +155,7 @@ int main(int argc, const char * const *argv) {
         }
 #endif //NCURSES_ENABLED
         g->Run();
+        g.reset();
     }
 #endif //GUI_ENABLED
     if (runWebServer) {

@@ -92,6 +92,7 @@ set(SOURCE_FILES main.cpp commandline.cpp commandline.h commandlineexeptions.cpp
 add_executable(pq2 ${SOURCE_FILES})
 
 add_subdirectory(game)
+add_subdirectory(utils)
 
 target_link_libraries(pq2 pq2game ${GUI_LIBS} ${WEBSERVER_LIBS})
 include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/game ${CMAKE_CURRENT_SOURCE_DIR}/includes ${GUI_INCLUDES} ${WEBSERVER_INCLUDES})

@@ -13,12 +13,13 @@ class GUI {
 private:
 
 protected:
-    std::shared_ptr<Game> _game;
+    std::shared_ptr<Game> game;
 
-    GUI(std::shared_ptr<Game> game); //cannot directly instantiate base class
+    GUI(std::shared_ptr<Game> game_ptr); //cannot directly instantiate base class
 
 public:
     virtual void Run() = 0;
+    virtual ~GUI();
 
 };
 

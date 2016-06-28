@@ -6,6 +6,10 @@
 
 using namespace std;
 
-GUI::GUI(shared_ptr<Game> game) {
-    _game = game;
+GUI::GUI(shared_ptr<Game> game_ptr) {
+    game = game_ptr;
+}
+
+GUI::~GUI() {
+
 }

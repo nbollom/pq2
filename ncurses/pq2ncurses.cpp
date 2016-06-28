@@ -1,21 +1,63 @@
 #include "pq2ncurses.h"
+#include <ncurses.h>
+#include "mainmenu.h"
+#include "signals.h"
 
 using namespace std;
 using namespace game;
 
 NCursesGUI::NCursesGUI(std::shared_ptr<Game> game) : GUI(game) {
-
+    initscr();
+    raw();
+    keypad(stdscr, true);
+    noecho();
+    timeout(100);
+    screen_changed = false;
+    AddSignalCallback(SIGWINCH, [this](int sig){
+        screen_change_lock.lock();
+        screen_changed = true;
+        screen_change_lock.unlock();
+    });
+    RaiseSignal(SIGWINCH);
 }
 
-void NCursesGUI::StartGameLoop() {
-
+NCursesGUI::~NCursesGUI() {
+    endwin();
+    printf("cleaning up\n");
 }
 
 void NCursesGUI::Run() {
-    if (_game->GetState() == GameStateReady) { //already have loaded a game, run loop
-        StartGameLoop();
+    if (game->GetState() != GameStateReady) { //haven't loaded a game
+        shared_ptr<View> menu = make_shared<MainMenu>(game, [this](string message, void *value){
+            return ProcessMessage(message, value);
+        });
+        view_stack.push(menu);
     }
-    else {
-#warning TODO: show game menu
+    bool running = true;
+    int ch = 0;
+    while (running) {
+        screen_change_lock.lock();
+        if (screen_changed) {
+            endwin();
+            initscr();
+            getmaxyx(stdscr, screen_height, screen_width);
+            view_stack.top()->Resize(screen_width, screen_height);
+            screen_changed = false;
+        }
+        screen_change_lock.unlock();
+        clear();
+        view_stack.top()->Render();
+        refresh();
+        ch = getch();
+        if (ch != ERR) { //wasn't a timeout but a real keypress`
+            view_stack.top()->HandleKeyPress(ch);
+            if (ch == 'q') { //global quit key
+                running = false;
+            }
+        }
     }
+}
+
+bool NCursesGUI::ProcessMessage(std::string message, void *value) {
+
 }

@@ -14,16 +14,18 @@
 class Game {
 
 private:
-    std::shared_ptr<std::mt19937_64> _engine;
-    std::string _filename;
-    game::GameState _state;
-    std::shared_ptr<Character> _character;
+    std::shared_ptr<std::mt19937_64> engine;
+    std::string filename;
+    game::GameState game_state;
+    std::shared_ptr<Character> character;
 
 public:
     Game();
-    file::LoadError LoadGame(std::string filename);
+    file::LoadError LoadGame(std::string filename_path);
+    file::SaveError SaveGame(std::string filename_path = "");
     std::shared_ptr<NewGame> StartNewGame();
     void Tick(uint64_t ms); //advances the game clock by the specified milliseconds;
+    void Close();
 
     game::GameState GetState();
 

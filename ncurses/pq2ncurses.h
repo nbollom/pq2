@@ -6,7 +6,9 @@
 #define PQ2_PQ2NCURSES_H
 
 #include <memory>
+#include <string>
 #include <stack>
+#include <mutex>
 #include "pq2gui.h"
 #include "game.h"
 #include "view.h"
@@ -14,12 +16,17 @@
 class NCursesGUI : public GUI {
 
 private:
-    std::stack<View> _viewStack;
+    std::stack<std::shared_ptr<View>> view_stack;
+    int screen_width;
+    int screen_height;
+    std::mutex screen_change_lock;
+    bool screen_changed;
 
-    void StartGameLoop();
+    bool ProcessMessage(std::string message, void *value);
 
 public:
     NCursesGUI(std::shared_ptr<Game> game);
+    virtual ~NCursesGUI();
     void Run() override;
 
 };
