@@ -3,7 +3,10 @@ project(pq2)
 
 set(VERSION_NUMBER 1.0)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
@@ -39,9 +42,9 @@ if(${QT_ENABLED} OR ${GTK_ENABLED} OR ${WINFORMS_ENABLED} OR ${COCOA_ENABLED} OR
     set(GUI_INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/gui)
     set(GUI_ENABLED ON)
     if (${QT_ENABLED})
-#        add_subdirectory(pq2qt)
-#        set(GUI_LIBS ${GUI_LIBS} pq2qt)
-#        set(GUI_INCLUDES ${GUI_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/pq2qt)
+        add_subdirectory(qt)
+        set(GUI_LIBS ${GUI_LIBS} pq2qt)
+        set(GUI_INCLUDES ${GUI_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/qt)
     endif ()
     if(${GTK_ENABLED})
 #        add_subdirectory(pq2gtk)
@@ -60,7 +63,7 @@ if(${QT_ENABLED} OR ${GTK_ENABLED} OR ${WINFORMS_ENABLED} OR ${COCOA_ENABLED} OR
     endif ()
     if(${NCURSES_ENABLED})
         add_subdirectory(ncurses)
-        set(GUI_LIBS pq2ncurses)
+        set(GUI_LIBS ${GUI_LIBS} pq2ncurses)
         set(GUI_INCLUDES ${GUI_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR}/ncurses)
     endif ()
 else()
@@ -88,11 +91,11 @@ endif()
 
 configure_file(config.h.in config.h @ONLY)
 
-set(SOURCE_FILES main.cpp commandline.cpp commandline.h commandlineexeptions.cpp commandlineexeptions.h commandlineoptions.h commandlineoptions.cpp)
+set(SOURCE_FILES main.cpp)
 add_executable(pq2 ${SOURCE_FILES})
 
 add_subdirectory(game)
 add_subdirectory(utils)
 
-target_link_libraries(pq2 pq2game ${GUI_LIBS} ${WEBSERVER_LIBS})
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/game ${CMAKE_CURRENT_SOURCE_DIR}/includes ${GUI_INCLUDES} ${WEBSERVER_INCLUDES})
+target_link_libraries(pq2 pq2game pq2utils ${GUI_LIBS} ${WEBSERVER_LIBS})
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/game ${CMAKE_CURRENT_SOURCE_DIR}/utils ${CMAKE_CURRENT_SOURCE_DIR}/includes ${GUI_INCLUDES} ${WEBSERVER_INCLUDES})

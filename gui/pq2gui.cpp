@@ -3,13 +3,40 @@
 //
 
 #include "pq2gui.h"
+#include "game.h"
 
 using namespace std;
+using namespace game;
 
 GUI::GUI(shared_ptr<Game> game_ptr) {
     game = game_ptr;
 }
 
 GUI::~GUI() {
+    PopAllViews();
+}
 
+void GUI::Run() {
+    if (game->GetState() != GameStateReady) {
+        ShowMainMenu();
+    }
+    else {
+        ShowGameScreen();
+    }
+}
+
+void GUI::PushView(std::shared_ptr<View> view) {
+    view_stack.push(view);
+}
+
+void GUI::PopView() {
+    std::shared_ptr<View> view = view_stack.top();
+    view_stack.pop();
+    view->Close();
+}
+
+void GUI::PopAllViews() {
+    while (!view_stack.empty()) {
+        PopView();
+    }
 }

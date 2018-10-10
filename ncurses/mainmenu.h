@@ -8,9 +8,9 @@
 #include <functional>
 #include <vector>
 #include <string>
-#include "view.h"
+#include "nview.h"
 
-class MainMenu : public View {
+class MainMenu : public NView {
     int selected_index;
     std::vector<std::pair<std::string, std::function<void()>>> menu_options;
 

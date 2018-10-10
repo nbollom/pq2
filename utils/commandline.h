@@ -29,7 +29,7 @@ public:
     CommandLineProcessor(const string program_name, const string program_description, const string program_version);
     void AddOption(const char shortName, const string longName, const string description, const bool hasValue, const string valueDesc = "", string defaultValue = "");
     void AddValueOnlyOption(const string name, const string description, string defaultValue = "");
-    void Parse(int argc, const char * const *argv);
+    bool Parse(int argc, const char * const *argv);
     bool IsSet(char shortName);
     bool IsSet(string longName);
     string GetOptionValue(char shortName);

@@ -2,7 +2,7 @@
 #include <memory>
 #include <thread>
 #include "config.h"
-#include "commandline.h"
+#include "utils.h"
 #include "game.h"
 
 #ifdef GUI_ENABLED
@@ -58,7 +58,9 @@ int main(int argc, const char * const *argv) {
         cmdProcessor.AddOption('s', "webserver", "Run web server", true, "The port to run the webserver on (default 8094)", "8094");
 #endif
         cmdProcessor.AddValueOnlyOption("Filename", "Load a saved game");
-        cmdProcessor.Parse(argc, argv);
+        if (cmdProcessor.Parse(argc, argv) == false) {
+            return 0;
+        }
         if (cmdProcessor.IsSet('d')) {
             gui = GUI_NONE;
         }
@@ -83,18 +85,18 @@ int main(int argc, const char * const *argv) {
         }
         filename = cmdProcessor.GetValueOnlyOptionValue("Filename");
     }
-    catch (BaseOptionExistsException *ex) {
-        cerr << ex->what() << endl;
-        cerr << ex->GetConflictMessage() << endl;
+    catch (BaseOptionExistsException &ex) {
+        cerr << ex.what() << endl;
+        cerr << ex.GetConflictMessage() << endl;
         return 1;
     }
-    catch (ParseException *ex) {
-        cerr << ex->what() << endl;
-        cerr << ex->GetExceptionMessage() << endl;
+    catch (ParseException &ex) {
+        cerr << ex.what() << endl;
+        cerr << ex.GetExceptionMessage() << endl;
         return 1;
     }
-    catch (CommandLineException *ex) {
-        cerr << "Unknown error: " << ex->what() << endl;
+    catch (CommandLineException &ex) {
+        cerr << "Unknown error: " << ex.what() << endl;
         return 1;
     }
     shared_ptr<Game> game = make_shared<Game>();
@@ -109,6 +111,7 @@ int main(int argc, const char * const *argv) {
     }
     if (gui == GUI_NONE) {
         cout << "Running in daemon mode" << endl;
+        game->SetDaemonMode();
         if (game->GetState() == game::GameStateReady) {
             TimePoint start = Clock::now();
             TimePoint now;

@@ -20,6 +20,9 @@ Game::Game() {
     random_device random;
     engine = make_shared<mt19937_64>(random());
     game_state = GameStateNone;
+}
+
+void Game::SetDaemonMode() {
     function<void(int)> term_callback = [this](int signal){
         Close();
     };

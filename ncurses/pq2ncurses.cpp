@@ -1,10 +1,13 @@
 #include "pq2ncurses.h"
 #include <ncurses.h>
+#include <iostream>
 #include "mainmenu.h"
 #include "signals.h"
 
 using namespace std;
 using namespace game;
+
+bool running = false;
 
 NCursesGUI::NCursesGUI(std::shared_ptr<Game> game) : GUI(game) {
     initscr();
@@ -27,13 +30,8 @@ NCursesGUI::~NCursesGUI() {
 }
 
 void NCursesGUI::Run() {
-    if (game->GetState() != GameStateReady) { //haven't loaded a game
-        shared_ptr<View> menu = make_shared<MainMenu>(game, [this](string message, void *value){
-            return ProcessMessage(message, value);
-        });
-        view_stack.push(menu);
-    }
-    bool running = true;
+    GUI::Run();
+    running = true;
     int ch = 0;
     while (running) {
         screen_change_lock.lock();
@@ -59,5 +57,25 @@ void NCursesGUI::Run() {
 }
 
 bool NCursesGUI::ProcessMessage(std::string message, void *value) {
+//    if(message == "Quit") {
+        running = false;
+//    }
+    return true;
+}
 
+void NCursesGUI::ShowMainMenu() {
+    shared_ptr<NView> menu = make_shared<MainMenu>(game, std::bind(&NCursesGUI::ProcessMessage, this, std::placeholders::_1, std::placeholders::_2));
+    view_stack.push(menu);
+}
+
+void NCursesGUI::ShowCharacterCreator() {
+
+}
+
+void NCursesGUI::ShowGameScreen() {
+
+}
+
+void NCursesGUI::Close() {
+    running = false;
 }

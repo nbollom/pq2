@@ -10,16 +10,16 @@ using namespace std;
 typedef pair<string, function<void()>> MenuItem;
 typedef std::vector<MenuItem>::iterator MenuItemIterator;
 
-MainMenu::MainMenu(std::shared_ptr<Game> game, std::function<bool(std::string message, void *value)> messageHandler) : View(game, messageHandler) {
+MainMenu::MainMenu(std::shared_ptr<Game> game, std::function<bool(std::string message, void *value)> messageHandler) : NView(game, messageHandler) {
     selected_index = 0;
-    menu_options.push_back(MenuItem("New Game", [this](){
+    menu_options.emplace_back(MenuItem("New Game", [this, game](){
+        game->StartNewGame();
+    }));
+    menu_options.emplace_back(MenuItem("Load Game", [this, game](){
 
     }));
-    menu_options.push_back(MenuItem("Load Game", [this](){
-
-    }));
-    menu_options.push_back(MenuItem("Quit", [this](){
-
+    menu_options.emplace_back(MenuItem("Quit", [this, game, messageHandler](){
+        messageHandler("Quit", nullptr);
     }));
 }
 
@@ -41,11 +41,10 @@ void MainMenu::Render() {
     int menu_top = max((screen_height / 3) - (((int)menu_options.size() + 3) / 2), 0);
     CenterAlign("Progress Quest 2", horizontal_middle, menu_top);
     int index = 0;
-    for (MenuItemIterator i = menu_options.begin(); i != menu_options.end(); ++i) {
+    for (auto item : menu_options) {
         if (index == selected_index) {
             attron(A_UNDERLINE);
         }
-        MenuItem item = *i;
         CenterAlign(item.first, horizontal_middle, menu_top + 2 + index);
         if (index == selected_index) {
             attroff(A_UNDERLINE);

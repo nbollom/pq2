@@ -6,5 +6,6 @@
 #define PQ2_UTILS_H
 
 #include "signals.h"
+#include "commandline.h"
 
 #endif //PQ2_UTILS_H

@@ -21,6 +21,7 @@ private:
 
 public:
     Game();
+    void SetDaemonMode();
     file::LoadError LoadGame(std::string filename_path);
     file::SaveError SaveGame(std::string filename_path = "");
     std::shared_ptr<NewGame> StartNewGame();
