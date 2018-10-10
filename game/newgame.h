@@ -6,6 +6,7 @@
 #define PQ2_NEWGAME_H
 
 #include <stack>
+#include <array>
 #include <random>
 #include <memory>
 #include <string>
