@@ -6,7 +6,9 @@
 #define PQ2_QTMAINMENU_H
 
 #include <QMainWindow>
+#include <QWidget>
 #include <QVBoxLayout>
+#include <QLabel>
 #include <QPushButton>
 #include <QSpacerItem>
 #include "view.h"
@@ -17,6 +19,8 @@ Q_OBJECT
 private:
     QWidget *main_widget;
     QVBoxLayout *main_layout;
+    QPixmap logo_image;
+    QLabel *logo;
     QPushButton *new_game;
     QPushButton *load_game;
     QPushButton *exit_game;
@@ -27,11 +31,14 @@ public:
 
     void closeEvent(QCloseEvent *event) override;
 
-public slots:
     void Show() override;
     void Hide() override;
+    void resizeEvent(QResizeEvent *event) override;
+    void ResizeLogo();
+public slots:
+    void NewGame();
+    void LoadGame();
     void Close() override;
-
 
 };
 

@@ -2,6 +2,10 @@
 // Created by nbollom on 9/10/18.
 //
 
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QImageReader>
+#include <iostream>
 #include "qtmainmenu.h"
 
 #define MARGIN 20
@@ -14,37 +18,86 @@ QTMainMenu::QTMainMenu(std::shared_ptr<Game> game, std::function<void(std::strin
     main_layout = new QVBoxLayout;
     main_layout->setContentsMargins(20, 20, 20, 20);
     main_layout->setSpacing(10);
+    logo = new QLabel;
+    logo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    logo->setAlignment(Qt::AlignCenter);
+    logo->setMinimumSize(200, 200);
+    QImage newImage(":/resources/pq.png");
+    logo_image = QPixmap::fromImage(newImage);
     new_game = new QPushButton("New Game");
-    new_game->setMinimumSize(300, 100);
+    new_game->setMinimumSize(200, 60);
     load_game = new QPushButton("Load Game");
-    load_game->setMinimumSize(300, 100);
+    load_game->setMinimumSize(200, 60);
     exit_game = new QPushButton("Exit");
-    exit_game->setMinimumSize(300, 100);
-    main_layout->addStretch();
+    exit_game->setMinimumSize(200, 60);
+    main_layout->addWidget(logo);
     main_layout->addWidget(new_game);
     main_layout->addWidget(load_game);
     main_layout->addWidget(exit_game);
-    main_layout->addStretch();
     main_widget->setLayout(main_layout);
     setCentralWidget(main_widget);
+    connect(new_game, SIGNAL(clicked()), this, SLOT(NewGame()));
+    connect(load_game, SIGNAL(clicked()), this, SLOT(LoadGame()));
     connect(exit_game, SIGNAL(clicked()), this, SLOT(Close()));
+    ResizeLogo();
 }
 
 QTMainMenu::~QTMainMenu() {
-
+    delete(main_widget);
+    delete(main_layout);
+    delete(logo);
+    delete(new_game);
+    delete(load_game);
+    delete(exit_game);
 }
 
 void QTMainMenu::Show() {
-    this->show();
+    QMainWindow::show();
+    ResizeLogo();
 }
 
 void QTMainMenu::Hide() {
-    this->hide();
+    QMainWindow::hide();
 }
 
 void QTMainMenu::Close() {
     if (isVisible()) {
-        this->close();
+        QMainWindow::close();
+    }
+}
+
+void QTMainMenu::resizeEvent(QResizeEvent *event) {
+    QWidget::resizeEvent(event);
+    ResizeLogo();
+}
+
+void QTMainMenu::ResizeLogo() {
+    int height = logo->height();
+    int width = logo->width();
+    logo->setPixmap(logo_image.scaled(width, height, Qt::KeepAspectRatio));
+}
+
+
+void QTMainMenu::NewGame() {
+    // TODO: show new game screen
+}
+
+void QTMainMenu::LoadGame() {
+    QFileDialog dialog(nullptr, "Please select a pq2 save file", "", "PQ2 saves (*.pq2)");
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+    if (dialog.exec()) {
+        QString filename = dialog.selectedFiles()[0];
+        file::LoadError error = game->LoadGame(filename.toStdString());
+        if (error == file::LoadErrorNone) {
+            // TODO: show game screen
+        }
+        else {
+            QMessageBox error_message;
+            error_message.setText("Error loading game");
+            error_message.setIcon(QMessageBox::Critical);
+            error_message.exec();
+        }
     }
 }
 
