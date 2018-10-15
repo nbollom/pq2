@@ -15,8 +15,8 @@ private:
     std::function<void(std::string, void*)> message_handler;
 
 public:
-    QTGUI(std::shared_ptr<Game> game);
-    virtual ~QTGUI();
+    explicit QTGUI(std::shared_ptr<Game> game);
+    ~QTGUI() override;
     void Run() override;
 
     void ShowMainMenu() override;

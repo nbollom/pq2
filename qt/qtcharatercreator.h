@@ -20,6 +20,7 @@
 #include "newgame.h"
 
 class QTCharacterCreator : public QMainWindow, public View {
+Q_OBJECT
 
 private:
     QWidget *main_widget;
@@ -31,10 +32,10 @@ private:
     QHBoxLayout *hlayout;
     QGroupBox *race_group;
     QVBoxLayout *race_layout;
-    QButtonGroup race_options;
+    QButtonGroup *race_options;
     QGroupBox *class_group;
     QVBoxLayout *class_layout;
-    QButtonGroup class_options;
+    QButtonGroup *class_options;
     QGroupBox *stats_group;
     QGridLayout *stats_layout;
     QLabel *str_label;
@@ -50,28 +51,33 @@ private:
     QLabel *cha_label;
     QLineEdit *cha_text;
     QLabel *total_label;
-    QLabel *total_text;
+    QLineEdit *total_text;
     QPushButton *roll_button;
     QPushButton *unroll_button;
+    QHBoxLayout *button_layout;
     QPushButton *start_button;
 
     std::shared_ptr<NewGame> new_game;
 
+    void UpdateStats();
+
 public:
     QTCharacterCreator(std::shared_ptr<Game> game, std::function<void(std::string, void*)> message_handler);
-    ~QTCharacterCreator();
+    ~QTCharacterCreator() override;
 
     void closeEvent(QCloseEvent *event) override;
+    QSize sizeHint() const override;
 
     void Show() override;
     void Hide() override;
 
 public slots:
     void GenRandomName();
-    void RaceButtonClicked(int id);
-    void ClassButtonClicked(int id);
+    void RaceButtonClicked(QAbstractButton *button);
+    void ClassButtonClicked(QAbstractButton *button);
     void RollStats();
     void UnrollStats();
+    void Start();
     void Close() override;
 
 };

@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by nbollom on 25/05/16.
 //
@@ -33,8 +35,8 @@ void Game::SetDaemonMode() {
 }
 
 LoadError Game::LoadGame(string filename_path) {
-    filename = filename_path;
-
+    filename = std::move(filename_path);
+    // TODO: Load game state from file
     game_state = GameStateReady; //if loaded successfully
     return LoadErrorNone;
 }

@@ -42,9 +42,7 @@ QTMainMenu::QTMainMenu(std::shared_ptr<Game> game, std::function<void(std::strin
     ResizeLogo();
 }
 
-QTMainMenu::~QTMainMenu() {
-
-}
+QTMainMenu::~QTMainMenu() = default;
 
 void QTMainMenu::Show() {
     QMainWindow::show();

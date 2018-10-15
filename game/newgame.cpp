@@ -1,3 +1,7 @@
+#include <utility>
+
+#include <utility>
+
 //
 // Created by nbollom on 3/06/16.
 //
@@ -14,8 +18,8 @@ using namespace data;
 using namespace ui;
 
 NewGame::NewGame(shared_ptr<mt19937_64> randomengine, std::function<void(std::shared_ptr<Character> character)> complete_callback) {
-    engine = randomengine;
-    callback = complete_callback;
+    engine = std::move(randomengine);
+    callback = std::move(complete_callback);
     character = make_shared<Character>();
     GenerateName();
     character->CharacterRace = data::get_random_race(engine.get());
@@ -44,7 +48,7 @@ void NewGame::GenerateName() {
     static uniform_int_distribution<unsigned long> distribution1(0, parts1.size() - 1);
     static uniform_int_distribution<unsigned long> distribution2(0, parts2.size() - 1);
     static uniform_int_distribution<unsigned long> distribution3(0, parts3.size() - 1);
-    string result = "";
+    string result;
     for (int i = 0; i < 6; ++i) {
         string part;
         switch (i % 3) {
@@ -57,6 +61,7 @@ void NewGame::GenerateName() {
             case 2:
                 part = parts3[distribution3(*engine)];
                 break;
+            default:break;
         }
         result.append(part);
     }
@@ -69,7 +74,7 @@ string NewGame::GetName() {
 }
 
 void NewGame::SetName(string name) {
-    character->Name = name;
+    character->Name = std::move(name);
 }
 
 typedef vector<Race>::iterator RI;
@@ -77,8 +82,8 @@ typedef vector<Race>::iterator RI;
 vector<string> NewGame::GetAvailableRaces() {
     auto races = data::get_race_list();
     vector<string> raceNames;
-    for (RI i = races.begin(); i != races.end(); i++) {
-        Race r = *i;
+    raceNames.reserve(races.size());
+    for (auto r : races) {
         raceNames.push_back(r.name);
     }
     return raceNames;
@@ -90,10 +95,10 @@ string NewGame::GetRace() {
 
 void NewGame::SetRace(string name) {
     auto races = data::get_race_list();
-    for (RI i = races.begin(); i != races.end(); i++) {
-        Race r = *i;
+    for (auto r : races) {
         if (r.name == name) {
             character->CharacterRace = r;
+            break;
         }
     }
 }
@@ -103,8 +108,8 @@ typedef vector<Class>::iterator CI;
 vector<string> NewGame::GetAvailableClasses() {
     auto classes = data::get_class_list();
     vector<string> classNames;
-    for (CI i = classes.begin(); i != classes.end(); i++) {
-        Class c = *i;
+    classNames.reserve(classes.size());
+    for (auto c : classes) {
         classNames.push_back(c.name);
     }
     return classNames;
@@ -116,10 +121,10 @@ string NewGame::GetClass() {
 
 void NewGame::SetClass(string name) {
     auto classes = data::get_class_list();
-    for (CI i = classes.begin(); i != classes.end(); i++) {
-        Class c = *i;
+    for (auto c : classes) {
         if (c.name == name) {
             character->CharacterClass = c;
+            break;
         }
     }
 }
@@ -131,7 +136,7 @@ void NewGame::ReRoll() {
 }
 
 bool NewGame::CanUnroll() {
-    return unrollBuffer.size() > 0;
+    return !unrollBuffer.empty();
 }
 
 void NewGame::UnRoll() {
