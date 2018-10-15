@@ -6,7 +6,7 @@
 
 inline QString StringValue(uint64_t value) {
     char buffer[10];
-    sprintf(buffer, "%ld", value);
+    sprintf(buffer, "%llu", value);
     return QString(buffer);
 }
 
