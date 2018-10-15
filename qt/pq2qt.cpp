@@ -22,6 +22,7 @@ QTGUI::~QTGUI() {
 void QTGUI::Run() {
     int argc = 0;
     auto *app = new QApplication(argc, nullptr);
+    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     app->setQuitOnLastWindowClosed(false);
     GUI::Run();
     QApplication::exec();
