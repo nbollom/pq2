@@ -9,6 +9,7 @@
 #include "pq2qt.h"
 #include "qtmainmenu.h"
 #include "signals.h"
+#include "qtcharatercreator.h"
 
 QTGUI::QTGUI(std::shared_ptr<Game> game) : GUI(game) {
     message_handler = std::bind(&QTGUI::HandleMessage, this, std::placeholders::_1, std::placeholders::_2);
@@ -34,7 +35,9 @@ void QTGUI::ShowMainMenu() {
 }
 
 void QTGUI::ShowCharacterCreator() {
-
+    std::shared_ptr<View> character_creator = std::make_shared<QTCharacterCreator>(game, message_handler);
+    character_creator->Show();
+    PushView(character_creator);
 }
 
 void QTGUI::ShowGameScreen() {
@@ -42,6 +45,7 @@ void QTGUI::ShowGameScreen() {
 }
 
 void QTGUI::Close() {
+    PopAllViews();
     game->Close();
     QApplication::exit();
 }
@@ -49,5 +53,11 @@ void QTGUI::Close() {
 void QTGUI::HandleMessage(std::string message, void *data) {
     if (message == "quit") {
         Close();
+    }
+    else if (message == "new") {
+        ShowCharacterCreator();
+    }
+    else if (message == "cancel") {
+        PopView();
     }
 }

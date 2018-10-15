@@ -26,6 +26,9 @@ void GUI::Run() {
 }
 
 void GUI::PushView(std::shared_ptr<View> view) {
+    if (!view_stack.empty()) {
+        view_stack.top()->Hide();
+    }
     view_stack.push(view);
 }
 
@@ -33,6 +36,9 @@ void GUI::PopView() {
     std::shared_ptr<View> view = view_stack.top();
     view_stack.pop();
     view->Close();
+    if (!view_stack.empty()) {
+        view_stack.top()->Show();
+    }
 }
 
 void GUI::PopAllViews() {

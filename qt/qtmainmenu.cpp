@@ -43,12 +43,7 @@ QTMainMenu::QTMainMenu(std::shared_ptr<Game> game, std::function<void(std::strin
 }
 
 QTMainMenu::~QTMainMenu() {
-    delete(main_widget);
-    delete(main_layout);
-    delete(logo);
-    delete(new_game);
-    delete(load_game);
-    delete(exit_game);
+
 }
 
 void QTMainMenu::Show() {
@@ -79,7 +74,7 @@ void QTMainMenu::ResizeLogo() {
 
 
 void QTMainMenu::NewGame() {
-    // TODO: show new game screen
+    message_handler("new", nullptr);
 }
 
 void QTMainMenu::LoadGame() {

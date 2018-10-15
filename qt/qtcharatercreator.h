@@ -17,22 +17,26 @@
 #include <QRadioButton>
 #include <QGridLayout>
 #include "view.h"
+#include "newgame.h"
 
 class QTCharacterCreator : public QMainWindow, public View {
 
 private:
     QWidget *main_widget;
     QVBoxLayout *vlayout;
+    QHBoxLayout *name_layout;
     QLabel *name_label;
     QLineEdit *name_text;
     QPushButton *name_randomiser;
     QHBoxLayout *hlayout;
     QGroupBox *race_group;
+    QVBoxLayout *race_layout;
     QButtonGroup race_options;
     QGroupBox *class_group;
+    QVBoxLayout *class_layout;
     QButtonGroup class_options;
     QGroupBox *stats_group;
-    QGridLayout *slats_layout;
+    QGridLayout *stats_layout;
     QLabel *str_label;
     QLineEdit *str_text;
     QLabel *con_label;
@@ -50,6 +54,8 @@ private:
     QPushButton *roll_button;
     QPushButton *unroll_button;
     QPushButton *start_button;
+
+    std::shared_ptr<NewGame> new_game;
 
 public:
     QTCharacterCreator(std::shared_ptr<Game> game, std::function<void(std::string, void*)> message_handler);
