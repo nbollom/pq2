@@ -7,6 +7,7 @@
 
 #include <string>
 #include <list>
+#include <array>
 
 namespace data {
 
@@ -40,6 +41,34 @@ namespace data {
         std::string name;
         int count;
     } Stack;
+
+    typedef enum {
+        Weapon = 0,
+        Shield,
+        Helm,
+        Hauberk,
+        Brassairts,
+        Vambraces,
+        Gauntlets,
+        Gambeson,
+        Cuisses,
+        Greaves,
+        Sollerets
+    } Equipment;
+
+    static const std::array<std::string, 11> EquipmentLabels = {
+            "Weapon",
+            "Shield",
+            "Helm",
+            "Hauberk",
+            "Brassairts",
+            "Vambraces",
+            "Gauntlets",
+            "Gambeson",
+            "Cuisses",
+            "Greaves",
+            "Sollerets"
+    };
 
 }
 

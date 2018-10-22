@@ -10,6 +10,7 @@
 #include "qtmainmenu.h"
 #include "signals.h"
 #include "qtcharatercreator.h"
+#include "qtgamescreen.h"
 
 QTGUI::QTGUI(std::shared_ptr<Game> game) : GUI(game) {
     message_handler = std::bind(&QTGUI::HandleMessage, this, std::placeholders::_1, std::placeholders::_2);
@@ -20,10 +21,11 @@ QTGUI::~QTGUI() {
 }
 
 void QTGUI::Run() {
-    int argc = 0;
-    auto *app = new QApplication(argc, nullptr);
+    int argc = 1;
+    char *argv = const_cast<char *>("pq2");
+    auto *app = new QApplication(argc, &argv);
     QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-    app->setQuitOnLastWindowClosed(false);
+    QApplication::setQuitOnLastWindowClosed(false);
     GUI::Run();
     QApplication::exec();
     delete(app);
@@ -42,7 +44,9 @@ void QTGUI::ShowCharacterCreator() {
 }
 
 void QTGUI::ShowGameScreen() {
-
+    std::shared_ptr<View> game_screen = std::make_shared<QTGameScreen>(game, message_handler);
+    game_screen->Show();
+    PushView(game_screen);
 }
 
 void QTGUI::Close() {
@@ -53,12 +57,19 @@ void QTGUI::Close() {
 
 void QTGUI::HandleMessage(std::string message, void *data) {
     if (message == "quit") {
-        Close();
+        // Don't close if there is nothing on the stack like when we pop all views to replace them with the game screen
+        if (!view_stack.empty()) {
+            Close();
+        }
     }
     else if (message == "new") {
         ShowCharacterCreator();
     }
     else if (message == "cancel") {
         PopView();
+    }
+    else if (message == "start") {
+        PopAllViews();
+        ShowGameScreen();
     }
 }

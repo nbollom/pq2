@@ -29,6 +29,7 @@ public:
     void Close();
 
     game::GameState GetState();
+    std::shared_ptr<Character> GetCharacter();
 
 };
 

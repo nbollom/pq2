@@ -6,6 +6,8 @@
 #include <QMessageBox>
 #include <QImageReader>
 #include <iostream>
+#include <QApplication>
+#include <QDesktopWidget>
 #include "qtmainmenu.h"
 
 #define MARGIN 20
@@ -46,6 +48,7 @@ QTMainMenu::~QTMainMenu() = default;
 
 void QTMainMenu::Show() {
     QMainWindow::show();
+    move(QApplication::desktop()->screen()->rect().center() - rect().center());
     ResizeLogo();
 }
 

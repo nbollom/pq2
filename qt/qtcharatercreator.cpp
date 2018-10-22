@@ -3,6 +3,8 @@
 //
 
 #include <algorithm>
+#include <QApplication>
+#include <QDesktopWidget>
 #include "qtcharatercreator.h"
 
 inline QString StringValue(uint64_t value) {
@@ -19,7 +21,7 @@ inline std::string StripShortcuts(const QString &value) {
 
 QTCharacterCreator::QTCharacterCreator(std::shared_ptr<Game> game, std::function<void(std::string, void *)> message_handler) : View(game, message_handler) {
     new_game = game->StartNewGame();
-    setWindowTitle("Progress Quest 2 - Create New Character");
+    setWindowTitle("ProgressQuest 2 - Create New Character");
     main_widget = new QWidget;
     vlayout = new QVBoxLayout;
     name_layout = new QHBoxLayout;
@@ -141,6 +143,7 @@ QSize QTCharacterCreator::sizeHint() const {
 
 void QTCharacterCreator::Show() {
     show();
+    move(QApplication::desktop()->screen()->rect().center() - rect().center());
 }
 
 void QTCharacterCreator::Hide() {
@@ -174,7 +177,7 @@ void QTCharacterCreator::UnrollStats() {
 void QTCharacterCreator::Start() {
     new_game->SetName(name_text->text().toStdString());
     new_game->ConfirmCharacter();
-    // TODO: Show game screen
+    message_handler("start", nullptr);
 }
 
 void QTCharacterCreator::Close() {
