@@ -70,6 +70,8 @@ public slots:
     void UpdateEquipment();
     void UpdateInventory();
     void UpdatePlot();
+    void UpdateQuests();
+    void UpdateStatus();
 };
 
 #endif //PQ2_QTGAMESCREEN_H

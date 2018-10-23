@@ -61,8 +61,8 @@ shared_ptr<NewGame> Game::StartNewGame() {
         this->character->Level = 1;
         this->character->Experience = 0;
         std::uniform_int_distribution<uint8_t> dist(0, 8);
-        this->character->MAX_HP = dist(*engine) + character->CON / 6;
-        this->character->MAX_MP = dist(*engine) + character->INT / 6;
+        this->character->MAXHP = dist(*engine) + character->CON / 6;
+        this->character->MAXMP = dist(*engine) + character->INT / 6;
         this->character->Equipment[Weapon] = {"Sharp Stick", 0};
         for (uint8_t i = Shield; i <= Sollerets; i++) {
             this->character->Equipment[i] = {"", 0};
@@ -71,6 +71,10 @@ shared_ptr<NewGame> Game::StartNewGame() {
         // NOTE: Temp
         this->character->Plot.emplace_back("Prologue");
         this->character->Plot.emplace_back("Act 1");
+        this->character->Quests.emplace_back("Fetch me a hammer");
+        this->character->Quests.emplace_back("Fetch me a pickle");
+        this->character->CurrentAction = "Killing time";
+        this->character->CurrentProgress = 23;
         game_state = GameStateReady;
     });
 }
