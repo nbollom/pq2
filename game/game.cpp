@@ -56,25 +56,19 @@ SaveError Game::SaveGame(string filename_path) {
 }
 
 shared_ptr<NewGame> Game::StartNewGame() {
-    return make_shared<NewGame>(engine, [this](shared_ptr<Character> character){
+    return make_shared<NewGame>(engine, [this](Character character){
         this->character = character;
-        this->character->Level = 1;
-        this->character->Experience = 0;
+        this->character.Level = 1;
+        this->character.Experience = 0;
         std::uniform_int_distribution<uint8_t> dist(0, 8);
-        this->character->MAXHP = dist(*engine) + character->CON / 6;
-        this->character->MAXMP = dist(*engine) + character->INT / 6;
-        this->character->Equipment[Weapon] = {"Sharp Stick", 0};
+        this->character.MAXHP = dist(*engine) + character.CON / 6;
+        this->character.MAXMP = dist(*engine) + character.INT / 6;
+        this->character.Equipment[Weapon] = {"Sharp Stick", 0};
         for (uint8_t i = Shield; i <= Sollerets; i++) {
-            this->character->Equipment[i] = {"", 0};
+            this->character.Equipment[i] = {"", 0};
         }
-        this->character->Gold = 0;
-        // NOTE: Temp
-        this->character->Plot.emplace_back("Prologue");
-        this->character->Plot.emplace_back("Act 1");
-        this->character->Quests.emplace_back("Fetch me a hammer");
-        this->character->Quests.emplace_back("Fetch me a pickle");
-        this->character->CurrentAction = "Killing time";
-        this->character->CurrentProgress = 23;
+        this->character.CurrentProgress = 0;
+        this->character.Gold = 0;
         game_state = GameStateReady;
     });
 }
@@ -95,6 +89,24 @@ void Game::Close() {
     game_state = GameStateFinished;
 }
 
-std::shared_ptr<Character> Game::GetCharacter() {
+Character Game::GetCharacter() {
     return character;
 }
+
+uint64_t Game::GetLevelUpMaxValue() {
+    // 20 mins per level
+    return 20 * character.Level * 60;
+}
+
+uint64_t Game::GetEncumbrance() {
+    uint64_t encumbrance = 0;
+    for (auto& item: character.Inventory) {
+        encumbrance += item.count;
+    }
+    return encumbrance;
+}
+
+uint64_t Game::GetEncumbranceMaxValue() {
+    return 10 + character.STR;
+}
+

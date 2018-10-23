@@ -17,7 +17,7 @@ private:
     std::shared_ptr<std::mt19937_64> engine;
     std::string filename;
     game::GameState game_state;
-    std::shared_ptr<Character> character;
+    Character character;
 
 public:
     Game();
@@ -29,7 +29,11 @@ public:
     void Close();
 
     game::GameState GetState();
-    std::shared_ptr<Character> GetCharacter();
+    Character GetCharacter();
+
+    uint64_t GetLevelUpMaxValue();
+    uint64_t GetEncumbrance();
+    uint64_t GetEncumbranceMaxValue();
 
 };
 

@@ -18,15 +18,15 @@ class NewGame {
 
 private:
     std::shared_ptr<std::mt19937_64> engine;
-    std::shared_ptr<Character> character;
+    Character character;
     std::stack<std::array<uint64_t, 6>> unrollBuffer;
-    std::function<void(std::shared_ptr<Character> character)> callback;
+    std::function<void(Character character)> callback;
 
     void RollEm();
     void RollStat(uint64_t *stat);
 
 public:
-    NewGame(std::shared_ptr<std::mt19937_64> random_engine, std::function<void(std::shared_ptr<Character> character)> complete_callback);
+    NewGame(std::shared_ptr<std::mt19937_64> random_engine, std::function<void(Character character)> complete_callback);
     void GenerateName();
     std::string GetName();
     void SetName(std::string name);

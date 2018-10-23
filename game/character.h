@@ -11,9 +11,8 @@
 
 #include "types.h"
 
-class Character {
+struct Character {
 
-public:
     std::string Name;
 
     data::Race CharacterRace;

@@ -17,23 +17,22 @@ using namespace std;
 using namespace data;
 using namespace ui;
 
-NewGame::NewGame(shared_ptr<mt19937_64> randomengine, std::function<void(std::shared_ptr<Character> character)> complete_callback) {
+NewGame::NewGame(shared_ptr<mt19937_64> randomengine, std::function<void(Character character)> complete_callback) {
     engine = std::move(randomengine);
     callback = std::move(complete_callback);
-    character = make_shared<Character>();
     GenerateName();
-    character->CharacterRace = data::get_random_race(engine.get());
-    character->CharacterClass = data::get_random_class(engine.get());
+    character.CharacterRace = data::get_random_race(engine.get());
+    character.CharacterClass = data::get_random_class(engine.get());
     RollEm();
 }
 
 void NewGame::RollEm() {
-    RollStat(&character->STR);
-    RollStat(&character->CON);
-    RollStat(&character->DEX);
-    RollStat(&character->INT);
-    RollStat(&character->WIS);
-    RollStat(&character->CHA);
+    RollStat(&character.STR);
+    RollStat(&character.CON);
+    RollStat(&character.DEX);
+    RollStat(&character.INT);
+    RollStat(&character.WIS);
+    RollStat(&character.CHA);
 }
 
 void NewGame::RollStat(uint64_t *stat) {
@@ -66,15 +65,15 @@ void NewGame::GenerateName() {
         result.append(part);
     }
     result[0] = result[0] - (char)32;
-    character->Name = result;
+    character.Name = result;
 }
 
 string NewGame::GetName() {
-    return character->Name;
+    return character.Name;
 }
 
 void NewGame::SetName(string name) {
-    character->Name = std::move(name);
+    character.Name = std::move(name);
 }
 
 typedef vector<Race>::iterator RI;
@@ -90,20 +89,18 @@ vector<string> NewGame::GetAvailableRaces() {
 }
 
 string NewGame::GetRace() {
-    return character->CharacterRace.name;
+    return character.CharacterRace.name;
 }
 
 void NewGame::SetRace(string name) {
     auto races = data::get_race_list();
     for (auto r : races) {
         if (r.name == name) {
-            character->CharacterRace = r;
+            character.CharacterRace = r;
             break;
         }
     }
 }
-
-typedef vector<Class>::iterator CI;
 
 vector<string> NewGame::GetAvailableClasses() {
     auto classes = data::get_class_list();
@@ -116,21 +113,21 @@ vector<string> NewGame::GetAvailableClasses() {
 }
 
 string NewGame::GetClass() {
-    return character->CharacterClass.name;
+    return character.CharacterClass.name;
 }
 
 void NewGame::SetClass(string name) {
     auto classes = data::get_class_list();
     for (auto c : classes) {
         if (c.name == name) {
-            character->CharacterClass = c;
+            character.CharacterClass = c;
             break;
         }
     }
 }
 
 void NewGame::ReRoll() {
-    array<uint64_t, 6> values = {character->STR, character->CON, character->DEX, character->INT, character->WIS, character->CHA};
+    array<uint64_t, 6> values = {character.STR, character.CON, character.DEX, character.INT, character.WIS, character.CHA};
     unrollBuffer.push(values);
     RollEm();
 }
@@ -142,42 +139,42 @@ bool NewGame::CanUnroll() {
 void NewGame::UnRoll() {
     if (!unrollBuffer.empty()) {
         array<uint64_t, 6> values = unrollBuffer.top();
-        character->STR = values[0];
-        character->CON = values[1];
-        character->DEX = values[2];
-        character->INT = values[3];
-        character->WIS = values[4];
-        character->CHA = values[5];
+        character.STR = values[0];
+        character.CON = values[1];
+        character.DEX = values[2];
+        character.INT = values[3];
+        character.WIS = values[4];
+        character.CHA = values[5];
         unrollBuffer.pop();
     }
 }
 
 uint64_t NewGame::GetSTR() {
-    return character->STR;
+    return character.STR;
 }
 
 uint64_t NewGame::GetCON() {
-    return character->CON;
+    return character.CON;
 }
 
 uint64_t NewGame::GetDEX() {
-    return character->DEX;
+    return character.DEX;
 }
 
 uint64_t NewGame::GetINT() {
-    return character->INT;
+    return character.INT;
 }
 
 uint64_t NewGame::GetWIS() {
-    return character->WIS;
+    return character.WIS;
 }
 
 uint64_t NewGame::GetCHA() {
-    return character->CHA;
+    return character.CHA;
 }
 
 uint64_t NewGame::GetTotal() {
-    return character->STR + character->CON + character->DEX + character->INT + character->WIS + character->CHA;
+    return character.STR + character.CON + character.DEX + character.INT + character.WIS + character.CHA;
 }
 
 Color NewGame::GetTotalColor() {
