@@ -6,8 +6,8 @@
 #define PQ2_CHARACTER_H
 
 #include <string>
-#include <list>
 #include <array>
+#include <vector>
 
 #include "types.h"
 
@@ -33,11 +33,11 @@ struct Character {
 
     uint64_t Gold;
 
-    std::list<data::Stack> Spells;
+    std::vector<data::Stack> Spells;
     std::array<data::Item, 11> Equipment;
-    std::list<data::Stack> Inventory;
-    std::list<std::string> Plot;
-    std::list<std::string> Quests;
+    std::vector<data::Stack> Inventory;
+    std::vector<std::string> Plot;
+    std::vector<std::string> Quests;
 
     std::string CurrentAction;
     uint64_t CurrentProgress;

@@ -19,6 +19,10 @@ private:
     game::GameState game_state;
     Character character;
 
+    void LevelUp();
+    void WinStat();
+    void WinSpell();
+
 public:
     Game();
     void SetDaemonMode();

@@ -18,6 +18,11 @@ using namespace game;
 using namespace data;
 using namespace file;
 
+template <typename T>
+inline T Square(T x) {
+    return x * x;
+}
+
 Game::Game() {
     random_device random;
     engine = make_shared<mt19937_64>(random());
@@ -108,5 +113,55 @@ uint64_t Game::GetEncumbrance() {
 
 uint64_t Game::GetEncumbranceMaxValue() {
     return 10 + character.STR;
+}
+
+void Game::LevelUp() {
+    character.Level += 1;
+    std::uniform_int_distribution<uint8_t> dist(0, 4);
+    character.MAXHP += character.CON / 3 + 1 + dist(*engine);
+    character.MAXMP += character.INT / 3 + 1 + dist(*engine);
+    WinStat();
+    WinStat();
+    WinSpell();
+    character.Experience = 0;
+    // TODO: raise events (updatestats, updatespells)
+    SaveGame();
+}
+
+void Game::WinStat() {
+    auto odds = static_cast<uint8_t>((*engine)() % 2);
+    int8_t stat = 0;
+    uint64_t *stat_pointers[] = {
+            &character.STR,
+            &character.CON,
+            &character.DEX,
+            &character.INT,
+            &character.WIS,
+            &character.CHA,
+            &character.MAXHP,
+            &character.MAXMP,
+    };
+    if (odds < 1) {
+        stat = static_cast<int8_t>((*engine)() % 8);
+    }
+    else {
+        int64_t t = 0;
+        for (auto i = 0; i <= 5; i++) {
+            t += Square(*stat_pointers[i]);
+        }
+        t = static_cast<int8_t>((*engine)() % t);
+        stat = -1;
+        while (t >= 0) {
+            stat += 1;
+            t -= Square(*stat_pointers[stat]);
+        }
+    }
+    *stat_pointers[stat] += 1;
+}
+
+void Game::WinSpell() {
+    uint64_t min_amount = min(character.WIS + character.Level, character.Spells.size());
+    uint64_t random_number = min((*engine)() % min_amount, (*engine)() % min_amount);
+    character.Spells[static_cast<int>(random_number)].count += 1;
 }
 
