@@ -7,5 +7,7 @@
 
 #include "signals.h"
 #include "commandline.h"
+#include "romannumerals.h"
+#include "namegenerator.h"
 
 #endif //PQ2_UTILS_H

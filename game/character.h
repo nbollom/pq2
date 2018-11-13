@@ -8,6 +8,7 @@
 #include <string>
 #include <array>
 #include <vector>
+#include <queue>
 
 #include "types.h"
 
@@ -34,13 +35,20 @@ struct Character {
     uint64_t Gold;
 
     std::vector<data::Stack> Spells;
-    std::array<data::Item, 11> Equipment;
+    std::array<std::string, 11> Equipment;
     std::vector<data::Stack> Inventory;
     std::vector<std::string> Plot;
-    std::vector<std::string> Quests;
+    std::vector<data::Quest> Quests;
 
-    std::string CurrentAction;
+    std::queue<data::QueueItem> Queue;
+
+    data::CurerntActionType CurrentAction;
+    std::string CurrentActionLabel;
     uint64_t CurrentProgress;
+    uint64_t MaxProgress;
+    uint64_t CurrentPlotProgress;
+    uint64_t CurrentQuestProgress;
+    uint64_t MaxQuestProgress;
 
 };
 

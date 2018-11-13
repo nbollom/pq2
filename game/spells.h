@@ -10,8 +10,7 @@
 
 namespace data {
 
-    const std::string get_random_spell(std::mt19937_64 *engine);
-
+    const std::vector<std::string> get_spells();
 }
 
 #endif //PQ2_SPELLS_H

@@ -58,11 +58,8 @@ namespace data {
             "Infinite Confusion"
     };
 
-    static uniform_int_distribution<unsigned long> distribution(0, spells.size() - 1);
-
-    const string get_random_spell(mt19937_64 *engine) {
-        unsigned long value = distribution(*engine);
-        return spells[value];
+    const std::vector<std::string> get_spells() {
+        return spells;
     }
 
 }

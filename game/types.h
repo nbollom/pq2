@@ -13,17 +13,17 @@ namespace data {
 
     typedef struct {
         std::string label;
-        int8_t value;
+        int64_t value;
     } Attribute;
 
     typedef struct {
         std::string label;
-        int8_t level;
+        uint64_t level;
     } Item;
 
     typedef struct {
         std::string name;
-        int8_t level;
+        uint64_t level;
         std::string drop;
     } Monster;
 
@@ -39,8 +39,13 @@ namespace data {
 
     typedef struct {
         std::string name;
-        int count;
+        uint64_t count;
     } Stack;
+
+    typedef struct {
+        std::string label;
+        uint64_t ms;
+    } Quest;
 
     typedef enum {
         Weapon = 0,
@@ -68,6 +73,21 @@ namespace data {
             "Cuisses",
             "Greaves",
             "Sollerets"
+    };
+
+    enum QueueItemType {
+        QueueItemTask = 0,
+        QueueItemPlot
+    };
+
+    typedef struct {
+        QueueItemType type = QueueItemTask;
+        Quest item;
+    } QueueItem;
+
+    enum CurerntActionType {
+        CurrentActionLoading = 0,
+        CurrentActionKill
     };
 
 }

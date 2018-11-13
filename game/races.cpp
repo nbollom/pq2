@@ -35,7 +35,7 @@ namespace data {
 
     static uniform_int_distribution<unsigned long> distribution(0, races.size() - 1);
 
-    const Race get_random_race(mt19937_64 *engine) {
+    const Race get_random_race(std::shared_ptr<std::mt19937_64> engine) {
         unsigned long value = distribution(*engine);
         return races[value];
     }

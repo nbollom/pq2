@@ -7,11 +7,12 @@
 
 #include <string>
 #include <random>
+#include <memory>
 #include "types.h"
 
 namespace data {
 
-    const Monster get_random_monster(std::mt19937_64 *engine);
+    const Monster get_random_monster(std::shared_ptr<std::mt19937_64> engine);
 
 }
 

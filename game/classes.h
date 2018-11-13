@@ -7,11 +7,12 @@
 
 #include <string>
 #include <random>
+#include <memory>
 #include "types.h"
 
 namespace data {
 
-    const Class get_random_class(std::mt19937_64 *engine);
+    const Class get_random_class(std::shared_ptr<std::mt19937_64> engine);
 
     const std::vector<Class> get_class_list();
 

@@ -7,10 +7,11 @@
 
 #include <string>
 #include <random>
+#include <memory>
 
 namespace data {
 
-    const std::string get_random_item_attribute(std::mt19937_64 *engine);
+    const std::string get_random_item_attribute(std::shared_ptr<std::mt19937_64> engine);
 
 }
 

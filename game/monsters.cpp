@@ -245,7 +245,7 @@ namespace data {
 
     static uniform_int_distribution<unsigned long> distribution(0, monsters.size() - 1);
 
-    const Monster get_random_monster(mt19937_64 *engine) {
+    const Monster get_random_monster(std::shared_ptr<std::mt19937_64> engine) {
         unsigned long value = distribution(*engine);
         return monsters[value];
     }

@@ -7,11 +7,12 @@
 
 #include <string>
 #include <random>
+#include <memory>
 #include "types.h"
 
 namespace data {
 
-    const Race get_random_race(std::mt19937_64 *engine);
+    const Race get_random_race(std::shared_ptr<std::mt19937_64> engine);
 
     const std::vector<Race> get_race_list();
 

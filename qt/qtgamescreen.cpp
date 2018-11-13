@@ -6,6 +6,8 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QCheckBox>
+#include <utils.h>
+#include <string>
 #include "qtgamescreen.h"
 
 #define MARGIN_AMOUNT 0
@@ -212,7 +214,8 @@ void QTGameScreen::UpdateStats() {
     uint64_t max = game->GetLevelUpMaxValue();
     experience_progress->setMaximum(static_cast<int>(max));
     experience_progress->setValue(static_cast<int>(character.Experience));
-    std::string needed_exp = std::to_string(max - character.Experience) + " XP needed for next level";
+    uint64_t needed = max - character.Experience;
+    std::string needed_exp = std::to_string(needed) + " XP needed for next level";
     experience_progress->setToolTip(needed_exp.c_str());
 }
 
@@ -223,8 +226,8 @@ void QTGameScreen::UpdateSpells() {
     spells_table->setRowCount(static_cast<int>(character.Spells.size()));
     for (const auto& spell: character.Spells) {
         spells_table->setItem(row, 0, new QTableWidgetItem(spell.name.c_str()));
-        // TODO: Get count as roman numerals
-        spells_table->setItem(row, 1, new QTableWidgetItem(QString::number(spell.count)));
+        std::string level = GetRomanNumerals(spell.count);
+        spells_table->setItem(row, 1, new QTableWidgetItem(level.c_str()));
         row++;
     }
 }
@@ -234,7 +237,7 @@ void QTGameScreen::UpdateEquipment() {
     auto equipment_index = 0;
     for (const auto& item: character.Equipment) {
         // TODO: proper item name logic
-        equipment_table->setItem(equipment_index++, 1, new QTableWidgetItem(item.label.c_str()));
+        equipment_table->setItem(equipment_index++, 1, new QTableWidgetItem(item.c_str()));
     }
 }
 
@@ -250,7 +253,6 @@ void QTGameScreen::UpdateInventory() {
         inventory_table->setItem(row, 1, new QTableWidgetItem(QString::number(item.count)));
         row++;
     }
-    // TODO: real encumbrance
     uint64_t max = game->GetEncumbranceMaxValue();
     uint64_t value = game->GetEncumbrance();
     encumbrance_progress->setMaximum(static_cast<int>(max));
@@ -273,8 +275,9 @@ void QTGameScreen::UpdatePlot() {
         plot_table->setCellWidget(row, 0, check);
         row++;
     }
-    // TODO: real plot progress
-    plot_progress->setValue(10);
+    uint64_t max = game->GetPlotMaxValue();
+    plot_progress->setMaximum(static_cast<int>(max));
+    plot_progress->setValue(static_cast<int>(character.CurrentPlotProgress));
 }
 
 void QTGameScreen::UpdateQuests() {
@@ -283,7 +286,7 @@ void QTGameScreen::UpdateQuests() {
     auto row = 0;
     quest_table->setRowCount(static_cast<int>(character.Quests.size()));
     for (const auto& quest: character.Quests) {
-        QCheckBox *check = new QCheckBox(quest.c_str());
+        QCheckBox *check = new QCheckBox(quest.label.c_str());
         bool checked = row != character.Quests.size() - 1;
         check->setChecked(checked);
         check->setAttribute(Qt::WA_TransparentForMouseEvents);
@@ -291,13 +294,13 @@ void QTGameScreen::UpdateQuests() {
         quest_table->setCellWidget(row, 0, check);
         row++;
     }
-    // TODO: real quest progress
-    quest_progress->setValue(10);
+    quest_progress->setMaximum(static_cast<int>(character.MaxQuestProgress));
+    quest_progress->setValue(static_cast<int>(character.CurrentQuestProgress));
 }
 
 void QTGameScreen::UpdateStatus() {
     auto character = game->GetCharacter();
-    status_label->setText(character.CurrentAction.c_str());
+    status_label->setText(character.CurrentActionLabel.c_str());
     status_progress->setValue(static_cast<int>(character.CurrentProgress));
 }
 

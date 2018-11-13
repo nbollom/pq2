@@ -22,6 +22,13 @@ private:
     void LevelUp();
     void WinStat();
     void WinSpell();
+    void WinItem();
+    void WinEquip();
+    void CompleteAct();
+    void InterplotCinematic();
+
+
+    std::string InterestingItem();
 
 public:
     Game();
@@ -38,6 +45,7 @@ public:
     uint64_t GetLevelUpMaxValue();
     uint64_t GetEncumbrance();
     uint64_t GetEncumbranceMaxValue();
+    uint64_t GetPlotMaxValue();
 
 };
 

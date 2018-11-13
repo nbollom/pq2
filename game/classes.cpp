@@ -32,7 +32,7 @@ namespace data {
 
     static uniform_int_distribution<unsigned long> distribution(0, classes.size() - 1);
 
-    const Class get_random_class(mt19937_64 *engine) {
+    const Class get_random_class(std::shared_ptr<std::mt19937_64> engine) {
         unsigned long value = distribution(*engine);
         return classes[value];
     }
