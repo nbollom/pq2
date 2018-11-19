@@ -17,12 +17,12 @@ GUI::~GUI() {
 }
 
 void GUI::Run() {
-//    if (game->GetState() != GameStateReady) {
-//        ShowMainMenu();
-//    }
-//    else {
+    if (game->GetState() != GameStateReady) {
+        ShowMainMenu();
+    }
+    else {
         ShowGameScreen();
-//    }
+    }
 }
 
 void GUI::PushView(std::shared_ptr<View> view) {

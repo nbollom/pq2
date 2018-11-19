@@ -6,10 +6,11 @@ For the original Progress Quest go [here](http://progressquest.com)
 ## Current Status
 
 Game core:
-At the current time the game is not "playable", the character creation logic is done, but the game logic is not. The load/save functionality also does not yet work
+At the current time the game is now "playable", there may be some bugs and inconsistencies with the original, but its totally playable.
+Saving and loading though are not, so feel free to start a new game and watch it play, but the game will only be good for as long as you leave it running
 
 QT Interface:
-The QT interface is the most complete and allows the player to create a new character and show the in-progress design screen
+The QT interface is the most complete and allows the player to create a new character and play the game, but as game loading doesn't yet work the load option is not available
 
 NCurses Interface:
 The ncurses interface has the main menu done, but in an older style that didn't work well and need re-coding

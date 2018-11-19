@@ -44,7 +44,7 @@ namespace data {
 
     typedef struct {
         std::string label;
-        uint64_t ms;
+        Monster monster;
     } Quest;
 
     typedef enum {
@@ -82,12 +82,18 @@ namespace data {
 
     typedef struct {
         QueueItemType type = QueueItemTask;
-        Quest item;
+        std::string label;
+        uint64_t ms;
     } QueueItem;
 
-    enum CurerntActionType {
+    enum CurrentActionType {
         CurrentActionLoading = 0,
-        CurrentActionKill
+        CurrentActionKill,
+        CurrentActionBuying,
+        CurrentActionSelling,
+        CurrentActionMarket,
+        CurrentActionNone,
+        CurrentActionHeading
     };
 
 }

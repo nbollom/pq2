@@ -42,8 +42,9 @@ struct Character {
 
     std::queue<data::QueueItem> Queue;
 
-    data::CurerntActionType CurrentAction;
+    data::CurrentActionType CurrentAction;
     std::string CurrentActionLabel;
+    data::Monster CurrentMonster;
     uint64_t CurrentProgress;
     uint64_t MaxProgress;
     uint64_t CurrentPlotProgress;

@@ -19,6 +19,7 @@
 #include "monsters.h"
 #include "titles.h"
 #include "races.h"
+#include "classes.h"
 #include "boringitems.h"
 #include <iostream>
 #include <utils.h>
@@ -29,19 +30,90 @@ using namespace game;
 using namespace data;
 using namespace file;
 
+#define NPOS std::string::npos
+
 template <typename T>
 inline T Square(T x) {
     return x * x;
+}
+
+inline uint64_t EquipPrice(uint64_t level) {
+    return 5 * level * level
+           + 10 * level
+           + 20;
+}
+
+inline void AddToInventory(Character &character, const Stack &item) {
+    bool found = false;
+    for (auto& i: character.Inventory) {
+        if (i.name == item.name) {
+            i.count += item.count;
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        character.Inventory.emplace_back(item);
+    }
+}
+
+inline uint64_t RandomLow(std::shared_ptr<std::mt19937_64> &engine, uint64_t num) {
+    return min(engine->operator()() % num, engine->operator()() % num);
+}
+
+inline std::string Plural(std::string s) {
+    size_t size = s.size();
+    if (size > 1 && s.substr(size - 1) == "y") {
+        return  s.replace(size - 1, NPOS, "ies");
+    }
+    else if (size > 2 && s.substr(size - 2) == "us") {
+        return s.replace(size - 2, NPOS, "i");
+    }
+    else if ((size > 2 && s.substr(size - 2) == "ch") || (size > 1 && (s.substr(size - 1) == "x" || s.substr(size - 1) == "s"))) {
+        return s + "es";
+    }
+    else if (size > 1 && s.substr(size - 1) == "f") {
+        return s.replace(size - 1, NPOS, "ves");
+    }
+    else if (size > 3 && (s.substr(size - 3) == "man" || s.substr(size - 3) == "Man")) {
+        return s.replace(size - 2, NPOS, "en");
+    }
+    else {
+        return s + "s";
+    }
+}
+
+inline std::string Indefinite(std::string name, uint64_t count) {
+    if (count == 1) {
+        static std::string characters = "AEIOUÜaeiouü";
+        char c = name.front();
+        if (characters.find(c) != NPOS) {
+            return  "an " + name;
+        }
+        else {
+            return "a " + name;
+        }
+    }
+    else {
+        return std::to_string(count) + " " + Plural(name);
+    }
+}
+
+inline std::string Definite(std::string name, uint64_t count) {
+    if (count > 1) {
+        name = std::to_string(count) + " " + Plural(name);
+    }
+    return "the " + name;
+}
+
+inline bool Odds(std::shared_ptr<std::mt19937_64> &engine, uint64_t chance, uint64_t out_of) {
+    return (engine->operator()() % out_of) < chance;
 }
 
 Game::Game() {
     random_device random;
     engine = make_shared<mt19937_64>(random());
     game_state = GameStateNone;
-
-    // NOTE: Temporary for debugging game screen
-    auto ng = StartNewGame();
-    ng->ConfirmCharacter();
 }
 
 void Game::SetDaemonMode() {
@@ -79,88 +151,71 @@ shared_ptr<NewGame> Game::StartNewGame() {
         std::uniform_int_distribution<uint8_t> dist(0, 8);
         this->character.MAXHP = dist(*engine) + character.CON / 6;
         this->character.MAXMP = dist(*engine) + character.INT / 6;
-        this->character.Equipment[Weapon] = {"Sharp Stick", 0};
+        this->character.Equipment[Weapon] = "Sharp Stick";
         for (uint8_t i = Shield; i <= Sollerets; i++) {
             this->character.Equipment[i] = {"", 0};
         }
-        this->character.CurrentProgress = 0;
         this->character.Gold = 0;
         this->character.Experience = 0;
-        this->character.MaxQuestProgress = 1; // Temporary until a quest is set
+        this->character.MaxQuestProgress = 0;
         this->character.CurrentAction = CurrentActionLoading;
         this->character.CurrentActionLabel = "Loading.";
+        this->character.CurrentProgress = 0;
         this->character.MaxProgress = 2000;
 
-        this->character.Queue.push({QueueItemTask, {"Experiencing an enigmatic and foreboding night vision", 10}});
-        this->character.Queue.push({QueueItemTask, {"Much is revealed about that wise old bastard you'd underestimated", 6}});
-        this->character.Queue.push({QueueItemTask, {"A shocking series of events leaves you alone and bewildered, but resolute", 6}});
-        this->character.Queue.push({QueueItemTask, {"Drawing upon an unexpected reserve of determination, you set out on a long and dangerous journey", 4}});
-        this->character.Queue.push({QueueItemTask, {"Loading", 2}});
-        /*
-            fTask.Caption := '';
-            fQuest.Caption := '';
-            fQueue.Items.Clear;
-
-            Task('Loading.',2000); // that dot is spotted for later...
-            Q('task|10|Experiencing an enigmatic and foreboding night vision');
-            Q('task|6|Much is revealed about that wise old bastard you''d underestimated');
-            Q('task|6|A shocking series of events leaves you alone and bewildered, but resolute');
-            Q('task|4|Drawing upon an unexpected reserve of determination, you set out on a long and dangerous journey');
-            Q('task|2|Loading');
-
-            PlotBar.Max := 26;
-            with Plots.Items.Add do begin
-            Caption := 'Prologue';
-            StateIndex := 0;
-            end;
-        */
+        this->character.Queue.push({QueueItemTask, "Experiencing an enigmatic and foreboding night vision", 10});
+        this->character.Queue.push({QueueItemTask, "Much is revealed about that wise old bastard you'd underestimated", 6});
+        this->character.Queue.push({QueueItemTask, "A shocking series of events leaves you alone and bewildered, but resolute", 6});
+        this->character.Queue.push({QueueItemTask, "Drawing upon an unexpected reserve of determination, you set out on a long and dangerous journey", 4});
+        this->character.Queue.push({QueueItemPlot, "Loading", 2});
+        this->character.Plot.emplace_back("Prologue");
         game_state = GameStateReady;
     });
 }
 
 void Game::Tick(uint64_t ms) {
     if (game_state == GameStateReady) {
-        /*
-            gain := Pos('kill|',fTask.Caption) = 1;
-            with TaskBar do begin
-              if Position >= Max then begin
-                ClearAllSelections;
+        while (ms > 0) {
+            uint64_t progress = min(ms, static_cast<uint64_t>(100));
+            bool gain = character.CurrentAction == CurrentActionKill;
+            if (character.CurrentProgress >= character.MaxProgress) {
 
-                if Kill.SimpleText = 'Loading....' then Max := 0;
+                if(character.CurrentAction == CurrentActionLoading) {
+                    character.MaxProgress = 0;
+                }
 
                 // gain XP / level up
-                if gain then with ExpBar do if Position >= Max
-                then LevelUp
-                else Position := Position + TaskBar.Max div 1000;
-                with ExpBar do Hint := IntToStr(Max-Position) + ' XP needed for next level';
+                if (gain && character.Experience >= GetLevelUpMaxValue()) {
+                    LevelUp();
+                }
+                else {
+                    character.Experience += character.MaxProgress / 1000;
+                }
 
                 // advance quest
-                if gain then if Plots.Items.Count > 1 then with QuestBar do if Position >= Max then begin
-                  CompleteQuest;
-                end else if Quests.Items.Count > 0 then begin
-                  Position := Position + TaskBar.Max div 1000;
-                  Hint := IntToStr(100 * Position div Max) + '% complete';
-                end;
-
+                if (gain && character.Plot.size() > 1) {
+                    if (character.CurrentQuestProgress >= character.MaxQuestProgress) {
+                        CompleteQuest();
+                    }
+                    else if (!character.Quests.empty()) {
+                        character.CurrentQuestProgress += character.MaxProgress / 1000;
+                    }
+                }
                 // advance plot
-                if gain then with PlotBar do if Position >= Max
-                then InterplotCinematic
-                else Position := Position + TaskBar.Max div 1000;
-
-                //Time.Caption := FormatDateTime('h:mm:ss',PlotBar.Position / (24.0 * 60 * 60));
-                PlotBar.Hint := RoughTime(PlotBar.Max-PlotBar.Position) + ' remaining';
-                //PlotBar.Hint := FormatDateTime('h:mm:ss" remaining"',(PlotBar.Max-PlotBar.Position) / (24.0 * 60 * 60));
+                if (gain && character.CurrentPlotProgress >= GetPlotMaxValue()) {
+                    InterplotCinematic();
+                }
+                else {
+                    character.CurrentPlotProgress += character.MaxProgress / 1000;
+                }
 
                 Dequeue();
-              end else with TaskBar do begin
-                elapsed := LongInt(timeGetTime) - LongInt(Timer1.Tag);
-                if elapsed > 100 then elapsed := 100;
-                if elapsed < 0 then elapsed := 0;
-                Position := Position + elapsed;
-              end;
-            end;
-            Timer1.Tag := timeGetTime;
-        */
+            }
+            else {
+                character.CurrentProgress += progress;
+            }
+            ms -= progress;
+        }
     }
 }
 
@@ -196,6 +251,9 @@ uint64_t Game::GetEncumbranceMaxValue() {
 }
 
 uint64_t Game::GetPlotMaxValue() {
+    if (character.Plot.size() <= 1) {
+        return 26;
+    }
     return 60 * 60 * (1 + 5 * character.Plot.size());
 }
 
@@ -246,7 +304,7 @@ void Game::WinStat() {
 void Game::WinSpell() {
     auto spells = get_spells();
     uint64_t min_amount = min(character.WIS + character.Level, spells.size());
-    uint64_t random_number = min(engine->operator()() % min_amount, engine->operator()() % min_amount);
+    uint64_t random_number = RandomLow(engine, min_amount);
     auto spell = spells[static_cast<int>(random_number)];
     bool existing = false;
     for (auto& curr_spell: character.Spells) {
@@ -263,8 +321,7 @@ void Game::WinSpell() {
 }
 
 void Game::WinItem() {
-    data::Stack item = {InterestingItem() + " of " + get_random_item_of(engine), 1};
-    character.Inventory.emplace_back(item);
+    AddToInventory(character, {InterestingItem() + " of " + get_random_item_of(engine), 1});
 }
 
 void Game::WinEquip() {
@@ -336,13 +393,15 @@ void Game::WinEquip() {
 
 void Game::CompleteAct() {
     character.CurrentPlotProgress = 0;
-    uint64_t count = character.Plot.size();
+    uint64_t count = character.Plot.size() - 1;
     std::string roman = GetRomanNumerals(count + 1);
     std::string act_name = "Act " + roman;
     character.Plot.emplace_back(act_name);
-    WinItem();
-    WinEquip();
-    SaveGame();
+    if (count > 1) {
+        WinItem();
+        WinEquip();
+        SaveGame();
+    }
 }
 
 std::string Game::InterestingItem() {
@@ -353,13 +412,13 @@ void Game::InterplotCinematic() {
     uint64_t r = engine->operator()() % 3;
     switch (r) {
         case 0:
-            character.Queue.push({QueueItemTask, {"Exhausted, you arrive at a friendly oasis in a hostile land", 1}});
-            character.Queue.push({QueueItemTask, {"You greet old friends and meet new allies", 2}});
-            character.Queue.push({QueueItemTask, {"You are privy to a council of powerful do-gooders", 2}});
-            character.Queue.push({QueueItemTask, {"There is much to be done. You are chosen!", 1}});
+            character.Queue.push({QueueItemTask, "Exhausted, you arrive at a friendly oasis in a hostile land", 1});
+            character.Queue.push({QueueItemTask, "You greet old friends and meet new allies", 2});
+            character.Queue.push({QueueItemTask, "You are privy to a council of powerful do-gooders", 2});
+            character.Queue.push({QueueItemTask, "There is much to be done. You are chosen!", 1});
             break;
         case 1: {
-            character.Queue.push({QueueItemTask, {"Your quarry is in sight, but a mighty enemy bars your path!", 1}});
+            character.Queue.push({QueueItemTask, "Your quarry is in sight, but a mighty enemy bars your path!", 1});
             std::string nemesis;
                 uint64_t level = character.Level + 3;
                 uint64_t lev = 0;
@@ -371,20 +430,20 @@ void Game::InterplotCinematic() {
                     }
                 }
                 nemesis = GenerateRandomName(engine) + " the " + nemesis;
-            character.Queue.push({QueueItemTask, {"A desperate struggle commences with " + nemesis, 4}});
+            character.Queue.push({QueueItemTask, "A desperate struggle commences with " + nemesis, 4});
             r = engine->operator()() % 3;
             switch (r) {
                 case 0:
-                    character.Queue.push({QueueItemTask, {"Locked in grim combat with " + nemesis, 2}});
+                    character.Queue.push({QueueItemTask, "Locked in grim combat with " + nemesis, 2});
                     break;
                 case 1:
-                    character.Queue.push({QueueItemTask, {nemesis + "seems to have the upper hand!", 2}});
+                    character.Queue.push({QueueItemTask, nemesis + "seems to have the upper hand!", 2});
                     break;
                 default:
-                    character.Queue.push({QueueItemTask, {"You seem to gain the advantage over " + nemesis, 2}});
+                    character.Queue.push({QueueItemTask, "You seem to gain the advantage over " + nemesis, 2});
             }
-            character.Queue.push({QueueItemTask, {"Victory! " + nemesis + " is slain! Exhausted, you lose conciousness", 3}});
-            character.Queue.push({QueueItemTask, {"You awake in a friendly place, but the road awaits", 2}});
+            character.Queue.push({QueueItemTask, "Victory! " + nemesis + " is slain! Exhausted, you lose conciousness", 3});
+            character.Queue.push({QueueItemTask, "You awake in a friendly place, but the road awaits", 2});
             break;
         }
         default: {
@@ -394,14 +453,336 @@ void Game::InterplotCinematic() {
             } else {
                 nemesis.append(" of " + GenerateRandomName(engine));
             }
-            character.Queue.push({QueueItemTask, {"Oh sweet relief! You've reached the protection of the good " + nemesis, 2}});
-            character.Queue.push({QueueItemTask, {"There is rejoicing, and an unnerving encouter with " + nemesis + " in private", 3}});
-            character.Queue.push({QueueItemTask, {"You forget your " + get_random_boring_item(engine) + " and go back to get it", 2}});
-            character.Queue.push({QueueItemTask, {"What''s this!? You overhear something shocking!", 2}});
-            character.Queue.push({QueueItemTask, {"Could " + nemesis + " be a dirty double-dealer?", 2}});
-            character.Queue.push({QueueItemTask, {"Who can possibly be trusted with this news!? ... Oh yes, of course", 3}});
+            character.Queue.push({QueueItemTask, "Oh sweet relief! You've reached the protection of the good " + nemesis, 2});
+            character.Queue.push({QueueItemTask, "There is rejoicing, and an unnerving encouter with " + nemesis + " in private", 3});
+            character.Queue.push({QueueItemTask, "You forget your " + get_random_boring_item(engine) + " and go back to get it", 2});
+            character.Queue.push({QueueItemTask, "What''s this!? You overhear something shocking!", 2});
+            character.Queue.push({QueueItemTask, "Could " + nemesis + " be a dirty double-dealer?", 2});
+            character.Queue.push({QueueItemTask, "Who can possibly be trusted with this news!? ... Oh yes, of course", 3});
         }
     }
-    character.Queue.push({QueueItemPlot, {"Loading", 1}});
+    character.Queue.push({QueueItemPlot, "Loading", 1});
 }
 
+void Game::Dequeue() {
+    while (character.CurrentProgress >= character.MaxProgress) {
+        if (character.CurrentAction == CurrentActionKill) {
+            if (character.CurrentMonster.drop == "*") {
+                WinItem();
+            }
+            else if (!character.CurrentMonster.drop.empty()) {
+                Monster m = character.CurrentMonster;
+                std::string item = m.name + " " + m.drop;
+                AddToInventory(character, {item, 1});
+            }
+        }
+        else if (character.CurrentAction == CurrentActionBuying) {
+            character.Gold -= EquipPrice(character.Level);
+            WinEquip();
+        }
+        else if (character.CurrentAction == CurrentActionMarket || character.CurrentAction == CurrentActionSelling) {
+            if (character.CurrentAction == CurrentActionSelling) {
+                Stack item = character.Inventory.front();
+                uint64_t amount = item.count * character.Level;
+                if (item.name.find(" of ") != NPOS) {
+                    amount *= (1 + RandomLow(engine, 10)) * (1 + RandomLow(engine, character.Level));
+                }
+                character.Inventory.erase(character.Inventory.begin());
+                character.Gold += amount;
+            }
+            if (!character.Inventory.empty()) {
+                Stack item = character.Inventory.front();
+                character.CurrentActionLabel = "Selling " + Indefinite(item.name, item.count);
+                character.CurrentAction = CurrentActionSelling;
+                character.CurrentProgress = 0;
+                character.MaxProgress = 1000;
+                break;
+            }
+        }
+        CurrentActionType old = character.CurrentAction;
+        character.CurrentAction = CurrentActionNone;
+        if (!character.Queue.empty()) {
+            QueueItem item = character.Queue.front();
+            QueueItemType type = item.type;
+            uint64_t time = item.ms;
+            std::string label = item.label;
+            if (type == QueueItemTask || type == QueueItemPlot) {
+                if (type == QueueItemPlot) {
+                    CompleteAct();
+                    label = "Loading " + character.Plot.back();
+                }
+                character.CurrentActionLabel = label;
+                character.CurrentProgress = 0;
+                character.MaxProgress = time * 1000;
+                character.Queue.pop();
+            }
+            else {
+                throw std::runtime_error("Should never get here");
+            }
+        }
+        else if (GetEncumbrance() >= GetEncumbranceMaxValue()) {
+            character.CurrentActionLabel = "Heading to market to sell loot";
+            character.CurrentAction = CurrentActionMarket;
+            character.CurrentProgress = 0;
+            character.MaxProgress = 4000;
+        }
+        else if (old != CurrentActionKill && old != CurrentActionHeading) {
+            if (character.Gold > EquipPrice(character.Level)) {
+                character.CurrentActionLabel = "Negotiating purchase of better equipment";
+                character.CurrentProgress = 0;
+                character.MaxProgress = 5000;
+                character.CurrentAction = CurrentActionBuying;
+            }
+            else {
+                character.CurrentActionLabel = "Heading to the killing fields";
+                character.CurrentProgress = 0;
+                character.MaxProgress = 4000;
+                character.CurrentAction = CurrentActionHeading;
+            }
+        }
+        else {
+            MonsterTask();
+        }
+    }
+}
+
+void Game::MonsterTask() {
+    int64_t level = character.Level;
+    int64_t lev;
+    Monster monster;
+    bool definite = false;
+    for (int64_t i = level; i > 0; i--) {
+        if (Odds(engine, 2, 5)) {
+            level += (engine->operator()() % 2) * 2 - 1;
+        }
+    }
+    level = max(level, static_cast<int64_t>(1));
+    if (Odds(engine, 1, 25)) {
+        // use an NPC every once in a while
+        std::string name = get_random_race(engine).name;
+        if (Odds(engine, 1, 2)) {
+            name = "passing " + name + " " + get_random_class(engine).name;
+        }
+        else {
+            name = get_random_title(engine, true);
+            definite = true;
+        }
+        lev = level;
+        monster = {name, static_cast<uint64_t>(level), "*"};
+    }
+    else if ((!character.Quests.empty() && !character.Quests.back().monster.name.empty()) && Odds(engine, 1, 4)) {
+        // use the quest monster
+        monster = character.Quests.back().monster;
+        lev = monster.level;
+    }
+    else {
+        // pick the monster out of so many random ones closest to the level we want
+        monster = get_random_monster(engine);
+        lev = monster.level;
+        for (int i = 5; i > 0; i--) {
+            Monster m1 = get_random_monster(engine);
+            if (abs(static_cast<long long int>(level - m1.level)) < abs(static_cast<long long int>(level - lev))) {
+                monster = m1;
+                lev = monster.level;
+            }
+        }
+    }
+    std::string name = monster.name;
+    int64_t qty = 1;
+    if (level - lev > 10) {
+        qty = (level + (engine->operator()() % level)) / max(lev, static_cast<int64_t>(1));
+        qty = max(qty, static_cast<int64_t>(1));
+        level = level / qty;
+    }
+
+    if (level - lev <= -10) {
+        name = "imaginary" + name;
+    }
+    else if (level - lev < -5) {
+        int64_t i = 10 + (level - lev);
+        i = 5 - (engine->operator()() % (i + 1));
+        name = Sick(i, Young((lev - level) - i, name));
+    }
+    else if (level - lev < 0 && engine->operator()() % 2 == 1) {
+        name = Sick(level - lev, name);
+    }
+    else if (level - lev < 0) {
+        name = Young(level - lev, name);
+    }
+    else if (level - lev >= 10) {
+        name = "messianic " + name;
+    }
+    else if (level - lev > 5) {
+        int64_t i = 10 - (level - lev);
+        i = 5 - (engine->operator()() % (i + 1));
+        name = Big(i, Special((level - lev) - i, name));
+    }
+    else if (level - lev > 0 && engine->operator()() % 2 == 1) {
+        name = Big(level-lev, name);
+    }
+    else if (level - lev > 0) {
+        name = Special(level - lev, name);
+    }
+    lev = level;
+    level = lev * qty;
+
+    if (!definite) {
+        name = Indefinite(name, static_cast<uint64_t>(qty));
+    }
+    character.CurrentAction = CurrentActionKill;
+    character.CurrentMonster = monster;
+    character.CurrentActionLabel = "Executing " + name;
+    character.CurrentProgress = 0;
+    character.MaxProgress = (5 * level * 1000) / character.Level;
+}
+
+void Game::CompleteQuest() {
+    uint64_t lev = 0;
+    character.CurrentQuestProgress = 0;
+    character.MaxQuestProgress = 50 + (engine->operator()() % 100);
+    if (!character.Quests.empty()) {
+        switch (engine->operator()() % 4) {
+            case 0:
+                WinSpell();
+                break;
+            case 1:
+                WinEquip();
+                break;
+            case 2:
+                WinStat();
+                break;
+            default:
+                WinItem();
+        }
+    }
+    while (character.Quests.size() > 99) {
+        character.Quests.erase(character.Quests.begin());
+    }
+    Quest quest;
+    switch (engine->operator()() % 5) {
+        case 0: {
+            uint64_t level = character.Level;
+            for (int i = 1; i <= 4; i++) {
+                Monster m = get_random_monster(engine);
+                if (i == 1 || abs(static_cast<long long int>(m.level - level)) < abs(static_cast<long long int>(lev - level))) {
+                    lev = m.level;
+                    quest.monster = m;
+                }
+            }
+            quest.label = "Exterminate " + Definite(quest.monster.name, 2);
+            break;
+        }
+        case 1:
+            quest.label = "Seek " + Definite(InterestingItem(), 1);
+            break;
+        case 2:
+            quest.label = "Deliver this " + get_random_boring_item(engine);
+            break;
+        case 3:
+            quest.label = "Fetch me " + Indefinite(get_random_boring_item(engine), 1);
+            break;
+        default:
+            uint64_t level = character.Level;
+            Monster m;
+            for (int i = 1; i <= 2; i++) {
+                m = get_random_monster(engine);
+                if (i == 1 || abs(static_cast<long long int>(m.level - level)) < abs(static_cast<long long int>(lev - level))) {
+                    lev = m.level;
+                }
+            }
+            quest.label = "Placate " + Definite(m.name, 2);
+            break;
+    }
+    character.Quests.emplace_back(quest);
+    SaveGame();
+}
+
+std::string Game::Sick(int64_t level, std::string name) {
+    std::string result = std::to_string(level) + name; // just in case
+    if (level == -5 || level == 5) {
+        return "dead " + name;
+    }
+    else if (level == -4 || level == 4) {
+        return "comatose " + name;
+    }
+    else if (level == -3 || level == 3) {
+        return "crippled " + name;
+    }
+    else if (level == -2 || level == 2) {
+        return "sick " + name;
+    }
+    else if (level == -1 || level == 1) {
+        return "undernourished " + name;
+    }
+    return result;
+}
+
+std::string Game::Young(int64_t level, std::string name) {
+    std::string result = std::to_string(level) + name; // just in case
+    if (level == -5 || level == 5) {
+        return "foetal " + name;
+    }
+    else if (level == -4 || level == 4) {
+        return "baby " + name;
+    }
+    else if (level == -3 || level == 3) {
+        return "preadolescent " + name;
+    }
+    else if (level == -2 || level == 2) {
+        return "teenage " + name;
+    }
+    else if (level == -1 || level == 1) {
+        return "underage " + name;
+    }
+    return result;
+}
+
+std::string Game::Big(int64_t level, std::string name) {
+    std::string result = std::to_string(level) + name; // just in case
+    if (level == -1 || level == 1) {
+        return "greater " + name;
+    }
+    else if (level == -2 || level == 2) {
+        return "massive " + name;
+    }
+    else if (level == -3 || level == 3) {
+        return "enormous " + name;
+    }
+    else if (level == -4 || level == 4) {
+        return "giant " + name;
+    }
+    else if (level == -5 || level == 5) {
+        return "titanic " + name;
+    }
+    return result;
+}
+
+std::string Game::Special(int64_t level, std::string name) {
+    std::string result = name; // just in case
+    if (level == -1 || level == 1) {
+        if (name.find(' ') != NPOS) {
+            return "veteran " + name;
+        }
+        else {
+            return "Battle-" + name;
+        }
+    }
+    else if (level == -2 || level == 2) {
+        return "cursed " + name;
+    }
+    else if (level == -3 || level == 3) {
+        if (name.find(' ') != NPOS) {
+            return "warrior " + name;
+        }
+        else {
+            return "Ware-" + name;
+        }
+    }
+    else if (level == -4 || level == 4) {
+        return "undead " + name;
+    }
+    else if (level == -5 || level == 5) {
+        return "demon " + name;
+    }
+    return result;
+}

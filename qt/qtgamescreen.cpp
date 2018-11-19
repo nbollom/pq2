@@ -11,6 +11,7 @@
 #include "qtgamescreen.h"
 
 #define MARGIN_AMOUNT 0
+#define TIMER_MS 100
 
 QTGameScreen::QTGameScreen(std::shared_ptr<Game> game, std::function<void(std::string, void *)> message_handler) : View(game, message_handler) {
     std::string title = "ProgressQuest 2 - ";
@@ -174,6 +175,12 @@ QTGameScreen::QTGameScreen(std::shared_ptr<Game> game, std::function<void(std::s
     main_vlayout->addWidget(status_progress);
     main_widget->setLayout(main_vlayout);
     setCentralWidget(main_widget);
+
+    timer = new QTimer();
+    timer->setTimerType(Qt::PreciseTimer);
+    timer->setInterval(TIMER_MS);
+    connect(timer, &QTimer::timeout, this, &QTGameScreen::UpdateAll);
+    timer->start();
 }
 
 QTGameScreen::~QTGameScreen() {
@@ -230,6 +237,7 @@ void QTGameScreen::UpdateSpells() {
         spells_table->setItem(row, 1, new QTableWidgetItem(level.c_str()));
         row++;
     }
+    spells_table->scrollToBottom();
 }
 
 void QTGameScreen::UpdateEquipment() {
@@ -253,6 +261,7 @@ void QTGameScreen::UpdateInventory() {
         inventory_table->setItem(row, 1, new QTableWidgetItem(QString::number(item.count)));
         row++;
     }
+    inventory_table->scrollToBottom();
     uint64_t max = game->GetEncumbranceMaxValue();
     uint64_t value = game->GetEncumbrance();
     encumbrance_progress->setMaximum(static_cast<int>(max));
@@ -275,6 +284,7 @@ void QTGameScreen::UpdatePlot() {
         plot_table->setCellWidget(row, 0, check);
         row++;
     }
+    plot_table->scrollToBottom();
     uint64_t max = game->GetPlotMaxValue();
     plot_progress->setMaximum(static_cast<int>(max));
     plot_progress->setValue(static_cast<int>(character.CurrentPlotProgress));
@@ -294,6 +304,7 @@ void QTGameScreen::UpdateQuests() {
         quest_table->setCellWidget(row, 0, check);
         row++;
     }
+    quest_table->scrollToBottom();
     quest_progress->setMaximum(static_cast<int>(character.MaxQuestProgress));
     quest_progress->setValue(static_cast<int>(character.CurrentQuestProgress));
 }
@@ -302,5 +313,17 @@ void QTGameScreen::UpdateStatus() {
     auto character = game->GetCharacter();
     status_label->setText(character.CurrentActionLabel.c_str());
     status_progress->setValue(static_cast<int>(character.CurrentProgress));
+    status_progress->setMaximum(static_cast<int>(character.MaxProgress));
+}
+
+void QTGameScreen::UpdateAll() {
+    game->Tick(TIMER_MS);
+    UpdateStats();
+    UpdateSpells();
+    UpdateEquipment();
+    UpdateInventory();
+    UpdatePlot();
+    UpdateQuests();
+    UpdateStatus();
 }
 

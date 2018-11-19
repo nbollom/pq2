@@ -26,6 +26,14 @@ private:
     void WinEquip();
     void CompleteAct();
     void InterplotCinematic();
+    void Dequeue();
+    void MonsterTask();
+    void CompleteQuest();
+    std::string Sick(int64_t level, std::string name);
+    std::string Young(int64_t level, std::string name);
+    std::string Big(int64_t level, std::string name);
+    std::string Special(int64_t level, std::string name);
+
 
 
     std::string InterestingItem();

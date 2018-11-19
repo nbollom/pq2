@@ -30,6 +30,8 @@ QTMainMenu::QTMainMenu(std::shared_ptr<Game> game, std::function<void(std::strin
     new_game->setMinimumSize(200, 60);
     load_game = new QPushButton("Load Game");
     load_game->setMinimumSize(200, 60);
+    // TODO: remove when loading works
+    load_game->setEnabled(false);
     exit_game = new QPushButton("Exit");
     exit_game->setMinimumSize(200, 60);
     main_layout->addWidget(logo);

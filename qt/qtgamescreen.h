@@ -13,6 +13,7 @@
 #include <QGroupBox>
 #include <QTableWidget>
 #include <QProgressBar>
+#include <QTimer>
 #include "view.h"
 
 class QTGameScreen : public QMainWindow, public View {
@@ -53,6 +54,8 @@ private:
     QLabel *status_label;
     QProgressBar *status_progress;
 
+    QTimer *timer;
+
 public:
     QTGameScreen(std::shared_ptr<Game> game, std::function<void(std::string, void*)> message_handler);
     ~QTGameScreen() override;
@@ -72,6 +75,7 @@ public slots:
     void UpdatePlot();
     void UpdateQuests();
     void UpdateStatus();
+    void UpdateAll();
 };
 
 #endif //PQ2_QTGAMESCREEN_H
