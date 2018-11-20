@@ -303,7 +303,7 @@ void Game::WinStat() {
 
 void Game::WinSpell() {
     auto spells = get_spells();
-    uint64_t min_amount = min(character.WIS + character.Level, spells.size());
+    uint64_t min_amount = min(character.WIS + character.Level, static_cast<uint64_t>(spells.size()));
     uint64_t random_number = RandomLow(engine, min_amount);
     auto spell = spells[static_cast<int>(random_number)];
     bool existing = false;
