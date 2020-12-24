@@ -4,13 +4,15 @@
 
 #include "mainmenu.h"
 #include <ncurses.h>
+#include "ncursesview.h"
+#include <iostream>
 
 using namespace std;
 
 typedef pair<string, function<void()>> MenuItem;
 typedef std::vector<MenuItem>::iterator MenuItemIterator;
 
-MainMenu::MainMenu(std::shared_ptr<Game> game, std::function<bool(std::string message, void *value)> messageHandler) : NView(game, messageHandler) {
+MainMenu::MainMenu(std::shared_ptr<Game> game, std::function<bool(std::string message, void *value)> message_handler) : NCursesView(game, message_handler) {
     selected_index = 0;
     menu_options.emplace_back(MenuItem("New Game", [this, game](){
         game->StartNewGame();
@@ -18,8 +20,8 @@ MainMenu::MainMenu(std::shared_ptr<Game> game, std::function<bool(std::string me
     menu_options.emplace_back(MenuItem("Load Game", [this, game](){
 
     }));
-    menu_options.emplace_back(MenuItem("Quit", [this, game, messageHandler](){
-        messageHandler("Quit", nullptr);
+    menu_options.emplace_back(MenuItem("Quit", [message_handler](){
+        message_handler("Quit", nullptr);
     }));
 }
 
@@ -30,9 +32,12 @@ void MainMenu::HandleKeyPress(int key) {
     else if (key == KEY_UP) {
         selected_index = max(selected_index - 1, 0);
     }
-    else if (key == KEY_ENTER) {
+    else if (key == KEY_ENTER || key == 10) {
         MenuItem item = menu_options[selected_index];
         item.second();
+    }
+    else {
+        cout << "Unhandled key " << key << endl;
     }
 }
 
@@ -52,4 +57,16 @@ void MainMenu::Render() {
         index++;
     }
     move(0, 0); //reset cursor to top left
+}
+
+void MainMenu::Show() {
+
+}
+
+void MainMenu::Hide() {
+
+}
+
+void MainMenu::Close() {
+
 }

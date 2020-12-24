@@ -11,12 +11,10 @@
 #include <mutex>
 #include "pq2gui.h"
 #include "game.h"
-#include "nview.h"
 
 class NCursesGUI : public GUI {
 
 private:
-    std::stack<std::shared_ptr<NView>> view_stack;
     int screen_width;
     int screen_height;
     std::mutex screen_change_lock;

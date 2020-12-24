@@ -8,16 +8,19 @@
 #include <functional>
 #include <vector>
 #include <string>
-#include "nview.h"
+#include "ncursesview.h"
 
-class MainMenu : public NView {
+class MainMenu : public NCursesView {
     int selected_index;
     std::vector<std::pair<std::string, std::function<void()>>> menu_options;
 
 public:
-    MainMenu(std::shared_ptr<Game> game, std::function<bool(std::string message, void *value)> messageHandler);
+    MainMenu(std::shared_ptr<Game> game, std::function<bool(std::string message, void *value)> message_handler);
     void HandleKeyPress(int key) override;
     void Render() override;
+    virtual void Show() override;
+    virtual void Hide() override;
+    virtual void Close() override;
 
 };
 
