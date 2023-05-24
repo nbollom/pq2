@@ -11,41 +11,41 @@
 
 namespace data {
 
-    typedef struct {
+    struct Attribute {
         std::string label;
         int64_t value;
-    } Attribute;
+    };
 
-    typedef struct {
+    struct Item {
         std::string label;
         uint64_t level;
-    } Item;
+    };
 
-    typedef struct {
+    struct Monster {
         std::string name;
         uint64_t level;
         std::string drop;
-    } Monster;
+    };
 
-    typedef struct {
+    struct Race {
         std::string name;
         std::list<std::string> attributes;
-    } Race;
+    };
 
-    typedef struct {
+    struct Class {
         std::string name;
         std::list<std::string> attributes;
-    } Class;
+    };
 
-    typedef struct {
+    struct Stack {
         std::string name;
         uint64_t count;
-    } Stack;
+    };
 
-    typedef struct {
+    struct Quest {
         std::string label;
         Monster monster;
-    } Quest;
+    };
 
     typedef enum {
         Weapon = 0,
@@ -80,11 +80,11 @@ namespace data {
         QueueItemPlot
     };
 
-    typedef struct {
+    struct QueueItem {
         QueueItemType type = QueueItemTask;
         std::string label;
         uint64_t ms;
-    } QueueItem;
+    };
 
     enum CurrentActionType {
         CurrentActionLoading = 0,

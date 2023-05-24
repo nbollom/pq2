@@ -10,6 +10,8 @@ set(SOURCE_FILES
 	pq2cocoa.h
 	cocoamainmenu.mm
 	cocoamainmenu.h
+	cocoacharatercreator.mm
+	cocoacharatercreator.h
 )
 
 configure_file(../resources/pq.png ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/pq.png COPYONLY)

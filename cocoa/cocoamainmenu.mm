@@ -56,8 +56,9 @@ CocoaMainMenu::CocoaMainMenu(std::shared_ptr<Game> game, std::function<void(std:
 	window = [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 600, 600) styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable) backing:NSBackingStoreBuffered defer:NO] autorelease];
 	[window setMinSize:NSMakeSize(300, 300)];
 	[window setShowsResizeIndicator:YES];
-	[window setTitle:@"Progress Quest 2"];
-	controller = [[[MainMenuController alloc] initWithWindow:window andView:this] autorelease];
+	[window setReleasedWhenClosed:NO];
+	[window setTitle:@"ProgressQuest 2"];
+	controller = [[MainMenuController alloc] initWithWindow:window andView:this];
 	[window setDelegate:(MainMenuController*)controller];
 	image = [[[NSImage alloc] initWithContentsOfFile:@"../pq.png"] autorelease];
 	[window setMiniwindowImage:image];
@@ -83,15 +84,20 @@ CocoaMainMenu::CocoaMainMenu(std::shared_ptr<Game> game, std::function<void(std:
 CocoaMainMenu::~CocoaMainMenu() = default;
 
 void CocoaMainMenu::Show() {
-	[window orderFrontRegardless];
+	[controller showWindow:window];
+	[window setIsVisible:YES];
+	[window makeKeyWindow];
+	[window orderFront:controller];
 }
 
 void CocoaMainMenu::Hide() {
-	[window close];
+	[window setIsVisible:NO];
 }
 
 void CocoaMainMenu::Close() {
-	message_handler("quit", nullptr);
+	if ([window isVisible]) {
+		message_handler("quit", nullptr);
+	}
 }
 
 void CocoaMainMenu::NewGame() {
