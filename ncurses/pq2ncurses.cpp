@@ -26,7 +26,7 @@ NCursesGUI::NCursesGUI(std::shared_ptr<Game> game) : GUI(game) {
 
 NCursesGUI::~NCursesGUI() {
     endwin();
-    printf("cleaning up\n");
+    cout << "cleaning up" << endl;
 }
 
 void NCursesGUI::Run() {
@@ -35,20 +35,21 @@ void NCursesGUI::Run() {
     int ch = 0;
     while (running) {
         screen_change_lock.lock();
+        shared_ptr<NCursesView> current_view = static_pointer_cast<NCursesView>(view_stack.top());
         if (screen_changed) {
             endwin();
             initscr();
             getmaxyx(stdscr, screen_height, screen_width);
-            view_stack.top()->Resize(screen_width, screen_height);
+            current_view->Resize(screen_width, screen_height);
             screen_changed = false;
         }
         screen_change_lock.unlock();
         clear();
-        view_stack.top()->Render();
+        current_view->Render();
         refresh();
         ch = getch();
         if (ch != ERR) { //wasn't a timeout but a real keypress`
-            view_stack.top()->HandleKeyPress(ch);
+            current_view->HandleKeyPress(ch);
             if (ch == 'q') { //global quit key
                 running = false;
             }
@@ -57,14 +58,14 @@ void NCursesGUI::Run() {
 }
 
 bool NCursesGUI::ProcessMessage(std::string message, void *value) {
-//    if(message == "Quit") {
-        running = false;
-//    }
+    if(message == "Quit") {
+        Close();
+    }
     return true;
 }
 
 void NCursesGUI::ShowMainMenu() {
-    shared_ptr<NView> menu = make_shared<MainMenu>(game, std::bind(&NCursesGUI::ProcessMessage, this, std::placeholders::_1, std::placeholders::_2));
+    shared_ptr<View> menu = make_shared<MainMenu>(game, std::bind(&NCursesGUI::ProcessMessage, this, std::placeholders::_1, std::placeholders::_2));
     view_stack.push(menu);
 }
 
