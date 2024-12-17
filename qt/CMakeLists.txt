@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.27)
 project(pq2qt)
 
-set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
-
 set(SOURCE_FILES pq2qt.cpp pq2qt.h qtmainmenu.cpp qtmainmenu.h qtcharatercreator.cpp qtcharatercreator.h qtgamescreen.cpp qtgamescreen.h)
 
 find_package(Qt5 REQUIRED Core Widgets)

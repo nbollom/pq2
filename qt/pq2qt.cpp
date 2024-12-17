@@ -55,7 +55,7 @@ void QTGUI::Close() {
     QApplication::exit();
 }
 
-void QTGUI::HandleMessage(const std::string& message, void *data) {
+void QTGUI::HandleMessage(const std::string& message, void *) {
     if (message == "quit") {
         // Don't close if there is nothing on the stack like when we pop all views to replace them with the game screen
         if (!view_stack.empty()) {

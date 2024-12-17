@@ -109,7 +109,7 @@ Game::Game(): character() {
 }
 
 void Game::SetDaemonMode() {
-    const function<void(int)> term_callback = [this](int signal){
+    const function<void(int)> term_callback = [this](int){
         Close();
     };
     AddSignalCallback(SIGTERM, term_callback);

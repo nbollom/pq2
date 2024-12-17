@@ -11,13 +11,13 @@
 #include "pq2qt.h"
 #endif //QT_ENABLED
 #ifdef GTK_ENABLED
-#include "pq2gtk.h"
+// #include "pq2gtk.h"
 #endif //GTK_ENABLED
 #ifdef COCOA_ENABLED
-#include "pq2cocoa.h"
+// #include "pq2cocoa.h"
 #endif //COCOA_ENABLED
 #ifdef WINFORMS_ENABLED
-#include "pq2winforms.h"
+// #include "pq2winforms.h"
 #endif //WINFORMS_ENABLED
 #ifdef NCURSES_ENABLED
 #include "pq2ncurses.h"
@@ -29,10 +29,10 @@ using namespace std;
 typedef std::chrono::steady_clock Clock;
 typedef std::chrono::steady_clock::time_point TimePoint;
 
-int main(int argc, const char * const *argv) {
+int main(const int argc, const char * const *argv) {
     bool runWebServer = false;
     int port = 8094;
-    string filename = "";
+    string filename;
     int gui = DEFAULT_GUI_LIBRARY;
     CommandLineProcessor cmdProcessor("Progress Quest 2 - The Progression", "A streamlined RPG experience", VERSION);
     try {
@@ -99,9 +99,9 @@ int main(int argc, const char * const *argv) {
         cerr << "Unknown error: " << ex.what() << endl;
         return 1;
     }
-    shared_ptr<Game> game = make_shared<Game>();
-    if (filename.length()) {
-        file::LoadError error = game->LoadGame(filename);
+    auto game = make_shared<Game>();
+    if (!filename.empty()) {
+        const file::LoadError error = game->LoadGame(filename);
         if (error != file::LoadErrorNone) {
             cout << "Error loading save " << filename << endl;
             if (gui == GUI_NONE) {
@@ -113,11 +113,10 @@ int main(int argc, const char * const *argv) {
         cout << "Running in daemon mode" << endl;
         game->SetDaemonMode();
         if (game->GetState() == game::GameStateReady) {
-            TimePoint start = Clock::now();
-            TimePoint now;
+            const TimePoint start = Clock::now();
             while (game->GetState() != game::GameStateFinished) {
-                now = Clock::now();
-                uint64_t milliseconds = (uint64_t)abs(chrono::duration_cast<chrono::milliseconds>(now - start).count());
+                TimePoint now = Clock::now();
+                const uint64_t milliseconds = static_cast<uint64_t>(abs(chrono::duration_cast<chrono::milliseconds>(now - start).count()));
                 game->Tick(milliseconds);
                 this_thread::sleep_for(chrono::seconds(1));
             }
@@ -138,19 +137,19 @@ int main(int argc, const char * const *argv) {
         }
 #endif //QT_ENABLED
 #ifdef GTK_ENABLED
-        if (gui == GUI_GTK) {
-            g = make_unique<GTKGUI>(game);
-        }
+        // if (gui == GUI_GTK) {
+        //     g = make_unique<GTKGUI>(game);
+        // }
 #endif //GTK_ENABLED
 #ifdef COCOA_ENABLED
-        if (gui == GUI_COCOA) {
-            g = make_unique<CocoaGUI>(game);
-        }
+        // if (gui == GUI_COCOA) {
+        //     g = make_unique<CocoaGUI>(game);
+        // }
 #endif //COCOA_ENABLED
 #ifdef WINFORMS_ENABLED
-        if (gui == GUI_WINFORMS) {
-            g = make_unique<WinformsGUI>(game);
-        }
+        // if (gui == GUI_WINFORMS) {
+        //     g = make_unique<WinformsGUI>(game);
+        // }
 #endif //WINFORMS_ENABLED
 #ifdef NCURSES_ENABLED
         if (gui == GUI_NCURSES) {

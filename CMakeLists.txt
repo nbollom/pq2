@@ -3,15 +3,21 @@ project(pq2)
 
 set(VERSION_NUMBER 1.0)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+if (MSVC)
+    add_compile_options(/W4 /WX)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+endif()
 
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
-if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+if(MSVC)
     set(PLATFORM_GUIS GUI_WINFORMS)
     set(DEFAULT_GUI GUI_WINFORMS)
     option(WINFORMS_ENABLED "Enable Winforms interface" ON)

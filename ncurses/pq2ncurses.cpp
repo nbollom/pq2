@@ -17,7 +17,7 @@ NCursesGUI::NCursesGUI(const std::shared_ptr<Game> &game) : GUI(game), screen_wi
     timeout(100);
     screen_changed = false;
     AddSignalCallback(
-        SIGWINCH, [this](int sig) {
+        SIGWINCH, [this](int) {
             screen_change_lock.lock();
             screen_changed = true;
             screen_change_lock.unlock();
@@ -59,7 +59,7 @@ void NCursesGUI::Run() {
     }
 }
 
-bool NCursesGUI::ProcessMessage(const std::string& message, void *value) {
+bool NCursesGUI::ProcessMessage(const std::string& message, void *) {
     if(message == "Quit") {
         Close();
     }

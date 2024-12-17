@@ -1,0 +1,22 @@
+name: Linux (gcc)
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build-linux-gcc:
+    name: Linux (gcc)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+      - name: Install ncurses
+        run: |
+          sudo apt install libncurses5-dev libncursesw5-dev
+      - name: Configure
+        run: cmake -B linux_gcc -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build linux_clang --parallel

@@ -270,7 +270,7 @@ void QTGameScreen::UpdateInventory() const {
 void QTGameScreen::UpdatePlot() const {
     plot_table->clearContents();
     const auto character = game->GetCharacter();
-    auto row = 0;
+    size_t row = 0;
     plot_table->setRowCount(static_cast<int>(character.Plot.size()));
     for (const auto& plot: character.Plot) {
         auto *check = new QCheckBox(plot.c_str());
@@ -289,8 +289,8 @@ void QTGameScreen::UpdatePlot() const {
 
 void QTGameScreen::UpdateQuests() const {
     quest_table->clearContents();
-    auto character = game->GetCharacter();
-    auto row = 0;
+    const auto character = game->GetCharacter();
+    size_t row = 0;
     quest_table->setRowCount(static_cast<int>(character.Quests.size()));
     for (const auto& quest: character.Quests) {
         auto *check = new QCheckBox(quest.label.c_str());
