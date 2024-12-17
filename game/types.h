@@ -8,6 +8,7 @@
 #include <string>
 #include <list>
 #include <array>
+#include <cstdint>
 
 namespace data {
 

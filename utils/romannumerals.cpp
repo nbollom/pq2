@@ -23,7 +23,7 @@ std::array<std::pair<uint64_t, std::string>, 13> roman_numerals = {
 
 std::string GetRomanNumerals(uint64_t value) {
     std::string numerals;
-    for(auto& numeral: roman_numerals) {
+    for(const auto& numeral: roman_numerals) {
         while (value >= numeral.first) {
             numerals += numeral.second;
             value -= numeral.first;

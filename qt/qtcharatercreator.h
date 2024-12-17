@@ -7,7 +7,6 @@
 
 #include <QMainWindow>
 #include <QWidget>
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
@@ -59,10 +58,10 @@ private:
 
     std::shared_ptr<NewGame> new_game;
 
-    void UpdateStats();
+    void UpdateStats() const;
 
 public:
-    QTCharacterCreator(std::shared_ptr<Game> game, std::function<void(std::string, void*)> message_handler);
+    QTCharacterCreator(const std::shared_ptr<Game>& game, const std::function<void(std::string, void*)>& message_handler);
     ~QTCharacterCreator() override;
 
     void closeEvent(QCloseEvent *event) override;
@@ -72,12 +71,12 @@ public:
     void Hide() override;
 
 public slots:
-    void GenRandomName();
-    void RaceButtonClicked(QAbstractButton *button);
-    void ClassButtonClicked(QAbstractButton *button);
-    void RollStats();
-    void UnrollStats();
-    void Start();
+    void GenRandomName() const;
+    void RaceButtonClicked(const QAbstractButton *button) const;
+    void ClassButtonClicked(const QAbstractButton *button) const;
+    void RollStats() const;
+    void UnrollStats() const;
+    void Start() const;
     void Close() override;
 
 };

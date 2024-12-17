@@ -2,25 +2,27 @@
 #include <ncurses.h>
 #include <iostream>
 #include "mainmenu.h"
-#include "signals.h"
+#include <utils.h>
 
 using namespace std;
 using namespace game;
 
 bool running = false;
 
-NCursesGUI::NCursesGUI(std::shared_ptr<Game> game) : GUI(game) {
+NCursesGUI::NCursesGUI(const std::shared_ptr<Game> &game) : GUI(game), screen_width(0), screen_height(0) {
     initscr();
     raw();
     keypad(stdscr, true);
     noecho();
     timeout(100);
     screen_changed = false;
-    AddSignalCallback(SIGWINCH, [this](int sig){
-        screen_change_lock.lock();
-        screen_changed = true;
-        screen_change_lock.unlock();
-    });
+    AddSignalCallback(
+        SIGWINCH, [this](int sig) {
+            screen_change_lock.lock();
+            screen_changed = true;
+            screen_change_lock.unlock();
+        }
+    );
     RaiseSignal(SIGWINCH);
 }
 
@@ -35,7 +37,7 @@ void NCursesGUI::Run() {
     int ch = 0;
     while (running) {
         screen_change_lock.lock();
-        shared_ptr<NCursesView> current_view = static_pointer_cast<NCursesView>(view_stack.top());
+        const shared_ptr<NCursesView> current_view = static_pointer_cast<NCursesView>(view_stack.top());
         if (screen_changed) {
             endwin();
             initscr();
@@ -57,7 +59,7 @@ void NCursesGUI::Run() {
     }
 }
 
-bool NCursesGUI::ProcessMessage(std::string message, void *value) {
+bool NCursesGUI::ProcessMessage(const std::string& message, void *value) {
     if(message == "Quit") {
         Close();
     }
@@ -65,7 +67,9 @@ bool NCursesGUI::ProcessMessage(std::string message, void *value) {
 }
 
 void NCursesGUI::ShowMainMenu() {
-    shared_ptr<View> menu = make_shared<MainMenu>(game, std::bind(&NCursesGUI::ProcessMessage, this, std::placeholders::_1, std::placeholders::_2));
+    const shared_ptr<View> menu = make_shared<MainMenu>(game, [this](auto && PH1, auto && PH2) {
+        return ProcessMessage(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
+    });
     view_stack.push(menu);
 }
 

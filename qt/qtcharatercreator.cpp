@@ -5,12 +5,13 @@
 #include <algorithm>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QScreen>
 #include "qtcharatercreator.h"
 
-inline QString StringValue(uint64_t value) {
+inline QString StringValue(const uint64_t value) {
     char buffer[10];
     sprintf(buffer, "%lu", value);
-    return QString(buffer);
+    return {buffer};
 }
 
 inline std::string StripShortcuts(const QString &value) {
@@ -19,7 +20,7 @@ inline std::string StripShortcuts(const QString &value) {
     return v;
 }
 
-QTCharacterCreator::QTCharacterCreator(std::shared_ptr<Game> game, std::function<void(std::string, void *)> message_handler) : View(game, message_handler) {
+QTCharacterCreator::QTCharacterCreator(const std::shared_ptr<Game>& game, const std::function<void(std::string, void *)>& message_handler) : View(game, message_handler) {
     new_game = game->StartNewGame();
     setWindowTitle("ProgressQuest 2 - Create New Character");
     main_widget = new QWidget;
@@ -35,8 +36,8 @@ QTCharacterCreator::QTCharacterCreator(std::shared_ptr<Game> game, std::function
     race_layout = new QVBoxLayout;
     race_options = new QButtonGroup;
     std::string selected_race = new_game->GetRace();
-    for (auto &race_name: new_game->GetAvailableRaces()) {
-        QRadioButton *race_option = new QRadioButton(race_name.c_str());
+    for (auto &race_name: NewGame::GetAvailableRaces()) {
+        auto *race_option = new QRadioButton(race_name.c_str());
         race_options->addButton(race_option);
         race_layout->addWidget(race_option);
         if (selected_race == race_name) {
@@ -48,8 +49,8 @@ QTCharacterCreator::QTCharacterCreator(std::shared_ptr<Game> game, std::function
     class_layout = new QVBoxLayout;
     class_options = new QButtonGroup;
     std::string selected_class = new_game->GetClass();
-    for (auto &class_name: new_game->GetAvailableClasses()) {
-        QRadioButton *class_option = new QRadioButton(class_name.c_str());
+    for (auto &class_name: NewGame::GetAvailableClasses()) {
+        auto *class_option = new QRadioButton(class_name.c_str());
         class_options->addButton(class_option);
         class_layout->addWidget(class_option);
         if (selected_class == class_name) {
@@ -143,38 +144,38 @@ QSize QTCharacterCreator::sizeHint() const {
 
 void QTCharacterCreator::Show() {
     show();
-    move(QApplication::desktop()->screen()->rect().center() - rect().center());
+    move(QApplication::primaryScreen()->geometry().center() - rect().center());
 }
 
 void QTCharacterCreator::Hide() {
     hide();
 }
 
-void QTCharacterCreator::GenRandomName() {
+void QTCharacterCreator::GenRandomName() const {
     new_game->GenerateName();
-    std::string name = new_game->GetName();
+    const std::string name = new_game->GetName();
     name_text->setText(name.c_str());
 }
 
-void QTCharacterCreator::RaceButtonClicked(QAbstractButton *button) {
+void QTCharacterCreator::RaceButtonClicked(const QAbstractButton *button) const {
     new_game->SetRace(StripShortcuts(button->text()));
 }
 
-void QTCharacterCreator::ClassButtonClicked(QAbstractButton *button) {
+void QTCharacterCreator::ClassButtonClicked(const QAbstractButton *button) const {
     new_game->SetClass(StripShortcuts(button->text()));
 }
 
-void QTCharacterCreator::RollStats() {
+void QTCharacterCreator::RollStats() const {
     new_game->ReRoll();
     UpdateStats();
 }
 
-void QTCharacterCreator::UnrollStats() {
+void QTCharacterCreator::UnrollStats() const {
     new_game->UnRoll();
     UpdateStats();
 }
 
-void QTCharacterCreator::Start() {
+void QTCharacterCreator::Start() const {
     new_game->SetName(name_text->text().toStdString());
     new_game->ConfirmCharacter();
     message_handler("start", nullptr);
@@ -184,7 +185,7 @@ void QTCharacterCreator::Close() {
 
 }
 
-void QTCharacterCreator::UpdateStats() {
+void QTCharacterCreator::UpdateStats() const {
     str_text->setText(StringValue(new_game->GetSTR()));
     con_text->setText(StringValue(new_game->GetCON()));
     dex_text->setText(StringValue(new_game->GetDEX()));

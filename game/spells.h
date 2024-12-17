@@ -10,7 +10,7 @@
 
 namespace data {
 
-    const std::vector<std::string> get_spells();
+    std::vector<std::string> get_spells();
 }
 
 #endif //PQ2_SPELLS_H

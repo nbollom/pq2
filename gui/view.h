@@ -16,8 +16,8 @@ protected:
     std::function<void(std::string, void*)> message_handler;
 
 public:
-    View(std::shared_ptr<Game> game, std::function<void(std::string, void*)> message_handler);
-    ~View();
+    View(const std::shared_ptr<Game> &game, const std::function<void(std::string, void*)> &message_handler);
+    virtual ~View() = default;
 
     virtual void Show() = 0;
     virtual void Hide() = 0;

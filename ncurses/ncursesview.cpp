@@ -6,23 +6,23 @@
 
 #include "ncursesview.h"
 
-NCursesView::NCursesView(std::shared_ptr<Game> game, std::function<bool(std::string message, void *value)> message_handler) : View(game, message_handler) {
+NCursesView::NCursesView(const std::shared_ptr<Game>& game, const std::function<bool(std::string message, void *value)>& message_handler) : View(game, message_handler) {
 
 }
 
-void NCursesView::LeftAlign(std::string value, int x, int y) {
+void NCursesView::LeftAlign(const std::string& value, const int x, const int y) {
     mvprintw(y, x, value.c_str());
 }
 
-void NCursesView::RightAlign(std::string value, int x, int y) {
-    mvprintw(y, x - (int)value.length(), value.c_str());
+void NCursesView::RightAlign(const std::string& value, const int x, const int y) {
+    mvprintw(y, x - static_cast<int>(value.length()), value.c_str());
 }
 
-void NCursesView::CenterAlign(std::string value, int x, int y) {
-    mvprintw(y, x - (int)((float)value.length() / 2), value.c_str());
+void NCursesView::CenterAlign(const std::string& value, const int x, const int y) {
+    mvprintw(y, x - static_cast<int>(static_cast<float>(value.length()) / 2), value.c_str());
 }
 
-void NCursesView::Resize(int new_screen_width, int new_screen_height) {
+void NCursesView::Resize(const int new_screen_width, const int new_screen_height) {
     screen_width = new_screen_width;
     screen_height = new_screen_height;
 }

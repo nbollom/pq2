@@ -11,7 +11,7 @@
 
 namespace data {
 
-    const std::string get_random_boring_item(std::shared_ptr<std::mt19937_64> engine);
+    std::string get_random_boring_item(const std::shared_ptr<std::mt19937_64>& engine);
 
 }
 

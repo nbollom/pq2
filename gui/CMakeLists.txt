@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.27)
 project(pq2gui)
 
 set(CMAKE_CXX_STANDARD 14)

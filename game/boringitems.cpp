@@ -56,8 +56,8 @@ namespace data {
 
     static uniform_int_distribution<unsigned long> distribution(0, boring_items.size() - 1);
 
-    const string get_random_boring_item(std::shared_ptr<std::mt19937_64> engine) {
-        unsigned long value = distribution(*engine);
+    string get_random_boring_item(const std::shared_ptr<std::mt19937_64>& engine) {
+        const unsigned long value = distribution(*engine);
         return boring_items[value];
     }
 

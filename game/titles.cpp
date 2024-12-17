@@ -23,7 +23,7 @@ namespace data {
 
     static uniform_int_distribution<unsigned long> t_distribution(0, titles.size() - 1);
 
-    const string get_random_title(std::shared_ptr<std::mt19937_64> engine, bool low) {
+    string get_random_title(const std::shared_ptr<std::mt19937_64>& engine, const bool low) {
         unsigned long value = t_distribution(*engine);
         if (low) {
             value = min(value, t_distribution(*engine));
@@ -47,8 +47,8 @@ namespace data {
 
     static uniform_int_distribution<unsigned long> it_distribution(0, impressive_titles.size() - 1);
 
-    const string get_random_impressive_title(std::shared_ptr<std::mt19937_64> engine) {
-        unsigned long value = it_distribution(*engine);
+    string get_random_impressive_title(const std::shared_ptr<std::mt19937_64>& engine) {
+        const unsigned long value = it_distribution(*engine);
         return impressive_titles[value];
     }
 

@@ -30,8 +30,8 @@ namespace data {
 
     static uniform_int_distribution<unsigned long> distribution(0, monster_mods.size() - 1);
 
-    const string get_random_monster_mod(std::shared_ptr<std::mt19937_64> engine) {
-        unsigned long value = distribution(*engine);
+    string get_random_monster_mod(const std::shared_ptr<std::mt19937_64>& engine) {
+        const unsigned long value = distribution(*engine);
         return monster_mods[value];
     }
 

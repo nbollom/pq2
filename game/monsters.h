@@ -12,7 +12,7 @@
 
 namespace data {
 
-    const Monster get_random_monster(std::shared_ptr<std::mt19937_64> engine);
+    Monster get_random_monster(const std::shared_ptr<std::mt19937_64>& engine);
 
 }
 

@@ -12,7 +12,7 @@
 
 namespace data {
 
-    const Item get_random_armor(std::shared_ptr<std::mt19937_64> engine);
+    Item get_random_armor(const std::shared_ptr<std::mt19937_64>& engine);
 
 }
 

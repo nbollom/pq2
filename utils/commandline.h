@@ -8,7 +8,6 @@
 #include <string>
 #include <list>
 #include <memory>
-#include "commandlineexeptions.h"
 #include "commandlineoptions.h"
 
 using namespace std;
@@ -23,18 +22,18 @@ private:
     list<shared_ptr<ValueOption>> values;
 
     shared_ptr<Option> GetOptionByShortName(char shortName);
-    shared_ptr<Option> GetOptionByLongName(string longName);
+    shared_ptr<Option> GetOptionByLongName(const string& longName);
 
 public:
-    CommandLineProcessor(const string program_name, const string program_description, const string program_version);
-    void AddOption(const char shortName, const string longName, const string description, const bool hasValue, const string valueDesc = "", string defaultValue = "");
-    void AddValueOnlyOption(const string name, const string description, string defaultValue = "");
+    CommandLineProcessor(string program_name, string program_description, string program_version);
+    void AddOption(char shortName, const string& longName, const string& description, bool hasValue, const string& valueDescription = "", const string& defaultValue = "");
+    void AddValueOnlyOption(const string& name, const string& description, const string& defaultValue = "");
     bool Parse(int argc, const char * const *argv);
     bool IsSet(char shortName);
-    bool IsSet(string longName);
+    bool IsSet(const string &longName);
     string GetOptionValue(char shortName);
-    string GetOptionValue(string longName);
-    string GetValueOnlyOptionValue(string name);
+    string GetOptionValue(const string &longName);
+    string GetValueOnlyOptionValue(const string& name) const;
 };
 
 #endif //PQ2_COMMANDLINE_H

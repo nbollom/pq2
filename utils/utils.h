@@ -5,8 +5,10 @@
 #ifndef PQ2_UTILS_H
 #define PQ2_UTILS_H
 
+#include <csignal>
 #include "signals.h"
 #include "commandline.h"
+#include "commandlineexeptions.h"
 #include "romannumerals.h"
 #include "namegenerator.h"
 

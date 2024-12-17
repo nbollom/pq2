@@ -9,6 +9,6 @@
 #include <memory>
 #include <random>
 
-std::string GenerateRandomName(std::shared_ptr<std::mt19937_64> engine);
+std::string GenerateRandomName(const std::shared_ptr<std::mt19937_64>& engine);
 
 #endif //PQ2_NAMEGENERATOR_H

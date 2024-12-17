@@ -18,8 +18,8 @@ private:
     const string message;
 
 public:
-    CommandLineException(const string exception_message);
-    const char *what();
+    explicit CommandLineException(string exception_message);
+    const char *what() const noexcept override;
 };
 
 class BaseOptionExistsException : public CommandLineException {
@@ -29,7 +29,7 @@ public:
     virtual string GetConflictMessage() = 0;
 };
 
-class OptionExistsException : public BaseOptionExistsException {
+class OptionExistsException final : public BaseOptionExistsException {
 
 private:
     shared_ptr<Option> option;
@@ -40,7 +40,7 @@ public:
     string GetConflictMessage() override;
 };
 
-class ValueOptionExistsException : public BaseOptionExistsException {
+class ValueOptionExistsException final : public BaseOptionExistsException {
 
 private:
     shared_ptr<ValueOption> option;
@@ -58,26 +58,26 @@ public:
     virtual string GetExceptionMessage() = 0;
 };
 
-class InvalidArgumentException : public ParseException {
+class InvalidArgumentException final : public ParseException {
 
 private:
     string value;
 
 public:
-    InvalidArgumentException(string argument_value);
+    explicit InvalidArgumentException(string argument_value);
     string GetExceptionMessage() override;
 };
 
-class UnknownArgumentException : public ParseException {
+class UnknownArgumentException final : public ParseException {
 private:
     string value;
 
 public:
-    UnknownArgumentException(string argument_value);
+    explicit UnknownArgumentException(string argument_value);
     string GetExceptionMessage() override;
 };
 
-class MissingValueException : public ParseException {
+class MissingValueException final : public ParseException {
 private:
     string value;
     shared_ptr<Option> option;

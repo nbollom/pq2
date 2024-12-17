@@ -7,7 +7,6 @@
 
 #include <QMainWindow>
 #include <QWidget>
-#include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QGroupBox>
@@ -57,8 +56,8 @@ private:
     QTimer *timer;
 
 public:
-    QTGameScreen(std::shared_ptr<Game> game, std::function<void(std::string, void*)> message_handler);
-    ~QTGameScreen() override;
+    QTGameScreen(const std::shared_ptr<Game>& game, const std::function<void(std::string, void*)>& message_handler);
+    ~QTGameScreen() override = default;
 
     void closeEvent(QCloseEvent *event) override;
 
@@ -68,14 +67,14 @@ public:
 public slots:
     void Close() override;
 
-    void UpdateStats();
-    void UpdateSpells();
-    void UpdateEquipment();
-    void UpdateInventory();
-    void UpdatePlot();
-    void UpdateQuests();
-    void UpdateStatus();
-    void UpdateAll();
+    void UpdateStats() const;
+    void UpdateSpells() const;
+    void UpdateEquipment() const;
+    void UpdateInventory() const;
+    void UpdatePlot() const;
+    void UpdateQuests() const;
+    void UpdateStatus() const;
+    void UpdateAll() const;
 };
 
 #endif //PQ2_QTGAMESCREEN_H

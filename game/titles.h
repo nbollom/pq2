@@ -11,9 +11,9 @@
 
 namespace data {
 
-    const std::string get_random_title(std::shared_ptr<std::mt19937_64> engine, bool low = false);
+    std::string get_random_title(const std::shared_ptr<std::mt19937_64>& engine, bool low = false);
 
-    const std::string get_random_impressive_title(std::shared_ptr<std::mt19937_64> engine);
+    std::string get_random_impressive_title(const std::shared_ptr<std::mt19937_64>& engine);
 
 }
 

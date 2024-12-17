@@ -18,13 +18,13 @@ protected:
     std::shared_ptr<Game> game;
     std::stack<std::shared_ptr<View>> view_stack;
 
-    GUI(std::shared_ptr<Game> game_ptr); //cannot directly instantiate base class
+    explicit GUI(std::shared_ptr<Game> game_ptr); //cannot directly instantiate base class
 
 public:
     virtual void Run();
     virtual ~GUI();
 
-    void PushView(std::shared_ptr<View> view);
+    void PushView(const std::shared_ptr<View>& view);
     void PopView();
     void PopAllViews();
 

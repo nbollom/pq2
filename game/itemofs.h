@@ -11,7 +11,7 @@
 
 namespace data {
 
-    const std::string get_random_item_of(std::shared_ptr<std::mt19937_64> engine);
+    std::string get_random_item_of(const std::shared_ptr<std::mt19937_64>& engine);
 
 }
 

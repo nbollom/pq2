@@ -8,12 +8,13 @@
 #include <iostream>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QScreen>
 #include "qtmainmenu.h"
 
 #define MARGIN 20
 #define MARGINS MARGIN, MARGIN, MARGIN, MARGIN
 
-QTMainMenu::QTMainMenu(std::shared_ptr<Game> game, std::function<void(std::string, void*)> message_handler) : View(game, message_handler) {
+QTMainMenu::QTMainMenu(const std::shared_ptr<Game>& game, const std::function<void(std::string, void*)> &message_handler) : View(game, message_handler) {
     setGeometry(0, 0, 800, 600);
     setWindowTitle("Progress Quest 2");
     main_widget = new QWidget;
@@ -24,7 +25,7 @@ QTMainMenu::QTMainMenu(std::shared_ptr<Game> game, std::function<void(std::strin
     logo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     logo->setAlignment(Qt::AlignCenter);
     logo->setMinimumSize(200, 200);
-    QImage newImage(":/resources/pq.png");
+    const QImage newImage(":/resources/pq.png");
     logo_image = QPixmap::fromImage(newImage);
     new_game = new QPushButton("New Game");
     new_game->setMinimumSize(200, 60);
@@ -49,18 +50,18 @@ QTMainMenu::QTMainMenu(std::shared_ptr<Game> game, std::function<void(std::strin
 QTMainMenu::~QTMainMenu() = default;
 
 void QTMainMenu::Show() {
-    QMainWindow::show();
-    move(QApplication::desktop()->screen()->rect().center() - rect().center());
+    show();
+    move(QApplication::primaryScreen()->geometry().center() - rect().center());
     ResizeLogo();
 }
 
 void QTMainMenu::Hide() {
-    QMainWindow::hide();
+    hide();
 }
 
 void QTMainMenu::Close() {
     if (isVisible()) {
-        QMainWindow::close();
+        close();
     }
 }
 
@@ -69,24 +70,24 @@ void QTMainMenu::resizeEvent(QResizeEvent *event) {
     ResizeLogo();
 }
 
-void QTMainMenu::ResizeLogo() {
-    int height = logo->height();
-    int width = logo->width();
+void QTMainMenu::ResizeLogo() const {
+    const int height = logo->height();
+    const int width = logo->width();
     logo->setPixmap(logo_image.scaled(width, height, Qt::KeepAspectRatio));
 }
 
 
-void QTMainMenu::NewGame() {
+void QTMainMenu::NewGame() const {
     message_handler("new", nullptr);
 }
 
-void QTMainMenu::LoadGame() {
+void QTMainMenu::LoadGame() const {
     QFileDialog dialog(nullptr, "Please select a pq2 save file", "", "PQ2 saves (*.pq2)");
     dialog.setFileMode(QFileDialog::ExistingFile);
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
     if (dialog.exec()) {
-        QString filename = dialog.selectedFiles()[0];
-        file::LoadError error = game->LoadGame(filename.toStdString());
+        const QString filename = dialog.selectedFiles()[0];
+        const file::LoadError error = game->LoadGame(filename.toStdString());
         if (error == file::LoadErrorNone) {
             // TODO: show game screen
         }

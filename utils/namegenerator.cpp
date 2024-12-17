@@ -7,7 +7,7 @@
 
 using namespace std;
 
-std::string GenerateRandomName(std::shared_ptr<std::mt19937_64> engine) {
+std::string GenerateRandomName(const std::shared_ptr<std::mt19937_64>& engine) {
     static vector<string> parts1 = {"br", "cr", "dr", "fr", "gr", "j", "kr", "l", "m", "n", "pr", "r", "sh", "tr", "v", "wh", "x", "y", "z"};
     static vector<string> parts2 = {"a", "a", "e", "e", "i", "i", "o", "o", "u", "u", "ae", "ie", "oo", "ou"};
     static vector<string> parts3 = {"b", "ck", "d", "g", "k", "m", "n", "p", "t", "v", "x", "z"};
@@ -31,6 +31,6 @@ std::string GenerateRandomName(std::shared_ptr<std::mt19937_64> engine) {
         }
         result.append(part);
     }
-    result[0] = result[0] - (char)32;
+    result[0] = static_cast<char>(static_cast<int>(result[0]) - 32);
     return result;
 }

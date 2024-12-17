@@ -29,8 +29,8 @@ struct Character {
     uint64_t WIS;
     uint64_t CHA;
 
-    uint64_t MAXHP;
-    uint64_t MAXMP;
+    uint64_t MAX_HP;
+    uint64_t MAX_MP;
 
     uint64_t Gold;
 

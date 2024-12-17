@@ -12,7 +12,7 @@
 #include "pq2gui.h"
 #include "game.h"
 
-class NCursesGUI : public GUI {
+class NCursesGUI final : public GUI {
 
 private:
     int screen_width;
@@ -20,11 +20,11 @@ private:
     std::mutex screen_change_lock;
     bool screen_changed;
 
-    bool ProcessMessage(std::string message, void *value);
+    bool ProcessMessage(const std::string& message, void *value);
 
 public:
-    NCursesGUI(std::shared_ptr<Game> game);
-    virtual ~NCursesGUI();
+    explicit NCursesGUI(const std::shared_ptr<Game> &game);
+    ~NCursesGUI() override;
     void Run() override;
 
     void ShowMainMenu() override;

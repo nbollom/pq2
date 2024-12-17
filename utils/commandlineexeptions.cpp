@@ -4,15 +4,17 @@
 
 #include "commandlineexeptions.h"
 
-CommandLineException::CommandLineException(const string exception_message) : exception(), message(exception_message) { };
+#include <utility>
 
-const char* CommandLineException::what() {
+CommandLineException::CommandLineException(string exception_message) : message(std::move(exception_message)) { };
+
+const char* CommandLineException::what() const noexcept {
     return message.c_str();
 }
 
 BaseOptionExistsException::BaseOptionExistsException() : CommandLineException("Option already exists") { }
 
-OptionExistsException::OptionExistsException(shared_ptr<Option> current_option, shared_ptr<Option> conflict_option) : BaseOptionExistsException(), option(current_option), conflict(conflict_option) { };
+OptionExistsException::OptionExistsException(shared_ptr<Option> current_option, shared_ptr<Option> conflict_option) : option(std::move(current_option)), conflict(std::move(conflict_option)) { };
 
 string OptionExistsException::GetConflictMessage() {
     string message = "Conflicting value: ";
@@ -30,7 +32,7 @@ string OptionExistsException::GetConflictMessage() {
     return message;
 }
 
-ValueOptionExistsException::ValueOptionExistsException(shared_ptr<ValueOption> current_option, shared_ptr<ValueOption> conflict_option) : BaseOptionExistsException(), option(current_option), conflict(conflict_option) { };
+ValueOptionExistsException::ValueOptionExistsException(shared_ptr<ValueOption> current_option, shared_ptr<ValueOption> conflict_option) : option(std::move(current_option)), conflict(std::move(conflict_option)) { };
 
 string ValueOptionExistsException::GetConflictMessage() {
     string message = "Conflicting value: ";
@@ -45,7 +47,7 @@ string ValueOptionExistsException::GetConflictMessage() {
 
 ParseException::ParseException() : CommandLineException("Error parsing command line") { }
 
-InvalidArgumentException::InvalidArgumentException(string argument_value) : ParseException(), value(argument_value) { }
+InvalidArgumentException::InvalidArgumentException(string argument_value) : value(std::move(argument_value)) { }
 
 string InvalidArgumentException::GetExceptionMessage() {
     string message = "Invalid argument ";
@@ -53,7 +55,7 @@ string InvalidArgumentException::GetExceptionMessage() {
     return message;
 }
 
-UnknownArgumentException::UnknownArgumentException(string argument_value) : ParseException(), value(argument_value) { }
+UnknownArgumentException::UnknownArgumentException(string argument_value) : value(std::move(argument_value)) { }
 
 string UnknownArgumentException::GetExceptionMessage() {
     string message = "Unknown argument ";
@@ -61,7 +63,7 @@ string UnknownArgumentException::GetExceptionMessage() {
     return message;
 }
 
-MissingValueException::MissingValueException(string argument_value, shared_ptr<Option> current_option) : ParseException(), value(argument_value), option(current_option) { }
+MissingValueException::MissingValueException(string argument_value, shared_ptr<Option> current_option) : value(std::move(argument_value)), option(std::move(current_option)) { }
 
 string MissingValueException::GetExceptionMessage() {
     string message = "Missing value for argument ";

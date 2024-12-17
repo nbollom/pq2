@@ -9,13 +9,13 @@
 #include <memory>
 #include <functional>
 
-class QTGUI : public GUI {
+class QTGUI final : public GUI {
 
 private:
     std::function<void(std::string, void*)> message_handler;
 
 public:
-    explicit QTGUI(std::shared_ptr<Game> game);
+    explicit QTGUI(const std::shared_ptr<Game> &game);
     ~QTGUI() override;
     void Run() override;
 
@@ -23,7 +23,7 @@ public:
     void ShowCharacterCreator() override;
     void ShowGameScreen() override;
     void Close() override;
-    void HandleMessage(std::string message, void *data);
+    void HandleMessage(const std::string& message, void *data);
 };
 
 #endif //PQ2_PQ2QT_H

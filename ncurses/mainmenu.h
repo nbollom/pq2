@@ -10,17 +10,17 @@
 #include <string>
 #include "ncursesview.h"
 
-class MainMenu : public NCursesView {
+class MainMenu final : public NCursesView {
     int selected_index;
     std::vector<std::pair<std::string, std::function<void()>>> menu_options;
 
 public:
-    MainMenu(std::shared_ptr<Game> game, std::function<bool(std::string message, void *value)> message_handler);
+    MainMenu(const std::shared_ptr<Game>& game, const std::function<bool(std::string message, void *value)>& message_handler);
     void HandleKeyPress(int key) override;
     void Render() override;
-    virtual void Show() override;
-    virtual void Hide() override;
-    virtual void Close() override;
+    void Show() override;
+    void Hide() override;
+    void Close() override;
 
 };
 

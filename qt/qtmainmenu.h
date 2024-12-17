@@ -8,12 +8,11 @@
 #include <QMainWindow>
 #include <QWidget>
 #include <QVBoxLayout>
-#include <QLabel>
 #include <QPushButton>
-#include <QSpacerItem>
+#include <QLabel>
 #include "view.h"
 
-class QTMainMenu : public QMainWindow, public View {
+class QTMainMenu final : public QMainWindow, public View {
 Q_OBJECT
 
 private:
@@ -26,7 +25,7 @@ private:
     QPushButton *exit_game;
 
 public:
-    QTMainMenu(std::shared_ptr<Game> game, std::function<void(std::string, void*)> message_handler);
+    QTMainMenu(const std::shared_ptr<Game>& game, const std::function<void(std::string, void*)> &message_handler);
     ~QTMainMenu() override;
 
     void closeEvent(QCloseEvent *event) override;
@@ -34,10 +33,10 @@ public:
     void Show() override;
     void Hide() override;
     void resizeEvent(QResizeEvent *event) override;
-    void ResizeLogo();
+    void ResizeLogo() const;
 public slots:
-    void NewGame();
-    void LoadGame();
+    void NewGame() const;
+    void LoadGame() const;
     void Close() override;
 
 };

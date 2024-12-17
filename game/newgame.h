@@ -23,31 +23,31 @@ private:
     std::function<void(Character character)> callback;
 
     void RollEm();
-    void RollStat(uint64_t *stat);
+    void RollStat(uint64_t *stat) const;
 
 public:
     NewGame(std::shared_ptr<std::mt19937_64> random_engine, std::function<void(Character character)> complete_callback);
     void GenerateName();
-    std::string GetName();
+    std::string GetName() const;
     void SetName(std::string name);
-    std::vector<std::string> GetAvailableRaces();
-    std::string GetRace();
-    void SetRace(std::string name);
-    std::vector<std::string> GetAvailableClasses();
-    std::string GetClass();
-    void SetClass(std::string name);
+    static std::vector<std::string> GetAvailableRaces();
+    std::string GetRace() const;
+    void SetRace(const std::string& name);
+    static std::vector<std::string> GetAvailableClasses();
+    std::string GetClass() const;
+    void SetClass(const std::string& name);
     void ReRoll();
-    bool CanUnroll();
+    bool CanUnroll() const;
     void UnRoll();
-    uint64_t GetSTR();
-    uint64_t GetCON();
-    uint64_t GetDEX();
-    uint64_t GetINT();
-    uint64_t GetWIS();
-    uint64_t GetCHA();
-    uint64_t GetTotal();
-    ui::Color GetTotalColor();
-    void ConfirmCharacter();
+    uint64_t GetSTR() const;
+    uint64_t GetCON() const;
+    uint64_t GetDEX() const;
+    uint64_t GetINT() const;
+    uint64_t GetWIS() const;
+    uint64_t GetCHA() const;
+    uint64_t GetTotal() const;
+    ui::Color GetTotalColor() const;
+    void ConfirmCharacter() const;
 };
 
 #endif //PQ2_NEWGAME_H

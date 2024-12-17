@@ -58,7 +58,7 @@ namespace data {
             "Infinite Confusion"
     };
 
-    const std::vector<std::string> get_spells() {
+    std::vector<std::string> get_spells() {
         return spells;
     }
 

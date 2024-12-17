@@ -3,13 +3,15 @@
 //
 
 #include "pq2gui.h"
+
+#include <utility>
 #include "game.h"
 
 using namespace std;
 using namespace game;
 
 GUI::GUI(shared_ptr<Game> game_ptr) {
-    game = game_ptr;
+    game = std::move(game_ptr);
 }
 
 GUI::~GUI() {
@@ -25,7 +27,7 @@ void GUI::Run() {
     }
 }
 
-void GUI::PushView(std::shared_ptr<View> view) {
+void GUI::PushView(const std::shared_ptr<View>& view) {
     if (!view_stack.empty()) {
         view_stack.top()->Hide();
     }
@@ -33,7 +35,7 @@ void GUI::PushView(std::shared_ptr<View> view) {
 }
 
 void GUI::PopView() {
-    std::shared_ptr<View> view = view_stack.top();
+    const std::shared_ptr<View> view = view_stack.top();
     view_stack.pop();
     view->Close();
     if (!view_stack.empty()) {

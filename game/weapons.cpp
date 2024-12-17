@@ -52,8 +52,8 @@ namespace data {
 
     static uniform_int_distribution<unsigned long> distribution(0, weapons.size() - 1);
 
-    const Item get_random_weapon(std::shared_ptr<std::mt19937_64> engine) {
-        unsigned long value = distribution(*engine);
+    Item get_random_weapon(const std::shared_ptr<std::mt19937_64>& engine) {
+        const unsigned long value = distribution(*engine);
         return weapons[value];
     }
 

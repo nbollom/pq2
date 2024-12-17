@@ -35,12 +35,12 @@ namespace data {
 
     static uniform_int_distribution<unsigned long> distribution(0, races.size() - 1);
 
-    const Race get_random_race(std::shared_ptr<std::mt19937_64> engine) {
-        unsigned long value = distribution(*engine);
+    Race get_random_race(const std::shared_ptr<std::mt19937_64>& engine) {
+        const unsigned long value = distribution(*engine);
         return races[value];
     }
 
-    const vector<Race> get_race_list() {
+    vector<Race> get_race_list() {
         return races;
     }
 

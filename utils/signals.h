@@ -6,9 +6,8 @@
 #define PQ2_SIGNALS_H
 
 #include <functional>
-#include <csignal>
 
-int AddSignalCallback(int signal_code, std::function<void(int)>callback);
+int AddSignalCallback(int signal_code, const std::function<void(int)> &callback);
 int RemoveSignalCallback(int signal_code);
 void RaiseSignal(int signal_code);
 

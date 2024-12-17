@@ -1,7 +1,3 @@
-#include <utility>
-
-#include <utility>
-
 //
 // Created by nbollom on 3/06/16.
 //
@@ -22,8 +18,8 @@ NewGame::NewGame(shared_ptr<mt19937_64> randomengine, std::function<void(Charact
     engine = std::move(randomengine);
     callback = std::move(complete_callback);
     GenerateName();
-    character.CharacterRace = data::get_random_race(engine);
-    character.CharacterClass = data::get_random_class(engine);
+    character.CharacterRace = get_random_race(engine);
+    character.CharacterClass = get_random_class(engine);
     RollEm();
 }
 
@@ -36,7 +32,7 @@ void NewGame::RollEm() {
     RollStat(&character.CHA);
 }
 
-void NewGame::RollStat(uint64_t *stat) {
+void NewGame::RollStat(uint64_t *stat) const {
     static uniform_int_distribution<uint64_t> distribution(0, 5);
     *stat = 3 + distribution(*engine) + distribution(*engine) + distribution(*engine);
 }
@@ -45,7 +41,7 @@ void NewGame::GenerateName() {
     character.Name = GenerateRandomName(engine);
 }
 
-string NewGame::GetName() {
+string NewGame::GetName() const {
     return character.Name;
 }
 
@@ -56,22 +52,22 @@ void NewGame::SetName(string name) {
 typedef vector<Race>::iterator RI;
 
 vector<string> NewGame::GetAvailableRaces() {
-    auto races = data::get_race_list();
+    auto races = get_race_list();
     vector<string> raceNames;
     raceNames.reserve(races.size());
-    for (auto r : races) {
+    for (const auto& r : races) {
         raceNames.push_back(r.name);
     }
     return raceNames;
 }
 
-string NewGame::GetRace() {
+string NewGame::GetRace() const {
     return character.CharacterRace.name;
 }
 
-void NewGame::SetRace(string name) {
-    auto races = data::get_race_list();
-    for (auto r : races) {
+void NewGame::SetRace(const string& name) {
+    auto races = get_race_list();
+    for (const auto& r : races) {
         if (r.name == name) {
             character.CharacterRace = r;
             break;
@@ -80,22 +76,22 @@ void NewGame::SetRace(string name) {
 }
 
 vector<string> NewGame::GetAvailableClasses() {
-    auto classes = data::get_class_list();
+    auto classes = get_class_list();
     vector<string> classNames;
     classNames.reserve(classes.size());
-    for (auto c : classes) {
+    for (const auto& c : classes) {
         classNames.push_back(c.name);
     }
     return classNames;
 }
 
-string NewGame::GetClass() {
+string NewGame::GetClass() const {
     return character.CharacterClass.name;
 }
 
-void NewGame::SetClass(string name) {
+void NewGame::SetClass(const string& name) {
     auto classes = data::get_class_list();
-    for (auto c : classes) {
+    for (const auto& c : classes) {
         if (c.name == name) {
             character.CharacterClass = c;
             break;
@@ -104,18 +100,18 @@ void NewGame::SetClass(string name) {
 }
 
 void NewGame::ReRoll() {
-    array<uint64_t, 6> values = {character.STR, character.CON, character.DEX, character.INT, character.WIS, character.CHA};
+    const array<uint64_t, 6> values = {character.STR, character.CON, character.DEX, character.INT, character.WIS, character.CHA};
     unrollBuffer.push(values);
     RollEm();
 }
 
-bool NewGame::CanUnroll() {
+bool NewGame::CanUnroll() const {
     return !unrollBuffer.empty();
 }
 
 void NewGame::UnRoll() {
     if (!unrollBuffer.empty()) {
-        array<uint64_t, 6> values = unrollBuffer.top();
+        const array<uint64_t, 6> values = unrollBuffer.top();
         character.STR = values[0];
         character.CON = values[1];
         character.DEX = values[2];
@@ -126,36 +122,36 @@ void NewGame::UnRoll() {
     }
 }
 
-uint64_t NewGame::GetSTR() {
+uint64_t NewGame::GetSTR() const {
     return character.STR;
 }
 
-uint64_t NewGame::GetCON() {
+uint64_t NewGame::GetCON() const {
     return character.CON;
 }
 
-uint64_t NewGame::GetDEX() {
+uint64_t NewGame::GetDEX() const {
     return character.DEX;
 }
 
-uint64_t NewGame::GetINT() {
+uint64_t NewGame::GetINT() const {
     return character.INT;
 }
 
-uint64_t NewGame::GetWIS() {
+uint64_t NewGame::GetWIS() const {
     return character.WIS;
 }
 
-uint64_t NewGame::GetCHA() {
+uint64_t NewGame::GetCHA() const {
     return character.CHA;
 }
 
-uint64_t NewGame::GetTotal() {
+uint64_t NewGame::GetTotal() const {
     return character.STR + character.CON + character.DEX + character.INT + character.WIS + character.CHA;
 }
 
-Color NewGame::GetTotalColor() {
-    uint64_t total = GetTotal();
+Color NewGame::GetTotalColor() const {
+    const uint64_t total = GetTotal();
     Color color;
     if (total >= 81) {
         color = ColorRed;
@@ -175,6 +171,6 @@ Color NewGame::GetTotalColor() {
     return color;
 }
 
-void NewGame::ConfirmCharacter() {
+void NewGame::ConfirmCharacter() const {
     callback(character);
 }

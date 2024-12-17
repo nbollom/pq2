@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.27)
 project(pq2)
 
 set(VERSION_NUMBER 1.0)

@@ -1,5 +1,3 @@
-#include <utility>
-
 //
 // Created by nbollom on 25/05/16.
 //
@@ -33,11 +31,11 @@ using namespace file;
 #define NPOS std::string::npos
 
 template <typename T>
-inline T Square(T x) {
+T Square(T x) {
     return x * x;
 }
 
-inline uint64_t EquipPrice(uint64_t level) {
+inline uint64_t EquipPrice(const uint64_t level) {
     return 5 * level * level
            + 10 * level
            + 20;
@@ -57,67 +55,61 @@ inline void AddToInventory(Character &character, const Stack &item) {
     }
 }
 
-inline uint64_t RandomLow(std::shared_ptr<std::mt19937_64> &engine, uint64_t num) {
+inline uint64_t RandomLow(const std::shared_ptr<std::mt19937_64> &engine, const uint64_t num) {
     return min(engine->operator()() % num, engine->operator()() % num);
 }
 
 inline std::string Plural(std::string s) {
-    size_t size = s.size();
+    const size_t size = s.size();
     if (size > 1 && s.substr(size - 1) == "y") {
-        return  s.replace(size - 1, NPOS, "ies");
+        return s.replace(size - 1, NPOS, "ies");
     }
-    else if (size > 2 && s.substr(size - 2) == "us") {
+    if (size > 2 && s.substr(size - 2) == "us") {
         return s.replace(size - 2, NPOS, "i");
     }
-    else if ((size > 2 && s.substr(size - 2) == "ch") || (size > 1 && (s.substr(size - 1) == "x" || s.substr(size - 1) == "s"))) {
+    if ((size > 2 && s.substr(size - 2) == "ch") || (size > 1 && (s.substr(size - 1) == "x" || s.substr(size - 1) == "s"))) {
         return s + "es";
     }
-    else if (size > 1 && s.substr(size - 1) == "f") {
+    if (size > 1 && s.substr(size - 1) == "f") {
         return s.replace(size - 1, NPOS, "ves");
     }
-    else if (size > 3 && (s.substr(size - 3) == "man" || s.substr(size - 3) == "Man")) {
+    if (size > 3 && (s.substr(size - 3) == "man" || s.substr(size - 3) == "Man")) {
         return s.replace(size - 2, NPOS, "en");
     }
-    else {
-        return s + "s";
-    }
+    return s + "s";
 }
 
-inline std::string Indefinite(std::string name, uint64_t count) {
+inline std::string Indefinite(const std::string &name, const uint64_t count) {
     if (count == 1) {
         static std::string characters = "AEIOUÜaeiouü";
-        char c = name.front();
+        const char c = name.front();
         if (characters.find(c) != NPOS) {
-            return  "an " + name;
+            return "an " + name;
         }
-        else {
-            return "a " + name;
-        }
+        return "a " + name;
     }
-    else {
-        return std::to_string(count) + " " + Plural(name);
-    }
+    return std::to_string(count) + " " + Plural(name);
 }
 
-inline std::string Definite(std::string name, uint64_t count) {
+inline std::string Definite(std::string name, const uint64_t count) {
     if (count > 1) {
         name = std::to_string(count) + " " + Plural(name);
     }
     return "the " + name;
 }
 
-inline bool Odds(std::shared_ptr<std::mt19937_64> &engine, uint64_t chance, uint64_t out_of) {
+inline bool Odds(const std::shared_ptr<std::mt19937_64> &engine, const uint64_t chance, const uint64_t out_of) {
     return (engine->operator()() % out_of) < chance;
 }
 
-Game::Game() {
+Game::Game(): character() {
     random_device random;
     engine = make_shared<mt19937_64>(random());
     game_state = GameStateNone;
 }
 
 void Game::SetDaemonMode() {
-    function<void(int)> term_callback = [this](int signal){
+    const function<void(int)> term_callback = [this](int signal){
         Close();
     };
     AddSignalCallback(SIGTERM, term_callback);
@@ -133,27 +125,28 @@ LoadError Game::LoadGame(string filename_path) {
     return LoadErrorNone;
 }
 
-SaveError Game::SaveGame(string filename_path) {
+SaveError Game::SaveGame(const string& filename_path) {
     if (!filename_path.empty()) {
         filename = filename_path;
     }
     if (filename.empty()) {
         return SaveErrorInvalidPath;
     }
+    // TODO: Save the game state from file
     return SaveErrorNone;
 }
 
 shared_ptr<NewGame> Game::StartNewGame() {
-    return make_shared<NewGame>(engine, [this](Character character){
+    return make_shared<NewGame>(engine, [this](const Character& character){
         this->character = character;
         this->character.Level = 1;
         this->character.Experience = 0;
         std::uniform_int_distribution<uint8_t> dist(0, 8);
-        this->character.MAXHP = dist(*engine) + character.CON / 6;
-        this->character.MAXMP = dist(*engine) + character.INT / 6;
+        this->character.MAX_HP = dist(*engine) + character.CON / 6;
+        this->character.MAX_MP = dist(*engine) + character.INT / 6;
         this->character.Equipment[Weapon] = "Sharp Stick";
         for (uint8_t i = Shield; i <= Sollerets; i++) {
-            this->character.Equipment[i] = {"", 0};
+            this->character.Equipment[i] = {std::string(), 0};
         }
         this->character.Gold = 0;
         this->character.Experience = 0;
@@ -176,8 +169,8 @@ shared_ptr<NewGame> Game::StartNewGame() {
 void Game::Tick(uint64_t ms) {
     if (game_state == GameStateReady) {
         while (ms > 0) {
-            uint64_t progress = min(ms, static_cast<uint64_t>(100));
-            bool gain = character.CurrentAction == CurrentActionKill;
+            const uint64_t progress = min(ms, static_cast<uint64_t>(100));
+            const bool gain = character.CurrentAction == CurrentActionKill;
             if (character.CurrentProgress >= character.MaxProgress) {
 
                 if(character.CurrentAction == CurrentActionLoading) {
@@ -219,7 +212,7 @@ void Game::Tick(uint64_t ms) {
     }
 }
 
-GameState Game::GetState() {
+GameState Game::GetState() const {
     return game_state;
 }
 
@@ -233,24 +226,24 @@ Character Game::GetCharacter() {
     return character;
 }
 
-uint64_t Game::GetLevelUpMaxValue() {
-    // 20 mins per level
+uint64_t Game::GetLevelUpMaxValue() const {
+    // 20 minutes per level
     return 20 * character.Level * 60;
 }
 
 uint64_t Game::GetEncumbrance() {
     uint64_t encumbrance = 0;
-    for (auto& item: character.Inventory) {
+    for (const auto& item: character.Inventory) {
         encumbrance += item.count;
     }
     return encumbrance;
 }
 
-uint64_t Game::GetEncumbranceMaxValue() {
+uint64_t Game::GetEncumbranceMaxValue() const {
     return 10 + character.STR;
 }
 
-uint64_t Game::GetPlotMaxValue() {
+uint64_t Game::GetPlotMaxValue() const {
     if (character.Plot.size() <= 1) {
         return 26;
     }
@@ -260,8 +253,8 @@ uint64_t Game::GetPlotMaxValue() {
 void Game::LevelUp() {
     character.Level += 1;
     std::uniform_int_distribution<uint8_t> dist(0, 4);
-    character.MAXHP += character.CON / 3 + 1 + dist(*engine);
-    character.MAXMP += character.INT / 3 + 1 + dist(*engine);
+    character.MAX_HP += character.CON / 3 + 1 + dist(*engine);
+    character.MAX_MP += character.INT / 3 + 1 + dist(*engine);
     WinStat();
     WinStat();
     WinSpell();
@@ -271,7 +264,7 @@ void Game::LevelUp() {
 }
 
 void Game::WinStat() {
-    auto odds = static_cast<uint8_t>(engine->operator()() % 2);
+    const auto odds = static_cast<uint8_t>(engine->operator()() % 2);
     int8_t stat = 0;
     uint64_t *stat_pointers[] = {
             &character.STR,
@@ -280,8 +273,8 @@ void Game::WinStat() {
             &character.INT,
             &character.WIS,
             &character.CHA,
-            &character.MAXHP,
-            &character.MAXMP,
+            &character.MAX_HP,
+            &character.MAX_MP,
     };
     if (odds < 1) {
         stat = static_cast<int8_t>(engine->operator()() % 8);
@@ -302,10 +295,10 @@ void Game::WinStat() {
 }
 
 void Game::WinSpell() {
-    auto spells = get_spells();
-    uint64_t min_amount = min(character.WIS + character.Level, static_cast<uint64_t>(spells.size()));
-    uint64_t random_number = RandomLow(engine, min_amount);
-    auto spell = spells[static_cast<int>(random_number)];
+    const auto spells = get_spells();
+    const uint64_t min_amount = min(character.WIS + character.Level, spells.size());
+    const uint64_t random_number = RandomLow(engine, min_amount);
+    const auto& spell = spells[static_cast<int>(random_number)];
     bool existing = false;
     for (auto& curr_spell: character.Spells) {
         if (curr_spell.name == spell) {
@@ -315,7 +308,7 @@ void Game::WinSpell() {
         }
     }
     if (!existing) {
-        data::Stack new_spell = {spell, 1};
+        Stack new_spell = {spell, 1};
         character.Spells.emplace_back(new_spell);
     }
 }
@@ -325,7 +318,7 @@ void Game::WinItem() {
 }
 
 void Game::WinEquip() {
-    Equipment equipment_type = static_cast<Equipment>(engine->operator()() % static_cast<uint64_t>(Sollerets + 1));
+    auto equipment_type = static_cast<Equipment>(engine->operator()() % static_cast<uint64_t>(Sollerets + 1));
     std::function<const Item(std::shared_ptr<std::mt19937_64>)> get_item;
     std::function<const Attribute(std::shared_ptr<std::mt19937_64>)> get_better;
     std::function<const Attribute(std::shared_ptr<std::mt19937_64>)> get_worse;
@@ -393,8 +386,8 @@ void Game::WinEquip() {
 
 void Game::CompleteAct() {
     character.CurrentPlotProgress = 0;
-    uint64_t count = character.Plot.size() - 1;
-    std::string roman = GetRomanNumerals(count + 1);
+    const uint64_t count = character.Plot.size() - 1;
+    const std::string roman = GetRomanNumerals(count + 1);
     std::string act_name = "Act " + roman;
     character.Plot.emplace_back(act_name);
     if (count > 1) {
@@ -404,7 +397,7 @@ void Game::CompleteAct() {
     }
 }
 
-std::string Game::InterestingItem() {
+std::string Game::InterestingItem() const {
     return get_random_item_attribute(engine) + " " + get_random_special(engine);
 }
 
@@ -420,10 +413,10 @@ void Game::InterplotCinematic() {
         case 1: {
             character.Queue.push({QueueItemTask, "Your quarry is in sight, but a mighty enemy bars your path!", 1});
             std::string nemesis;
-                uint64_t level = character.Level + 3;
+                const uint64_t level = character.Level + 3;
                 uint64_t lev = 0;
                 for (int i = 0; i < 5; ++i) {
-                    Monster m = get_random_monster(engine);
+                    const Monster m = get_random_monster(engine);
                     if (nemesis.empty() || abs(static_cast<long long int>(level - m.level)) < abs(static_cast<long long int>(level - lev))) {
                         nemesis = m.name;
                         lev = m.level;
@@ -442,7 +435,7 @@ void Game::InterplotCinematic() {
                 default:
                     character.Queue.push({QueueItemTask, "You seem to gain the advantage over " + nemesis, 2});
             }
-            character.Queue.push({QueueItemTask, "Victory! " + nemesis + " is slain! Exhausted, you lose conciousness", 3});
+            character.Queue.push({QueueItemTask, "Victory! " + nemesis + " is slain! Exhausted, you lose consciousness", 3});
             character.Queue.push({QueueItemTask, "You awake in a friendly place, but the road awaits", 2});
             break;
         }
@@ -454,7 +447,7 @@ void Game::InterplotCinematic() {
                 nemesis.append(" of " + GenerateRandomName(engine));
             }
             character.Queue.push({QueueItemTask, "Oh sweet relief! You've reached the protection of the good " + nemesis, 2});
-            character.Queue.push({QueueItemTask, "There is rejoicing, and an unnerving encouter with " + nemesis + " in private", 3});
+            character.Queue.push({QueueItemTask, "There is rejoicing, and an unnerving encounter with " + nemesis + " in private", 3});
             character.Queue.push({QueueItemTask, "You forget your " + get_random_boring_item(engine) + " and go back to get it", 2});
             character.Queue.push({QueueItemTask, "What''s this!? You overhear something shocking!", 2});
             character.Queue.push({QueueItemTask, "Could " + nemesis + " be a dirty double-dealer?", 2});
@@ -472,7 +465,7 @@ void Game::Dequeue() {
             }
             else if (!character.CurrentMonster.drop.empty()) {
                 Monster m = character.CurrentMonster;
-                std::string item = m.name + " " + m.drop;
+                const std::string item = m.name + " " + m.drop;
                 AddToInventory(character, {item, 1});
             }
         }
@@ -491,7 +484,7 @@ void Game::Dequeue() {
                 character.Gold += amount;
             }
             if (!character.Inventory.empty()) {
-                Stack item = character.Inventory.front();
+                const Stack item = character.Inventory.front();
                 character.CurrentActionLabel = "Selling " + Indefinite(item.name, item.count);
                 character.CurrentAction = CurrentActionSelling;
                 character.CurrentProgress = 0;
@@ -499,12 +492,12 @@ void Game::Dequeue() {
                 break;
             }
         }
-        CurrentActionType old = character.CurrentAction;
+        const CurrentActionType old = character.CurrentAction;
         character.CurrentAction = CurrentActionNone;
         if (!character.Queue.empty()) {
-            QueueItem item = character.Queue.front();
-            QueueItemType type = item.type;
-            uint64_t time = item.ms;
+            const QueueItem item = character.Queue.front();
+            const QueueItemType type = item.type;
+            const uint64_t time = item.ms;
             std::string label = item.label;
             if (type == QueueItemTask || type == QueueItemPlot) {
                 if (type == QueueItemPlot) {
@@ -661,9 +654,9 @@ void Game::CompleteQuest() {
     Quest quest;
     switch (engine->operator()() % 5) {
         case 0: {
-            uint64_t level = character.Level;
+            const uint64_t level = character.Level;
             for (int i = 1; i <= 4; i++) {
-                Monster m = get_random_monster(engine);
+                const Monster m = get_random_monster(engine);
                 if (i == 1 || abs(static_cast<long long int>(m.level - level)) < abs(static_cast<long long int>(lev - level))) {
                     lev = m.level;
                     quest.monster = m;
@@ -682,7 +675,7 @@ void Game::CompleteQuest() {
             quest.label = "Fetch me " + Indefinite(get_random_boring_item(engine), 1);
             break;
         default:
-            uint64_t level = character.Level;
+            const uint64_t level = character.Level;
             Monster m;
             for (int i = 1; i <= 2; i++) {
                 m = get_random_monster(engine);
@@ -697,91 +690,87 @@ void Game::CompleteQuest() {
     SaveGame();
 }
 
-std::string Game::Sick(int64_t level, std::string name) {
+std::string Game::Sick(const int64_t level, const std::string& name) {
     std::string result = std::to_string(level) + name; // just in case
     if (level == -5 || level == 5) {
         return "dead " + name;
     }
-    else if (level == -4 || level == 4) {
+    if (level == -4 || level == 4) {
         return "comatose " + name;
     }
-    else if (level == -3 || level == 3) {
+    if (level == -3 || level == 3) {
         return "crippled " + name;
     }
-    else if (level == -2 || level == 2) {
+    if (level == -2 || level == 2) {
         return "sick " + name;
     }
-    else if (level == -1 || level == 1) {
+    if (level == -1 || level == 1) {
         return "undernourished " + name;
     }
     return result;
 }
 
-std::string Game::Young(int64_t level, std::string name) {
+std::string Game::Young(const int64_t level, const std::string& name) {
     std::string result = std::to_string(level) + name; // just in case
     if (level == -5 || level == 5) {
         return "foetal " + name;
     }
-    else if (level == -4 || level == 4) {
+    if (level == -4 || level == 4) {
         return "baby " + name;
     }
-    else if (level == -3 || level == 3) {
+    if (level == -3 || level == 3) {
         return "preadolescent " + name;
     }
-    else if (level == -2 || level == 2) {
+    if (level == -2 || level == 2) {
         return "teenage " + name;
     }
-    else if (level == -1 || level == 1) {
+    if (level == -1 || level == 1) {
         return "underage " + name;
     }
     return result;
 }
 
-std::string Game::Big(int64_t level, std::string name) {
+std::string Game::Big(const int64_t level, const std::string& name) {
     std::string result = std::to_string(level) + name; // just in case
     if (level == -1 || level == 1) {
         return "greater " + name;
     }
-    else if (level == -2 || level == 2) {
+    if (level == -2 || level == 2) {
         return "massive " + name;
     }
-    else if (level == -3 || level == 3) {
+    if (level == -3 || level == 3) {
         return "enormous " + name;
     }
-    else if (level == -4 || level == 4) {
+    if (level == -4 || level == 4) {
         return "giant " + name;
     }
-    else if (level == -5 || level == 5) {
+    if (level == -5 || level == 5) {
         return "titanic " + name;
     }
     return result;
 }
 
-std::string Game::Special(int64_t level, std::string name) {
+std::string Game::Special(const int64_t level, const std::string& name) {
     std::string result = name; // just in case
     if (level == -1 || level == 1) {
         if (name.find(' ') != NPOS) {
             return "veteran " + name;
         }
-        else {
-            return "Battle-" + name;
-        }
+        return "Battle-" + name;
     }
-    else if (level == -2 || level == 2) {
+    if (level == -2 || level == 2) {
         return "cursed " + name;
     }
-    else if (level == -3 || level == 3) {
+    if (level == -3 || level == 3) {
         if (name.find(' ') != NPOS) {
             return "warrior " + name;
         }
-        else {
-            return "Ware-" + name;
-        }
+        return "Ware-" + name;
     }
-    else if (level == -4 || level == 4) {
+    if (level == -4 || level == 4) {
         return "undead " + name;
     }
-    else if (level == -5 || level == 5) {
+    if (level == -5 || level == 5) {
         return "demon " + name;
     }
     return result;

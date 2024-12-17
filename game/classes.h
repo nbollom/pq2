@@ -12,9 +12,9 @@
 
 namespace data {
 
-    const Class get_random_class(std::shared_ptr<std::mt19937_64> engine);
+    Class get_random_class(const std::shared_ptr<std::mt19937_64>& engine);
 
-    const std::vector<Class> get_class_list();
+    std::vector<Class> get_class_list();
 
 }
 

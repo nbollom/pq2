@@ -11,15 +11,15 @@
 class NCursesView : public View {
 
 protected:
-    int screen_width;
-    int screen_height;
+    int screen_width{};
+    int screen_height{};
 
 public:
-    NCursesView(std::shared_ptr<Game> game, std::function<bool(std::string message, void *value)> message_handler);
+    NCursesView(const std::shared_ptr<Game>& game, const std::function<bool(std::string message, void *value)>& message_handler);
 
-    void LeftAlign(std::string value, int x, int y);
-    void RightAlign(std::string value, int x, int y);
-    void CenterAlign(std::string value, int x, int y);
+    static void LeftAlign(const std::string& value, int x, int y);
+    static void RightAlign(const std::string& value, int x, int y);
+    static void CenterAlign(const std::string& value, int x, int y);
 
     void Resize(int new_screen_width, int new_screen_height);
     virtual void HandleKeyPress(int key) = 0;
