@@ -11,15 +11,15 @@ NCursesView::NCursesView(const std::shared_ptr<Game>& game, const std::function<
 }
 
 void NCursesView::LeftAlign(const std::string& value, const int x, const int y) {
-    mvprintw(y, x, value.c_str());
+    mvprintw(y, x, "%s", value.c_str());
 }
 
 void NCursesView::RightAlign(const std::string& value, const int x, const int y) {
-    mvprintw(y, x - static_cast<int>(value.length()), value.c_str());
+    mvprintw(y, x - static_cast<int>(value.length()), "%s", value.c_str());
 }
 
 void NCursesView::CenterAlign(const std::string& value, const int x, const int y) {
-    mvprintw(y, x - static_cast<int>(static_cast<float>(value.length()) / 2), value.c_str());
+    mvprintw(y, x - static_cast<int>(static_cast<float>(value.length()) / 2), "%s", value.c_str());
 }
 
 void NCursesView::Resize(const int new_screen_width, const int new_screen_height) {

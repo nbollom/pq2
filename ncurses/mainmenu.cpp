@@ -14,10 +14,10 @@ typedef std::vector<MenuItem>::iterator MenuItemIterator;
 
 MainMenu::MainMenu(const std::shared_ptr<Game>& game, const std::function<bool(std::string message, void *value)>& message_handler) : NCursesView(game, message_handler) {
     selected_index = 0;
-    menu_options.emplace_back("New Game", [this, game] {
+    menu_options.emplace_back("New Game", [game] {
         game->StartNewGame();
     });
-    menu_options.emplace_back("Load Game", [this, game] {
+    menu_options.emplace_back("Load Game", [] {
 
     });
     menu_options.emplace_back("Quit", [message_handler] {
