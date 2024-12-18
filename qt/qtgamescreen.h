@@ -13,6 +13,7 @@
 #include <QTableWidget>
 #include <QProgressBar>
 #include <QTimer>
+#include <chrono>
 #include "view.h"
 
 class QTGameScreen : public QMainWindow, public View {
@@ -54,6 +55,7 @@ private:
     QProgressBar *status_progress;
 
     QTimer *timer;
+    std::chrono::time_point<std::chrono::system_clock> last_update;
 
 public:
     QTGameScreen(const std::shared_ptr<Game>& game, const std::function<void(std::string, void*)>& message_handler);
@@ -74,7 +76,7 @@ public slots:
     void UpdatePlot() const;
     void UpdateQuests() const;
     void UpdateStatus() const;
-    void UpdateAll() const;
+    void UpdateAll();
 };
 
 #endif //PQ2_QTGAMESCREEN_H

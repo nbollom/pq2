@@ -563,20 +563,19 @@ void Game::MonsterTask() {
         lev = level;
         monster = {name, static_cast<uint64_t>(level), "*"};
     }
-    else if ((!character.Quests.empty() && !character.Quests.back().monster.name.empty()) && Odds(engine, 1, 4)) {
+    else if ((!character.Quests.empty() && character.Quests.back().monster.has_value()) && Odds(engine, 1, 4)) {
         // use the quest monster
-        monster = character.Quests.back().monster;
-        lev = monster.level;
+        lev = static_cast<int64_t>(character.Quests.back().monster->level);
     }
     else {
         // pick the monster out of so many random ones closest to the level we want
         monster = get_random_monster(engine);
-        lev = monster.level;
+        lev = static_cast<int64_t>(monster.level);
         for (int i = 5; i > 0; i--) {
             Monster m1 = get_random_monster(engine);
             if (abs(static_cast<long long int>(level - m1.level)) < abs(static_cast<long long int>(level - lev))) {
                 monster = m1;
-                lev = monster.level;
+                lev = static_cast<int64_t>(monster.level);
             }
         }
     }
@@ -662,7 +661,7 @@ void Game::CompleteQuest() {
                     quest.monster = m;
                 }
             }
-            quest.label = "Exterminate " + Definite(quest.monster.name, 2);
+            quest.label = "Exterminate " + Definite(quest.monster->name, 2);
             break;
         }
         case 1:

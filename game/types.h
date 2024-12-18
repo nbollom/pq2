@@ -9,6 +9,7 @@
 #include <list>
 #include <array>
 #include <cstdint>
+#include <optional>
 
 namespace data {
 
@@ -45,7 +46,7 @@ namespace data {
 
     struct Quest {
         std::string label;
-        Monster monster;
+        std::optional<Monster> monster;
     };
 
     typedef enum {

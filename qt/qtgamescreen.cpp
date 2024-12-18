@@ -180,6 +180,7 @@ QTGameScreen::QTGameScreen(const std::shared_ptr<Game>& game, const std::functio
     timer = new QTimer();
     timer->setTimerType(Qt::PreciseTimer);
     timer->setInterval(TIMER_MS);
+    last_update = std::chrono::system_clock::now();
     connect(timer, &QTimer::timeout, this, &QTGameScreen::UpdateAll);
     timer->start();
 }
@@ -253,9 +254,9 @@ void QTGameScreen::UpdateInventory() const {
     inventory_table->setRowCount(static_cast<int>(character.Inventory.size() + 1));
     inventory_table->setItem(0, 0, new QTableWidgetItem("Gold"));
     inventory_table->setItem(0, 1, new QTableWidgetItem(QString::number(character.Gold)));
-    for (const auto& item: character.Inventory) {
-        inventory_table->setItem(row, 0, new QTableWidgetItem(item.name.c_str()));
-        inventory_table->setItem(row, 1, new QTableWidgetItem(QString::number(item.count)));
+    for (const auto&[name, count]: character.Inventory) {
+        inventory_table->setItem(row, 0, new QTableWidgetItem(name.c_str()));
+        inventory_table->setItem(row, 1, new QTableWidgetItem(QString::number(count)));
         row++;
     }
     inventory_table->scrollToBottom();
@@ -278,7 +279,7 @@ void QTGameScreen::UpdatePlot() const {
         check->setChecked(checked);
         check->setAttribute(Qt::WA_TransparentForMouseEvents);
         check->setFocusPolicy(Qt::NoFocus);
-        plot_table->setCellWidget(row, 0, check);
+        plot_table->setCellWidget(static_cast<int>(row), 0, check);
         row++;
     }
     plot_table->scrollToBottom();
@@ -292,13 +293,13 @@ void QTGameScreen::UpdateQuests() const {
     const auto character = game->GetCharacter();
     size_t row = 0;
     quest_table->setRowCount(static_cast<int>(character.Quests.size()));
-    for (const auto& quest: character.Quests) {
-        auto *check = new QCheckBox(quest.label.c_str());
+    for (const auto&[label, monster]: character.Quests) {
+        auto *check = new QCheckBox(label.c_str());
         const bool checked = row != character.Quests.size() - 1;
         check->setChecked(checked);
         check->setAttribute(Qt::WA_TransparentForMouseEvents);
         check->setFocusPolicy(Qt::NoFocus);
-        quest_table->setCellWidget(row, 0, check);
+        quest_table->setCellWidget(static_cast<int>(row), 0, check);
         row++;
     }
     quest_table->scrollToBottom();
@@ -313,8 +314,11 @@ void QTGameScreen::UpdateStatus() const {
     status_progress->setMaximum(static_cast<int>(character.MaxProgress));
 }
 
-void QTGameScreen::UpdateAll() const {
-    game->Tick(TIMER_MS);
+void QTGameScreen::UpdateAll() {
+    const std::chrono::time_point<std::chrono::system_clock> time = std::chrono::system_clock::now();
+    const auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(time - last_update).count();
+    last_update = time;
+    game->Tick(elapsed);
     UpdateStats();
     UpdateSpells();
     UpdateEquipment();
