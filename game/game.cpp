@@ -20,8 +20,12 @@
 #include "classes.h"
 #include "boringitems.h"
 #include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <filesystem>
 #include <utils.h>
 #include <algorithm>
+#include <nlohmann/json.hpp>
 
 using namespace std;
 using namespace game;
@@ -130,9 +134,23 @@ SaveError Game::SaveGame(const string& filename_path) {
         filename = filename_path;
     }
     if (filename.empty()) {
+        // TODO: save filename logic in GUI???
+//         if (character.Name.empty()) {
+//             return SaveErrorInvalidPath;
+//         }
+// #ifdef _WIN32
+//         auto home = getenv("HOMEPATH");
+// #else
+//         auto home = getenv("HOME");
+// #endif
+//         std::filesystem::path path(home);
+//         path /= character.Name + ".pq2";
+//         filename = path.string();
         return SaveErrorInvalidPath;
     }
-    // TODO: Save the game state from file
+    std::ofstream file(filename);
+    file << serialise();
+    file.close();
     return SaveErrorNone;
 }
 
@@ -156,11 +174,11 @@ shared_ptr<NewGame> Game::StartNewGame() {
         this->character.CurrentProgress = 0;
         this->character.MaxProgress = 2000;
 
-        this->character.Queue.push({QueueItemTask, "Experiencing an enigmatic and foreboding night vision", 10});
-        this->character.Queue.push({QueueItemTask, "Much is revealed about that wise old bastard you'd underestimated", 6});
-        this->character.Queue.push({QueueItemTask, "A shocking series of events leaves you alone and bewildered, but resolute", 6});
-        this->character.Queue.push({QueueItemTask, "Drawing upon an unexpected reserve of determination, you set out on a long and dangerous journey", 4});
-        this->character.Queue.push({QueueItemPlot, "Loading", 2});
+        this->character.Queue.push_back({QueueItemTask, "Experiencing an enigmatic and foreboding night vision", 10});
+        this->character.Queue.push_back({QueueItemTask, "Much is revealed about that wise old bastard you'd underestimated", 6});
+        this->character.Queue.push_back({QueueItemTask, "A shocking series of events leaves you alone and bewildered, but resolute", 6});
+        this->character.Queue.push_back({QueueItemTask, "Drawing upon an unexpected reserve of determination, you set out on a long and dangerous journey", 4});
+        this->character.Queue.push_back({QueueItemPlot, "Loading", 2});
         this->character.Plot.emplace_back("Prologue");
         game_state = GameStateReady;
     });
@@ -405,13 +423,13 @@ void Game::InterplotCinematic() {
     uint64_t r = engine->operator()() % 3;
     switch (r) {
         case 0:
-            character.Queue.push({QueueItemTask, "Exhausted, you arrive at a friendly oasis in a hostile land", 1});
-            character.Queue.push({QueueItemTask, "You greet old friends and meet new allies", 2});
-            character.Queue.push({QueueItemTask, "You are privy to a council of powerful do-gooders", 2});
-            character.Queue.push({QueueItemTask, "There is much to be done. You are chosen!", 1});
+            character.Queue.push_back({QueueItemTask, "Exhausted, you arrive at a friendly oasis in a hostile land", 1});
+            character.Queue.push_back({QueueItemTask, "You greet old friends and meet new allies", 2});
+            character.Queue.push_back({QueueItemTask, "You are privy to a council of powerful do-gooders", 2});
+            character.Queue.push_back({QueueItemTask, "There is much to be done. You are chosen!", 1});
             break;
         case 1: {
-            character.Queue.push({QueueItemTask, "Your quarry is in sight, but a mighty enemy bars your path!", 1});
+            character.Queue.push_back({QueueItemTask, "Your quarry is in sight, but a mighty enemy bars your path!", 1});
             std::string nemesis;
                 const uint64_t level = character.Level + 3;
                 uint64_t lev = 0;
@@ -423,20 +441,20 @@ void Game::InterplotCinematic() {
                     }
                 }
                 nemesis = GenerateRandomName(engine) + " the " + nemesis;
-            character.Queue.push({QueueItemTask, "A desperate struggle commences with " + nemesis, 4});
+            character.Queue.push_back({QueueItemTask, "A desperate struggle commences with " + nemesis, 4});
             r = engine->operator()() % 3;
             switch (r) {
                 case 0:
-                    character.Queue.push({QueueItemTask, "Locked in grim combat with " + nemesis, 2});
+                    character.Queue.push_back({QueueItemTask, "Locked in grim combat with " + nemesis, 2});
                     break;
                 case 1:
-                    character.Queue.push({QueueItemTask, nemesis + "seems to have the upper hand!", 2});
+                    character.Queue.push_back({QueueItemTask, nemesis + "seems to have the upper hand!", 2});
                     break;
                 default:
-                    character.Queue.push({QueueItemTask, "You seem to gain the advantage over " + nemesis, 2});
+                    character.Queue.push_back({QueueItemTask, "You seem to gain the advantage over " + nemesis, 2});
             }
-            character.Queue.push({QueueItemTask, "Victory! " + nemesis + " is slain! Exhausted, you lose consciousness", 3});
-            character.Queue.push({QueueItemTask, "You awake in a friendly place, but the road awaits", 2});
+            character.Queue.push_back({QueueItemTask, "Victory! " + nemesis + " is slain! Exhausted, you lose consciousness", 3});
+            character.Queue.push_back({QueueItemTask, "You awake in a friendly place, but the road awaits", 2});
             break;
         }
         default: {
@@ -446,15 +464,15 @@ void Game::InterplotCinematic() {
             } else {
                 nemesis.append(" of " + GenerateRandomName(engine));
             }
-            character.Queue.push({QueueItemTask, "Oh sweet relief! You've reached the protection of the good " + nemesis, 2});
-            character.Queue.push({QueueItemTask, "There is rejoicing, and an unnerving encounter with " + nemesis + " in private", 3});
-            character.Queue.push({QueueItemTask, "You forget your " + get_random_boring_item(engine) + " and go back to get it", 2});
-            character.Queue.push({QueueItemTask, "What''s this!? You overhear something shocking!", 2});
-            character.Queue.push({QueueItemTask, "Could " + nemesis + " be a dirty double-dealer?", 2});
-            character.Queue.push({QueueItemTask, "Who can possibly be trusted with this news!? ... Oh yes, of course", 3});
+            character.Queue.push_back({QueueItemTask, "Oh sweet relief! You've reached the protection of the good " + nemesis, 2});
+            character.Queue.push_back({QueueItemTask, "There is rejoicing, and an unnerving encounter with " + nemesis + " in private", 3});
+            character.Queue.push_back({QueueItemTask, "You forget your " + get_random_boring_item(engine) + " and go back to get it", 2});
+            character.Queue.push_back({QueueItemTask, "What''s this!? You overhear something shocking!", 2});
+            character.Queue.push_back({QueueItemTask, "Could " + nemesis + " be a dirty double-dealer?", 2});
+            character.Queue.push_back({QueueItemTask, "Who can possibly be trusted with this news!? ... Oh yes, of course", 3});
         }
     }
-    character.Queue.push({QueueItemPlot, "Loading", 1});
+    character.Queue.push_back({QueueItemPlot, "Loading", 1});
 }
 
 void Game::Dequeue() {
@@ -495,19 +513,17 @@ void Game::Dequeue() {
         const CurrentActionType old = character.CurrentAction;
         character.CurrentAction = CurrentActionNone;
         if (!character.Queue.empty()) {
-            const QueueItem item = character.Queue.front();
-            const QueueItemType type = item.type;
-            const uint64_t time = item.ms;
-            std::string label = item.label;
+            const auto [type, label, ms] = character.Queue.front();
+            std::string item_label = label;
             if (type == QueueItemTask || type == QueueItemPlot) {
                 if (type == QueueItemPlot) {
                     CompleteAct();
-                    label = "Loading " + character.Plot.back();
+                    item_label = "Loading " + character.Plot.back();
                 }
-                character.CurrentActionLabel = label;
+                character.CurrentActionLabel = item_label;
                 character.CurrentProgress = 0;
-                character.MaxProgress = time * 1000;
-                character.Queue.pop();
+                character.MaxProgress = ms * 1000;
+                character.Queue.pop_front();
             }
             else {
                 throw std::runtime_error("Should never get here");
@@ -565,7 +581,8 @@ void Game::MonsterTask() {
     }
     else if ((!character.Quests.empty() && character.Quests.back().monster.has_value()) && Odds(engine, 1, 4)) {
         // use the quest monster
-        lev = static_cast<int64_t>(character.Quests.back().monster->level);
+        monster = character.Quests.back().monster.value();
+        lev = static_cast<int64_t>(monster.level);
     }
     else {
         // pick the monster out of so many random ones closest to the level we want
@@ -774,3 +791,201 @@ std::string Game::Special(const int64_t level, const std::string& name) {
     }
     return result;
 }
+
+nlohmann::json serialise_race(const Race& race) {
+    nlohmann::json json;
+    json["name"] = race.name;
+    for (const auto &attr : race.attributes) {
+        json["attributes"].push_back(attr);
+    }
+    return json;
+}
+
+nlohmann::json serialise_class(const Class& cls) {
+    nlohmann::json json;
+    json["name"] = cls.name;
+    for (const auto &attr : cls.attributes) {
+        json["attributes"].push_back(attr);
+    }
+    return json;
+}
+
+nlohmann::json serialise_stack_item(const Stack& stack) {
+    nlohmann::json json;
+    json["name"] = stack.name;
+    json["count"] = stack.count;
+    return json;
+}
+
+nlohmann::json serialise_equipment(const std::array<std::string, 11> &equipment) {
+    nlohmann::json json;
+    for (size_t i = 0; i < equipment.size(); i++) {
+        json[EquipmentLabels[i]] = equipment[i];
+    }
+    return json;
+}
+
+nlohmann::json serialise_monster(const Monster& monster) {
+    nlohmann::json json;
+    json["name"] = monster.name;
+    json["level"] = monster.level;
+    json["drop"] = monster.drop;
+    return json;
+}
+
+nlohmann::json serialise_quest(const Quest& quest) {
+    nlohmann::json json;
+    json["label"] = quest.label;
+    if (quest.monster.has_value()) {
+        json["monster"] = serialise_monster(*quest.monster);
+    }
+    return json;
+}
+
+nlohmann::json serialise_queue_item(const QueueItem& item) {
+    nlohmann::json json;
+    json["type"] = item.type;
+    json["label"] = item.label;
+    json["ms"] = item.ms;
+    return json;
+}
+
+std::string Game::serialise() const {
+    nlohmann::json json;
+    json["name"] = character.Name;
+    json["race"] = serialise_race(character.CharacterRace);
+    json["class"] = serialise_class(character.CharacterClass);
+    json["level"] = character.Level;
+    json["experience"] = character.Experience;
+    json["str"] = character.STR;
+    json["con"] = character.CON;
+    json["dex"] = character.DEX;
+    json["int"] = character.INT;
+    json["wis"] = character.WIS;
+    json["cha"] = character.CHA;
+    json["max_hp"] = character.MAX_HP;
+    json["max_mp"] = character.MAX_MP;
+    json["gold"] = character.Gold;
+    for (const auto &item: character.Spells) {
+        json["spells"].push_back(serialise_stack_item(item));
+    }
+    json["equipment"] = serialise_equipment(character.Equipment);
+    for (const auto &item: character.Inventory) {
+        json["inventory"].push_back(serialise_stack_item(item));
+    }
+    for (const auto &plot_string : character.Plot) {
+        json["plot"].push_back(plot_string);
+    }
+    for (const auto &quest: character.Quests) {
+        json["quests"].push_back(serialise_quest(quest));
+    }
+    for (const auto &queue_item: character.Queue) {
+        json["queue"].push_back(serialise_queue_item(queue_item));
+    }
+    json["current_action"] = character.CurrentAction;
+    json["current_action_label"] = character.CurrentActionLabel;
+    json["current_monster"] = serialise_monster(character.CurrentMonster);
+    json["current_progress"] = character.CurrentProgress;
+    json["max_progress"] = character.MaxProgress;
+    json["current_plot_progress"] = character.CurrentPlotProgress;
+    json["current_quest_progress"] = character.CurrentQuestProgress;
+    json["max_quest_progress"] = character.MaxQuestProgress;
+    return json.dump();
+}
+
+Race deserialize_race(const nlohmann::json &json) {
+    Race race;
+    race.name = json["name"].get<std::string>();
+    for (const auto &attr : json["attributes"]) {
+        race.attributes.push_back(attr.get<std::string>());
+    }
+    return race;
+}
+
+Class deserialize_class(const nlohmann::json &json) {
+    Class cls;
+    cls.name = json["name"].get<std::string>();
+    for (const auto &attr : json["attributes"]) {
+        cls.attributes.push_back(attr.get<std::string>());
+    }
+    return cls;
+}
+
+Stack deserialise_stack_item(nlohmann::json json) {
+    return {json["name"].get<std::string>(), json["count"].get<uint64_t>()};
+}
+
+Monster deserialise_monster(nlohmann::json json) {
+    Monster monster;
+    monster.name = json["name"].get<std::string>();
+    monster.level = json["level"].get<uint64_t>();
+    monster.drop = json["drop"].get<std::string>();
+    return monster;
+}
+
+Quest deserialise_quest(nlohmann::json json) {
+    Quest quest;
+    quest.label = json["label"].get<std::string>();
+    if (json.contains("monster")) {
+        quest.monster = deserialise_monster(json["monster"]);
+    }
+    return quest;
+}
+
+QueueItem deserialise_queue_item(nlohmann::json json) {
+    QueueItem item;
+    item.type = static_cast<QueueItemType>(json["type"].get<int>());
+    item.label = json["label"].get<std::string>();
+    item.ms = json["ms"].get<uint64_t>();
+    return item;
+}
+
+void Game::deserialize(const std::string& value) {
+    nlohmann::json json = nlohmann::json::parse(value);
+    character.Name = json["name"].get<std::string>();
+    character.CharacterRace = deserialize_race(json["race"]);
+    character.CharacterClass = deserialize_class(json["class"]);
+    character.Level = json["level"].get<uint64_t>();
+    character.Experience = json["experience"].get<uint64_t>();
+    character.STR = json["str"].get<uint64_t>();
+    character.CON = json["con"].get<uint64_t>();
+    character.DEX = json["dex"].get<uint64_t>();
+    character.INT = json["int"].get<uint64_t>();
+    character.WIS = json["wis"].get<uint64_t>();
+    character.CHA = json["cha"].get<uint64_t>();
+    character.MAX_HP = json["max_hp"].get<uint64_t>();
+    character.MAX_MP = json["max_mp"].get<uint64_t>();
+    character.Gold = json["gold"].get<uint64_t>();
+    character.Spells.clear();
+    for (const auto &item: json["spells"]) {
+        character.Spells.push_back(deserialise_stack_item(item));
+    }
+    size_t index = 0;
+    for (const auto &element: json["equipment"].items()) {
+        character.Equipment[index] = element.value();
+        index++;
+    }
+    character.Inventory.clear();
+    for (const auto &item: json["inventory"]) {
+        character.Inventory.push_back(deserialise_stack_item(item));
+    }
+    character.Plot = json["plot"].get<std::vector<std::string>>();
+    character.Quests.clear();
+    for (const auto &item: json["quests"]) {
+        character.Quests.push_back(deserialise_quest(item));
+    }
+    character.Queue.clear();
+    for (const auto &item: json["queue"]) {
+        character.Queue.push_back(deserialise_queue_item(item));
+    }
+    character.CurrentAction = static_cast<CurrentActionType>(json["current_action"].get<int>());
+    character.CurrentActionLabel = json["current_action_label"].get<std::string>();
+    character.CurrentMonster = deserialise_monster(json["current_monster"]);
+    character.CurrentProgress = json["current_progress"].get<uint64_t>();
+    character.MaxProgress = json["max_progress"].get<uint64_t>();
+    character.CurrentPlotProgress = json["current_plot_progress"].get<uint64_t>();
+    character.CurrentQuestProgress = json["current_quest_progress"].get<uint64_t>();
+    character.MaxQuestProgress = json["max_quest_progress"].get<uint64_t>();
+}
+
+

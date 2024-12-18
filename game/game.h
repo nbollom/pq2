@@ -34,8 +34,6 @@ private:
     static std::string Big(int64_t level, const std::string& name);
     static std::string Special(int64_t level, const std::string& name);
 
-
-
     std::string InterestingItem() const;
 
 public:
@@ -54,6 +52,9 @@ public:
     uint64_t GetEncumbrance();
     uint64_t GetEncumbranceMaxValue() const;
     uint64_t GetPlotMaxValue() const;
+
+    std::string serialise() const;
+    void deserialize(const std::string& value);
 
 };
 

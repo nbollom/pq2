@@ -101,8 +101,7 @@ int main(const int argc, const char * const *argv) {
     }
     auto game = make_shared<Game>();
     if (!filename.empty()) {
-        const file::LoadError error = game->LoadGame(filename);
-        if (error != file::LoadErrorNone) {
+        if (const file::LoadError error = game->LoadGame(filename); error != file::LoadErrorNone) {
             cout << "Error loading save " << filename << endl;
             if (gui == GUI_NONE) {
                 return 1; //Daemon mode requires an existing save to run

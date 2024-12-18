@@ -8,7 +8,7 @@
 #include <string>
 #include <array>
 #include <vector>
-#include <queue>
+#include <deque>
 
 #include "types.h"
 
@@ -40,7 +40,7 @@ struct Character {
     std::vector<std::string> Plot;
     std::vector<data::Quest> Quests;
 
-    std::queue<data::QueueItem> Queue;
+    std::deque<data::QueueItem> Queue;
 
     data::CurrentActionType CurrentAction;
     std::string CurrentActionLabel;
