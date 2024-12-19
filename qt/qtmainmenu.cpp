@@ -31,8 +31,6 @@ QTMainMenu::QTMainMenu(const std::shared_ptr<Game>& game, const std::function<vo
     new_game->setMinimumSize(200, 60);
     load_game = new QPushButton("Load Game");
     load_game->setMinimumSize(200, 60);
-    // TODO: remove when loading works
-    load_game->setEnabled(false);
     exit_game = new QPushButton("Exit");
     exit_game->setMinimumSize(200, 60);
     main_layout->addWidget(logo);
@@ -87,9 +85,8 @@ void QTMainMenu::LoadGame() const {
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
     if (dialog.exec()) {
         const QString filename = dialog.selectedFiles()[0];
-        const file::LoadError error = game->LoadGame(filename.toStdString());
-        if (error == file::LoadErrorNone) {
-            // TODO: show game screen
+        if (const file::LoadError error = game->LoadGame(filename.toStdString()); error == file::LoadErrorNone) {
+            message_handler("load", nullptr);
         }
         else {
             QMessageBox error_message;

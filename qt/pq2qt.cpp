@@ -69,6 +69,11 @@ void QTGUI::HandleMessage(const std::string& message, void *) {
         PopView();
     }
     else if (message == "start") {
+        game->SaveGame(game->GetCharacter().Name + ".pq2");
+        PopAllViews();
+        ShowGameScreen();
+    }
+    else if (message == "load") {
         PopAllViews();
         ShowGameScreen();
     }

@@ -36,7 +36,7 @@ int main(const int argc, const char * const *argv) {
     int gui = DEFAULT_GUI_LIBRARY;
     CommandLineProcessor cmdProcessor("Progress Quest 2 - The Progression", "A streamlined RPG experience", VERSION);
     try {
-        cmdProcessor.AddOption('d', "daemon", "Run as a daemon", false);
+        cmdProcessor.AddOption('d', "daemon", "Run as a daemon (requires savefile)", false);
 #ifdef GUI_ENABLED
 #ifdef QT_ENABLED
         cmdProcessor.AddOption('q', "qt", "Run QT interface", false);
@@ -57,7 +57,7 @@ int main(const int argc, const char * const *argv) {
 #ifdef WEBSERVER_ENABLED
         cmdProcessor.AddOption('s', "webserver", "Run web server", true, "The port to run the webserver on (default 8094)", "8094");
 #endif
-        cmdProcessor.AddValueOnlyOption("Filename", "Load a saved game");
+        cmdProcessor.AddValueOnlyOption("savefile", "Load the saved game (optional unless run in daemon mode)");
         if (cmdProcessor.Parse(argc, argv) == false) {
             return 0;
         }
@@ -83,7 +83,7 @@ int main(const int argc, const char * const *argv) {
             runWebServer = true;
             port = stoi(cmdProcessor.GetOptionValue('s'));
         }
-        filename = cmdProcessor.GetValueOnlyOptionValue("Filename");
+        filename = cmdProcessor.GetValueOnlyOptionValue("savefile");
     }
     catch (BaseOptionExistsException &ex) {
         cerr << ex.what() << endl;

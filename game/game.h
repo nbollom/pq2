@@ -53,9 +53,6 @@ public:
     uint64_t GetEncumbranceMaxValue() const;
     uint64_t GetPlotMaxValue() const;
 
-    std::string serialise() const;
-    void deserialize(const std::string& value);
-
 };
 
 #endif //PQ2_GAME_H

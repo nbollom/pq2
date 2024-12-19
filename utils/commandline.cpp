@@ -75,22 +75,29 @@ bool CommandLineProcessor::Parse(const int argc, const char *const *argv) {
                     return a->shortName < b->shortName;
                 });
                 std::string usage_str;
-                std::string value_usage_str;
+                std::string option_usage_str;
                 unsigned long longest_name = 0;
                 for (const auto &op : options) {
                     if (op->hasValue) {
-                        value_usage_str += " -";
-                        value_usage_str += op->shortName;
-                        value_usage_str += " <";
-                        value_usage_str += op->longName;
-                        value_usage_str += ">";
+                        option_usage_str += " -";
+                        option_usage_str += op->shortName;
+                        option_usage_str += " <";
+                        option_usage_str += op->longName;
+                        option_usage_str += ">";
                     }
                     else {
                         usage_str += op->shortName;
                     }
                     longest_name = max(longest_name, op->longName.length());
                 }
-                std::cout << "Usage: " << executable << " [-" << usage_str << value_usage_str << "]\n\n";
+                std::string value_usage_str;
+                for (const auto &op: values) {
+                    if (!value_usage_str.empty()) {
+                        value_usage_str += " ";
+                    }
+                    value_usage_str += "[" + op->name + "]";
+                }
+                std::cout << "Usage: " << executable << " [-" << usage_str << option_usage_str << "] " + value_usage_str + "\n\n";
                 for (const auto &op : options) {
                     std::cout << "\t-" << op->shortName << "\t--" << op->longName << pad(longest_name - op->longName.length()) << "\t" << op->description << "\n";
                     if (op->hasValue) {
@@ -102,6 +109,10 @@ bool CommandLineProcessor::Parse(const int argc, const char *const *argv) {
                             std::cout << "\n";
                         }
                     }
+                }
+                std::cout << "\n";
+                for (const auto &op : values) {
+                    std::cout << "\t" << op->name << "\t\t" << op->description << "\n";
                 }
                 std::cout << "\n";
                 return false;
