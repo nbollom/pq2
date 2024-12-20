@@ -15,11 +15,11 @@ inline QString StringValue(const uint64_t value) {
 
 inline std::string StripShortcuts(const QString &value) {
     std::string v = value.toStdString();
-    v.erase(std::remove(v.begin(), v.end(), '&'), v.end());
+    std::erase(v, '&');
     return v;
 }
 
-QTCharacterCreator::QTCharacterCreator(const std::shared_ptr<Game>& game, const std::function<void(std::string, void *)>& message_handler) : View(game, message_handler) {
+QTCharacterCreator::QTCharacterCreator(const std::shared_ptr<Game>& game, const MessageHandler& message_handler) : View(game, message_handler) {
     new_game = game->StartNewGame();
     setWindowTitle("ProgressQuest 2 - Create New Character");
     scroll_area = new QScrollArea();
@@ -38,6 +38,7 @@ QTCharacterCreator::QTCharacterCreator(const std::shared_ptr<Game>& game, const 
     race_options = new QButtonGroup;
     std::string selected_race = new_game->GetRace();
     for (auto &race_name: NewGame::GetAvailableRaces()) {
+        // ReSharper disable once CppDFAMemoryLeak
         auto *race_option = new QRadioButton(race_name.c_str());
         race_options->addButton(race_option);
         race_layout->addWidget(race_option);
@@ -51,6 +52,7 @@ QTCharacterCreator::QTCharacterCreator(const std::shared_ptr<Game>& game, const 
     class_options = new QButtonGroup;
     std::string selected_class = new_game->GetClass();
     for (auto &class_name: NewGame::GetAvailableClasses()) {
+        // ReSharper disable once CppDFAMemoryLeak
         auto *class_option = new QRadioButton(class_name.c_str());
         class_options->addButton(class_option);
         class_layout->addWidget(class_option);
@@ -137,7 +139,7 @@ QTCharacterCreator::~QTCharacterCreator() = default;
 
 void QTCharacterCreator::closeEvent(QCloseEvent *event) {
     QWidget::closeEvent(event);
-    message_handler("cancel", nullptr);
+    message_handler("cancel");
 }
 
 QSize QTCharacterCreator::sizeHint() const {
@@ -180,7 +182,7 @@ void QTCharacterCreator::UnrollStats() const {
 void QTCharacterCreator::Start() const {
     new_game->SetName(name_text->text().toStdString());
     new_game->ConfirmCharacter();
-    message_handler("start", nullptr);
+    message_handler("start");
 }
 
 void QTCharacterCreator::Close() {

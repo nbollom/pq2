@@ -9,14 +9,16 @@
 #include <functional>
 #include "game.h"
 
+typedef std::function<void(std::string)> MessageHandler;
+
 class View {
 
 protected:
     std::shared_ptr<Game> game;
-    std::function<void(std::string, void*)> message_handler;
+    MessageHandler message_handler;
 
 public:
-    View(const std::shared_ptr<Game> &game, const std::function<void(std::string, void*)> &message_handler);
+    View(const std::shared_ptr<Game> &game, const MessageHandler &message_handler);
     virtual ~View() = default;
 
     virtual void Show() = 0;

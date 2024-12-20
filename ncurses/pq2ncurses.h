@@ -7,20 +7,17 @@
 
 #include <memory>
 #include <string>
-#include <stack>
-#include <mutex>
 #include "pq2gui.h"
 #include "game.h"
 
 class NCursesGUI final : public GUI {
 
 private:
+    MessageHandler message_handler;
     int screen_width;
     int screen_height;
-    std::mutex screen_change_lock;
-    bool screen_changed;
 
-    bool ProcessMessage(const std::string& message, void *value);
+    void HandleMessage(const std::string& message);
 
 public:
     explicit NCursesGUI(const std::shared_ptr<Game> &game);

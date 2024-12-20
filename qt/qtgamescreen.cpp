@@ -24,6 +24,7 @@ inline void smooth_update_progress_bar(const uint64_t value, const uint64_t max,
     const float progress_multiplier = safe_float_max / max_float;
     bar->setMaximum(max_float * progress_multiplier);
     const auto value_float = std::ceil(static_cast<float>(value) * progress_multiplier);
+    // ReSharper disable once CppDFAMemoryLeak
     const auto animation = new QPropertyAnimation(bar, "value");
     animation->setDuration(TIMER_MS - 10);
     animation->setStartValue(bar->value());
@@ -32,7 +33,7 @@ inline void smooth_update_progress_bar(const uint64_t value, const uint64_t max,
     animation->start(QAbstractAnimation::DeleteWhenStopped);
 }
 
-QTGameScreen::QTGameScreen(const std::shared_ptr<Game>& game, const std::function<void(std::string, void *)>& message_handler) : View(game, message_handler) {
+QTGameScreen::QTGameScreen(const std::shared_ptr<Game>& game, const MessageHandler& message_handler) : View(game, message_handler) {
     std::string title = "ProgressQuest 2 - ";
     QMargins margins(MARGIN_AMOUNT, MARGIN_AMOUNT, MARGIN_AMOUNT, MARGIN_AMOUNT);
     auto character = game->GetCharacter();
@@ -208,7 +209,7 @@ QTGameScreen::QTGameScreen(const std::shared_ptr<Game>& game, const std::functio
 
 void QTGameScreen::closeEvent(QCloseEvent *event) {
     QWidget::closeEvent(event);
-    message_handler("quit", nullptr);
+    message_handler("quit");
 }
 
 void QTGameScreen::Show() {
@@ -304,6 +305,7 @@ void QTGameScreen::UpdatePlot() {
         size_t row = 0;
         plot_table->setRowCount(new_plot_count);
         for (const auto& plot: character.Plot) {
+            // ReSharper disable once CppDFAMemoryLeak
             auto *check = new QCheckBox(plot.c_str());
             const bool checked = row != character.Plot.size() - 1;
             check->setChecked(checked);
@@ -334,6 +336,7 @@ void QTGameScreen::UpdateQuests() {
         size_t row = 0;
         quest_table->setRowCount(new_quest_count);
         for (const auto&[label, monster]: character.Quests) {
+            // ReSharper disable once CppDFAMemoryLeak
             auto *check = new QCheckBox(label.c_str());
             const bool checked = row != character.Quests.size() - 1;
             check->setChecked(checked);

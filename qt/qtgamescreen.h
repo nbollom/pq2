@@ -17,7 +17,7 @@
 #include <chrono>
 #include "view.h"
 
-class QTGameScreen : public QMainWindow, public View {
+class QTGameScreen final : public QMainWindow, public View {
 Q_OBJECT
 
 private:
@@ -65,7 +65,7 @@ private:
     int quest_count = 0;
 
 public:
-    QTGameScreen(const std::shared_ptr<Game>& game, const std::function<void(std::string, void*)>& message_handler);
+    QTGameScreen(const std::shared_ptr<Game>& game, const MessageHandler& message_handler);
     ~QTGameScreen() override = default;
 
     void closeEvent(QCloseEvent *event) override;

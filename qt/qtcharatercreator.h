@@ -5,21 +5,21 @@
 #ifndef PQ2_CHARATERCREATOR_H
 #define PQ2_CHARATERCREATOR_H
 
-#include <QMainWindow>
-#include <QScrollArea>
-#include <QWidget>
+#include <QButtonGroup>
+#include <QGridLayout>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLineEdit>
+#include <QMainWindow>
 #include <QPushButton>
-#include <QGroupBox>
-#include <QButtonGroup>
 #include <QRadioButton>
-#include <QGridLayout>
-#include "view.h"
+#include <QScrollArea>
+#include <QWidget>
 #include "newgame.h"
+#include "view.h"
 
-class QTCharacterCreator : public QMainWindow, public View {
+class QTCharacterCreator final : public QMainWindow, public View {
 Q_OBJECT
 
 private:
@@ -63,7 +63,7 @@ private:
     void UpdateStats() const;
 
 public:
-    QTCharacterCreator(const std::shared_ptr<Game>& game, const std::function<void(std::string, void*)>& message_handler);
+    QTCharacterCreator(const std::shared_ptr<Game>& game, const MessageHandler& message_handler);
     ~QTCharacterCreator() override;
 
     void closeEvent(QCloseEvent *event) override;

@@ -15,7 +15,7 @@
 #define MARGIN 20
 #define MARGINS MARGIN, MARGIN, MARGIN, MARGIN
 
-QTMainMenu::QTMainMenu(const std::shared_ptr<Game>& game, const std::function<void(std::string, void*)> &message_handler) : View(game, message_handler) {
+QTMainMenu::QTMainMenu(const std::shared_ptr<Game>& game, const MessageHandler& message_handler) : View(game, message_handler) {
     setGeometry(0, 0, 800, 600);
     setWindowTitle("Progress Quest 2");
     main_widget = new QWidget;
@@ -84,7 +84,7 @@ void QTMainMenu::ResizeLogo() const {
 
 
 void QTMainMenu::NewGame() const {
-    message_handler("new", nullptr);
+    message_handler("new");
 }
 
 void QTMainMenu::LoadGame() const {
@@ -94,7 +94,7 @@ void QTMainMenu::LoadGame() const {
     if (dialog.exec()) {
         const QString filename = dialog.selectedFiles()[0];
         if (const file::LoadError error = game->LoadGame(filename.toStdString()); error == file::LoadErrorNone) {
-            message_handler("load", nullptr);
+            message_handler("load");
         }
         else {
             QMessageBox error_message;
@@ -107,5 +107,5 @@ void QTMainMenu::LoadGame() const {
 
 void QTMainMenu::closeEvent(QCloseEvent *event) {
     QWidget::closeEvent(event);
-    message_handler("quit", nullptr);
+    message_handler("quit");
 }

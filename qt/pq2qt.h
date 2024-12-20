@@ -12,7 +12,7 @@
 class QTGUI final : public GUI {
 
 private:
-    std::function<void(std::string, void*)> message_handler;
+    MessageHandler message_handler;
 
 public:
     explicit QTGUI(const std::shared_ptr<Game> &game);
@@ -23,7 +23,7 @@ public:
     void ShowCharacterCreator() override;
     void ShowGameScreen() override;
     void Close() override;
-    void HandleMessage(const std::string& message, void *data);
+    void HandleMessage(const std::string& message);
 };
 
 #endif //PQ2_PQ2QT_H

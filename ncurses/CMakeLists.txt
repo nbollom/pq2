@@ -7,7 +7,9 @@ set(SOURCE_FILES
         mainmenu.cpp
         mainmenu.h
         ncursesview.cpp
-        ncursesview.h)
+        ncursesview.h
+        charactercreator.cpp
+        charactercreator.h)
 add_library(pq2ncurses SHARED ${SOURCE_FILES})
 
 target_link_libraries(pq2ncurses pq2gui pq2game pq2utils ncurses)

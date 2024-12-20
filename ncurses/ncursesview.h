@@ -6,6 +6,7 @@
 #define PQ2_NCURSESTOOLS_H
 
 #include <string>
+#include <ncurses.h>
 #include "view.h"
 
 class NCursesView : public View {
@@ -13,17 +14,21 @@ class NCursesView : public View {
 protected:
     int screen_width{};
     int screen_height{};
+    bool visible = true;
 
 public:
-    NCursesView(const std::shared_ptr<Game>& game, const std::function<bool(std::string message, void *value)>& message_handler);
+    NCursesView(const std::shared_ptr<Game>& game, const MessageHandler& message_handler);
 
-    static void LeftAlign(const std::string& value, int x, int y);
-    static void RightAlign(const std::string& value, int x, int y);
-    static void CenterAlign(const std::string& value, int x, int y);
+    static void LeftAlign(WINDOW *win, const std::string& value, int x, int y);
+    static void RightAlign(WINDOW *win, const std::string& value, int x, int y);
+    static void CenterAlign(WINDOW *win, const std::string& value, int x, int y);
 
-    void Resize(int new_screen_width, int new_screen_height);
-    virtual void HandleKeyPress(int key) = 0;
+    virtual void Resize(int new_screen_width, int new_screen_height);
     virtual void Render() = 0;
+
+    void Show() override;
+    void Hide() override;
+    void Close() override;
 
 };
 

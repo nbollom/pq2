@@ -9,6 +9,7 @@
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QPushButton>
+// ReSharper disable once CppUnusedIncludeDirective
 #include <QLabel>
 #include "view.h"
 
@@ -25,7 +26,7 @@ private:
     QPushButton *exit_game;
 
 public:
-    QTMainMenu(const std::shared_ptr<Game>& game, const std::function<void(std::string, void*)> &message_handler);
+    QTMainMenu(const std::shared_ptr<Game>& game, const MessageHandler& message_handler);
     ~QTMainMenu() override;
 
     void closeEvent(QCloseEvent *event) override;

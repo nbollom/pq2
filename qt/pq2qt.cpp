@@ -6,13 +6,12 @@
 #include <zconf.h>
 #include "pq2qt.h"
 #include "qtmainmenu.h"
-#include "signals.h"
 #include "qtcharatercreator.h"
 #include "qtgamescreen.h"
 
 QTGUI::QTGUI(const std::shared_ptr<Game> &game) : GUI(game) {
-    message_handler = [this](auto && PH1, auto && PH2) {
-        HandleMessage(std::forward<decltype(PH1)>(PH1), std::forward<decltype(PH2)>(PH2));
+    message_handler = [this](const std::string &message) {
+        HandleMessage(message);
     };
 }
 
@@ -38,7 +37,7 @@ void QTGUI::ShowMainMenu() {
 }
 
 void QTGUI::ShowCharacterCreator() {
-    std::shared_ptr<View> character_creator = std::make_shared<QTCharacterCreator>(game, message_handler);
+    const std::shared_ptr<View> character_creator = std::make_shared<QTCharacterCreator>(game, message_handler);
     character_creator->Show();
     PushView(character_creator);
 }
@@ -55,7 +54,7 @@ void QTGUI::Close() {
     QApplication::exit();
 }
 
-void QTGUI::HandleMessage(const std::string& message, void *) {
+void QTGUI::HandleMessage(const std::string& message) {
     if (message == "quit") {
         // Don't close if there is nothing on the stack like when we pop all views to replace them with the game screen
         if (!view_stack.empty()) {

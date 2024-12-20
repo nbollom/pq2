@@ -6,67 +6,71 @@
 #include <ncurses.h>
 #include "ncursesview.h"
 #include <iostream>
+#include <ranges>
 
 using namespace std;
 
 typedef pair<string, function<void()>> MenuItem;
 typedef std::vector<MenuItem>::iterator MenuItemIterator;
 
-MainMenu::MainMenu(const std::shared_ptr<Game>& game, const std::function<bool(std::string message, void *value)>& message_handler) : NCursesView(game, message_handler) {
+MainMenu::MainMenu(const std::shared_ptr<Game>& game, const MessageHandler& message_handler) : NCursesView(game, message_handler) {
     selected_index = 0;
-    menu_options.emplace_back("New Game", [game] {
-        game->StartNewGame();
+    menu_options.emplace_back("Start New Game", [message_handler] {
+        message_handler("new");
     });
     menu_options.emplace_back("Load Game", [] {
 
     });
     menu_options.emplace_back("Quit", [message_handler] {
-        message_handler("Quit", nullptr);
+        message_handler("quit");
     });
 }
 
-void MainMenu::HandleKeyPress(const int key) {
-    if (key == KEY_DOWN) {
-        selected_index = min(selected_index + 1, static_cast<int>(menu_options.size()) - 1);
-    }
-    else if (key == KEY_UP) {
-        selected_index = max(selected_index - 1, 0);
-    }
-    else if (key == KEY_ENTER || key == 10) {
-        const MenuItem item = menu_options[selected_index];
-        item.second();
-    }
-    else {
-        cout << "Unhandled key " << key << endl;
-    }
+void MainMenu::Resize(const int new_screen_width, const int new_screen_height) {
+    NCursesView::Resize(new_screen_width, new_screen_height);
+    delwin(win);
+    constexpr int required_width = 26;
+    const int required_height = static_cast<int>(menu_options.size()) + 6;
+    const int menu_top = max((screen_height / 3) - required_height / 2, 0);
+    const int menu_left = max(0, (screen_width / 2) - required_width / 2);
+    win = newwin(required_height, required_width, menu_top, menu_left);
+    keypad(win, true);
+    nodelay(win, true);
+    wtimeout(win, 100);
 }
 
+
 void MainMenu::Render() {
-    const int horizontal_middle = screen_width / 2;
-    const int menu_top = max((screen_height / 3) - (static_cast<int>(menu_options.size()) + 3) / 2, 0);
-    CenterAlign("Progress Quest 2", horizontal_middle, menu_top);
+    constexpr int horizontal_middle = 13;
+    wclear(win);
+    box(win, 0, 0);
+    CenterAlign(win, "Progress Quest 2", horizontal_middle, 2);
     int index = 0;
-    for (const auto& item : menu_options) {
+    for (const auto& label : std::views::keys(menu_options)) {
         if (index == selected_index) {
-            attron(A_UNDERLINE);
+            wattron(win, A_STANDOUT);
         }
-        CenterAlign(item.first, horizontal_middle, menu_top + 2 + index);
+        CenterAlign(win, label, horizontal_middle, 4 + index);
         if (index == selected_index) {
-            attroff(A_UNDERLINE);
+            wattroff(win, A_STANDOUT);
         }
         index++;
     }
-    move(0, 0); //reset cursor to top left
-}
-
-void MainMenu::Show() {
-
-}
-
-void MainMenu::Hide() {
-
-}
-
-void MainMenu::Close() {
-
+    wrefresh(win);
+    const int ch = wgetch(win);
+    if (ch != ERR) {
+        if (ch == 27) {
+            message_handler("quit");
+        }
+        else if (ch == KEY_DOWN) {
+            selected_index = min(selected_index + 1, static_cast<int>(menu_options.size()) - 1);
+        }
+        else if (ch == KEY_UP) {
+            selected_index = max(selected_index - 1, 0);
+        }
+        else if (ch == '\n' || ch == ' ') {
+            const auto [_, func] = menu_options[selected_index];
+            func();
+        }
+    }
 }
