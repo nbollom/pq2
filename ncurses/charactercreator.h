@@ -21,6 +21,8 @@ class CharacterCreator final : public NCursesView {
 
     std::shared_ptr<NewGame> new_game;
 
+    void ShowPopup(const std::string &label, const std::vector<std::string> &items, int current_index) const;
+
 public:
     CharacterCreator(const std::shared_ptr<Game>& game, const MessageHandler& message_handler);
     void Resize(int new_screen_width, int new_screen_height) override;

@@ -4,13 +4,51 @@
 
 #include "charactercreator.h"
 
+#include <ranges>
+
 #define CONTROLS 3
 
 CharacterCreator::CharacterCreator(const std::shared_ptr<Game> &game, const MessageHandler& message_handler)  : NCursesView(game, message_handler) {
     new_game = game->StartNewGame();
-    races = new_game->GetAvailableRaces();
-    classes = new_game->GetAvailableClasses();
+    races = NewGame::GetAvailableRaces();
+    classes = NewGame::GetAvailableClasses();
 }
+
+void CharacterCreator::ShowPopup(const std::string &label, const std::vector<std::string> &items, const int current_index) const {
+    const int desired_rows = static_cast<int>(items.size());
+    const int rows = std::min(screen_height - 4, desired_rows);
+    int skip = 0;
+    WINDOW *w = subwin(win, rows + 2, 30, 1, 4);
+    wclear(w);
+    box(w, 0, 0);
+    LeftAlign(w, label, 2, 0);
+    if (rows < desired_rows) {
+        skip = std::clamp(current_index - rows / 2, 0, desired_rows - rows);
+        wattron(w, A_REVERSE);
+        if (skip == 0) {
+            mvwaddch(w, 1, 28, ' ');
+        }
+        else if (skip + rows == desired_rows) {
+            mvwaddch(w, rows, 28, ' ');
+        }
+        else {
+            const auto scroll_pos = static_cast<int>(static_cast<float>(skip) * static_cast<float>(rows) / static_cast<float>(desired_rows - rows)) + 1;
+            mvwaddch(w, scroll_pos, 28, ' ');
+        }
+        wattroff(w, A_REVERSE);
+    }
+    int index = skip;
+    for (const auto &item: items | std::ranges::views::drop(skip) | std::ranges::views::take(rows)) {
+        if (current_index == index) {
+            wattron(w, A_STANDOUT);
+        }
+        LeftAlign(w, item, 2, 1 + index - skip);
+        wattroff(w, A_STANDOUT);
+        index++;
+    }
+    wrefresh(w);
+}
+
 
 void CharacterCreator::Resize(const int new_screen_width, const int new_screen_height) {
     NCursesView::Resize(new_screen_width, new_screen_height);
@@ -29,106 +67,36 @@ void CharacterCreator::Render() {
     if (selected_control == 0) {
         wattron(win, A_UNDERLINE);
     }
-    LeftAlign(win, new_game->GetName(), 9, 2);
+    const auto name = new_game->GetName();
+    LeftAlign(win, name, 9, 2);
     wattroff(win, A_UNDERLINE);
+    if (selected_control == 0) {
+        wattron(win, A_REVERSE);
+        mvwaddch(win, 2, 9 + name.size(), ' ');
+        wattroff(win, A_REVERSE);
+    }
     if (selected_control == 1) {
-        wattron(win, A_UNDERLINE);
+        wattron(win, A_STANDOUT);
     }
     LeftAlign(win, "?", 40, 2);
-    wattroff(win, A_UNDERLINE);
+    wattroff(win, A_STANDOUT);
     LeftAlign(win, "Race:", 2, 3);
     if (selected_control == 2) {
-        wattron(win, A_UNDERLINE);
+        wattron(win, A_STANDOUT);
     }
     LeftAlign(win, new_game->GetRace(), 9, 3);
-    wattroff(win, A_UNDERLINE);
+    wattroff(win, A_STANDOUT);
     LeftAlign(win, "Class:", 2, 4);
     if (selected_control == 3) {
-        wattron(win, A_UNDERLINE);
+        wattron(win, A_STANDOUT);
     }
     LeftAlign(win, new_game->GetClass(), 9, 4);
-    wattroff(win, A_UNDERLINE);
+    wattroff(win, A_STANDOUT);
     if (show_race_popup) {
-        const int desired_rows = static_cast<int>(races.size());
-        const int rows = std::min(screen_height - 4, desired_rows);
-        int skip = 0;
-        int skip_tail = 0;
-        WINDOW *w = subwin(win, rows + 2, 30, 1, 4);
-        wclear(w);
-        box(w, 0, 0);
-        LeftAlign(w, "Race:", 2, 0);
-        int index = 0;
-        if (rows < desired_rows) {
-            skip = std::min(std::max(race_index - rows / 2, 0), desired_rows - rows);
-            skip_tail = skip + rows;
-            wattron(w, A_REVERSE);
-            if (skip == 0) {
-                mvwaddch(w, 1, 28, ' ');
-            }
-            else if (skip_tail == desired_rows) {
-                mvwaddch(w, rows, 28, ' ');
-            }
-            else {
-                const auto scroll_pos = static_cast<int>(skip * static_cast<float>(rows) / static_cast<float>(desired_rows - rows)) + 1;
-                mvwaddch(w, scroll_pos, 28, ' ');
-            }
-            wattroff(w, A_REVERSE);
-        }
-        for (const auto &race: races) {
-            if (index >= skip_tail) {
-                break;;
-            }
-            if (index >= skip) {
-                if (race_index == index) {
-                    wattron(w, A_UNDERLINE);
-                }
-                LeftAlign(w, race, 2, 1 + index - skip);
-                wattroff(w, A_UNDERLINE);
-            }
-            index++;
-        }
-        wrefresh(w);
+        ShowPopup("Race:", races, race_index);
     }
     if (show_class_popup) {
-        const int desired_rows = static_cast<int>(classes.size());
-        const int rows = std::min(screen_height - 4, desired_rows);
-        int skip = 0;
-        int skip_tail = 0;
-        WINDOW *w = subwin(win, rows + 2, 30, 1, 4);
-        wclear(w);
-        box(w, 0, 0);
-        LeftAlign(w, "Class:", 2, 0);
-        int index = 0;
-        if (rows < desired_rows) {
-            skip = std::min(std::max(class_index - rows / 2, 0), desired_rows - rows);
-            skip_tail = skip + rows;
-            wattron(w, A_REVERSE);
-            if (skip == 0) {
-                mvwaddch(w, 1, 28, ' ');
-            }
-            else if (skip_tail == desired_rows) {
-                mvwaddch(w, rows, 28, ' ');
-            }
-            else {
-                const auto scroll_pos = static_cast<int>(skip * static_cast<float>(rows) / static_cast<float>(desired_rows - rows)) + 1;
-                mvwaddch(w, scroll_pos, 28, ' ');
-            }
-            wattroff(w, A_REVERSE);
-        }
-        for (const auto &cls: classes) {
-            if (index >= skip_tail) {
-                break;;
-            }
-            if (index >= skip) {
-                if (class_index == index) {
-                    wattron(w, A_UNDERLINE);
-                }
-                LeftAlign(w, cls, 2, 1 + index - skip);
-                wattroff(w, A_UNDERLINE);
-            }
-            index++;
-        }
-        wrefresh(w);
+        ShowPopup("Class:", classes, class_index);
     }
     wrefresh(win);
     const int ch = wgetch(win);
@@ -214,7 +182,7 @@ void CharacterCreator::Render() {
                 }
                 else {
                     show_race_popup = true;
-                    race_index = std::ranges::find(races, new_game->GetRace()) - races.begin();
+                    race_index = static_cast<int>(std::ranges::find(races, new_game->GetRace()) - races.begin());
                 }
             }
             else if (selected_control == 3) {
@@ -225,14 +193,14 @@ void CharacterCreator::Render() {
                 }
                 else {
                     show_class_popup = true;
-                    class_index = std::ranges::find(classes, new_game->GetClass()) - classes.begin();
+                    class_index = static_cast<int>(std::ranges::find(classes, new_game->GetClass()) - classes.begin());
                 }
             }
         }
         else if (ch == KEY_BACKSPACE) {
             if (selected_control == 0) {
                 std::string name = new_game->GetName();
-                if (name.length() > 0) {
+                if (!name.empty()) {
                     name.pop_back();
                     new_game->SetName(name);
                 }
@@ -242,7 +210,7 @@ void CharacterCreator::Render() {
             if (selected_control == 0) {
                 std::string name = new_game->GetName();
                 if (name.length() < 30) {
-                    name += ch;
+                    name += static_cast<char>(ch);
                 }
                 new_game->SetName(name);
             }
