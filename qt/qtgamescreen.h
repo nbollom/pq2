@@ -6,6 +6,7 @@
 #define PQ2_QTGAMESCREEN_H
 
 #include <QMainWindow>
+#include <QScrollArea>
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -20,6 +21,7 @@ class QTGameScreen : public QMainWindow, public View {
 Q_OBJECT
 
 private:
+    QScrollArea *scroll_area;
     QWidget *main_widget;
     QVBoxLayout *main_vlayout;
     QHBoxLayout *columns_hlayout;
@@ -57,6 +59,11 @@ private:
     QTimer *timer;
     std::chrono::time_point<std::chrono::system_clock> last_update;
 
+    int spell_count = 0;
+    int inventory_count = 0;
+    int plot_count = 0;
+    int quest_count = 0;
+
 public:
     QTGameScreen(const std::shared_ptr<Game>& game, const std::function<void(std::string, void*)>& message_handler);
     ~QTGameScreen() override = default;
@@ -70,11 +77,11 @@ public slots:
     void Close() override;
 
     void UpdateStats() const;
-    void UpdateSpells() const;
+    void UpdateSpells();
     void UpdateEquipment() const;
-    void UpdateInventory() const;
-    void UpdatePlot() const;
-    void UpdateQuests() const;
+    void UpdateInventory();
+    void UpdatePlot();
+    void UpdateQuests();
     void UpdateStatus() const;
     void UpdateAll();
 };

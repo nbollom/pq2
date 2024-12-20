@@ -6,6 +6,7 @@
 #define PQ2_CHARATERCREATOR_H
 
 #include <QMainWindow>
+#include <QScrollArea>
 #include <QWidget>
 #include <QHBoxLayout>
 #include <QLabel>
@@ -22,6 +23,7 @@ class QTCharacterCreator : public QMainWindow, public View {
 Q_OBJECT
 
 private:
+    QScrollArea *scroll_area;
     QWidget *main_widget;
     QVBoxLayout *vlayout;
     QHBoxLayout *name_layout;

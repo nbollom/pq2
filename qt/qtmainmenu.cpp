@@ -9,6 +9,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QScreen>
+#include <QResizeEvent>
 #include "qtmainmenu.h"
 
 #define MARGIN 20
@@ -22,9 +23,10 @@ QTMainMenu::QTMainMenu(const std::shared_ptr<Game>& game, const std::function<vo
     main_layout->setContentsMargins(20, 20, 20, 20);
     main_layout->setSpacing(10);
     logo = new QLabel;
-    logo->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    logo->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     logo->setAlignment(Qt::AlignCenter);
-    logo->setMinimumSize(200, 200);
+    logo->setMinimumSize(150, 150);
+    logo->setMaximumSize(10000, 500);
     const QImage newImage(":/resources/pq.png");
     logo_image = QPixmap::fromImage(newImage);
     new_game = new QPushButton("New Game");
@@ -65,7 +67,13 @@ void QTMainMenu::Close() {
 
 void QTMainMenu::resizeEvent(QResizeEvent *event) {
     QWidget::resizeEvent(event);
-    ResizeLogo();
+    if (const auto size = event->size(); size.height() < 450) {
+        logo->hide();
+    }
+    else {
+        logo->show();
+        ResizeLogo();
+    }
 }
 
 void QTMainMenu::ResizeLogo() const {

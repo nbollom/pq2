@@ -499,8 +499,8 @@ void Game::Dequeue() {
                 character.Gold += amount;
             }
             if (!character.Inventory.empty()) {
-                const Stack item = character.Inventory.front();
-                character.CurrentActionLabel = "Selling " + Indefinite(item.name, item.count);
+                const auto [name, count] = character.Inventory.front();
+                character.CurrentActionLabel = "Selling " + Indefinite(name, count);
                 character.CurrentAction = CurrentActionSelling;
                 character.CurrentProgress = 0;
                 character.MaxProgress = 1000;

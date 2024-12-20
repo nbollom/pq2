@@ -4,7 +4,6 @@
 
 #include <algorithm>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QScreen>
 #include "qtcharatercreator.h"
 
@@ -23,6 +22,8 @@ inline std::string StripShortcuts(const QString &value) {
 QTCharacterCreator::QTCharacterCreator(const std::shared_ptr<Game>& game, const std::function<void(std::string, void *)>& message_handler) : View(game, message_handler) {
     new_game = game->StartNewGame();
     setWindowTitle("ProgressQuest 2 - Create New Character");
+    scroll_area = new QScrollArea();
+    scroll_area->setWidgetResizable(true);
     main_widget = new QWidget;
     vlayout = new QVBoxLayout;
     name_layout = new QHBoxLayout;
@@ -121,7 +122,8 @@ QTCharacterCreator::QTCharacterCreator(const std::shared_ptr<Game>& game, const 
     button_layout->addWidget(start_button);
     vlayout->addLayout(button_layout);
     main_widget->setLayout(vlayout);
-    setCentralWidget(main_widget);
+    scroll_area->setWidget(main_widget);
+    setCentralWidget(scroll_area);
     connect(name_randomiser, &QPushButton::clicked, this, &QTCharacterCreator::GenRandomName);
     connect(race_options, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), this, &QTCharacterCreator::RaceButtonClicked);
     connect(class_options, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), this, &QTCharacterCreator::ClassButtonClicked);
