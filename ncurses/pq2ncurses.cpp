@@ -88,7 +88,9 @@ void NCursesGUI::ShowCharacterCreator() {
 }
 
 void NCursesGUI::ShowGameScreen() {
-
+    // TODO: game screen
+    // for now just go back to main menu
+    ShowMainMenu();
 }
 
 void NCursesGUI::Close() {
