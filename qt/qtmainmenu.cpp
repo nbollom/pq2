@@ -10,7 +10,7 @@
 #include <QDesktopWidget>
 #include <QScreen>
 #include <QResizeEvent>
-#include "qtmainmenu.h"
+#include "qtmainmenu.hpp"
 
 #define MARGIN 20
 #define MARGINS MARGIN, MARGIN, MARGIN, MARGIN

@@ -2,7 +2,7 @@
 // Created by nbollom on 1/06/16.
 //
 
-#include "shields.h"
+#include "shields.hpp"
 #include <vector>
 
 using namespace std;

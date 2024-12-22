@@ -2,7 +2,7 @@
 // Created by nbollom on 1/06/16.
 //
 
-#include "monsters.h"
+#include "monsters.hpp"
 #include <vector>
 
 using namespace std;

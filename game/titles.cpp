@@ -2,7 +2,7 @@
 // Created by nbollom on 2/06/16.
 //
 
-#include "titles.h"
+#include "titles.hpp"
 #include <vector>
 
 using namespace std;

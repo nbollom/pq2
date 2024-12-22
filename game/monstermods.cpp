@@ -2,7 +2,7 @@
 // Created by nbollom on 16/10/18.
 //
 
-#include "monstermods.h"
+#include "monstermods.hpp"
 #include <vector>
 
 using namespace std;

@@ -4,11 +4,11 @@
 
 #include <iostream>
 #include <vector>
-#include "newgame.h"
-#include "races.h"
-#include "classes.h"
-#include "types.h"
-#include "utils.h"
+#include "newgame.hpp"
+#include "races.hpp"
+#include "classes.hpp"
+#include "types.hpp"
+#include "utils.hpp"
 
 using namespace std;
 using namespace data;

@@ -2,7 +2,7 @@
 // Created by nbollom on 1/06/16.
 //
 
-#include "weapons.h"
+#include "weapons.hpp"
 #include <vector>
 
 using namespace std;

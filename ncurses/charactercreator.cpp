@@ -2,7 +2,7 @@
 // Created by nbollom on 20/12/24.
 //
 
-#include "charactercreator.h"
+#include "charactercreator.hpp"
 #include <ranges>
 
 #define CONTROLS 6

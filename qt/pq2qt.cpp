@@ -4,10 +4,10 @@
 
 #include <QApplication>
 #include <zconf.h>
-#include "pq2qt.h"
-#include "qtmainmenu.h"
-#include "qtcharatercreator.h"
-#include "qtgamescreen.h"
+#include "pq2qt.hpp"
+#include "qtmainmenu.hpp"
+#include "qtcharatercreator.hpp"
+#include "qtgamescreen.hpp"
 
 QTGUI::QTGUI(const std::shared_ptr<Game> &game) : GUI(game) {
     message_handler = [this](const std::string &message) {

@@ -1,9 +1,9 @@
-#include "pq2ncurses.h"
+#include "pq2ncurses.hpp"
 #include <ncurses.h>
 #include <iostream>
-#include "mainmenu.h"
-#include "charactercreator.h"
-#include <utils.h>
+#include "mainmenu.hpp"
+#include "charactercreator.hpp"
+#include <utils.hpp>
 
 using namespace std;
 using namespace game;

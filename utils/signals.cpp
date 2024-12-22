@@ -2,7 +2,7 @@
 // Created by nbollom on 27/06/16.
 //
 
-#include "signals.h"
+#include "signals.hpp"
 #include <map>
 #include <csignal>
 

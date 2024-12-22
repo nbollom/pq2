@@ -2,7 +2,7 @@
 // Created by nbollom on 9/10/18.
 //
 
-#include "view.h"
+#include "view.hpp"
 
 View::View(const std::shared_ptr<Game> &game, const MessageHandler &message_handler) {
     this->game = game;

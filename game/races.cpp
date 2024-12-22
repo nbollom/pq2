@@ -2,7 +2,7 @@
 // Created by nbollom on 2/06/16.
 //
 
-#include "races.h"
+#include "races.hpp"
 #include <vector>
 
 using namespace std;

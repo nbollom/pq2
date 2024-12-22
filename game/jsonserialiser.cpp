@@ -3,8 +3,8 @@
 //
 
 #include <nlohmann/json.hpp>
-#include "jsonserialiser.h"
-#include "game.h"
+#include "jsonserialiser.hpp"
+#include "game.hpp"
 
 using namespace std;
 using namespace game;
@@ -109,6 +109,7 @@ std::string serialise(const Character &character) {
     json["current_plot_progress"] = character.CurrentPlotProgress;
     json["current_quest_progress"] = character.CurrentQuestProgress;
     json["max_quest_progress"] = character.MaxQuestProgress;
+    json["hash"] = character.CalculateHash();
     return json.dump();
 }
 
@@ -179,10 +180,9 @@ void deserialize(const std::string& value, Character &character) {
     for (const auto &item: json["spells"]) {
         character.Spells.push_back(deserialise_stack_item(item));
     }
-    size_t index = 0;
     for (const auto &element: json["equipment"].items()) {
+        const size_t index = std::ranges::find(EquipmentLabels, element.key()) - EquipmentLabels.begin();
         character.Equipment[index] = element.value();
-        index++;
     }
     character.Inventory.clear();
     for (const auto &item: json["inventory"]) {
@@ -205,4 +205,8 @@ void deserialize(const std::string& value, Character &character) {
     character.CurrentPlotProgress = json["current_plot_progress"].get<uint64_t>();
     character.CurrentQuestProgress = json["current_quest_progress"].get<uint64_t>();
     character.MaxQuestProgress = json["max_quest_progress"].get<uint64_t>();
+    const auto hash = json["hash"].get<uint64_t>();
+    if (hash != character.CalculateHash()) {
+        throw std::runtime_error("Invalid hash");
+    }
 }

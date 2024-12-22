@@ -2,9 +2,9 @@
 // Created by nbollom on 21/06/16.
 //
 
-#include "mainmenu.h"
+#include "mainmenu.hpp"
 #include <ncurses.h>
-#include "ncursesview.h"
+#include "ncursesview.hpp"
 #include <iostream>
 #include <ranges>
 

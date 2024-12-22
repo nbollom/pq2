@@ -2,13 +2,13 @@
 #include <memory>
 #include <thread>
 #include "config.h"
-#include "utils.h"
-#include "game.h"
+#include "utils.hpp"
+#include "game.hpp"
 
 #ifdef GUI_ENABLED
-#include "pq2gui.h"
+#include "pq2gui.hpp"
 #ifdef QT_ENABLED
-#include "pq2qt.h"
+#include "pq2qt.hpp"
 #endif //QT_ENABLED
 #ifdef GTK_ENABLED
 // #include "pq2gtk.h"
@@ -20,7 +20,7 @@
 // #include "pq2winforms.h"
 #endif //WINFORMS_ENABLED
 #ifdef NCURSES_ENABLED
-#include "pq2ncurses.h"
+#include "pq2ncurses.hpp"
 #endif //NCURSES_ENABLED
 #endif //GUI_ENABLED
 

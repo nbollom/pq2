@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <QApplication>
 #include <QScreen>
-#include "qtcharatercreator.h"
+#include "qtcharatercreator.hpp"
 
 inline QString StringValue(const uint64_t value) {
     char buffer[10];

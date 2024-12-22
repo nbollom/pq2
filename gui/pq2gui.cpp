@@ -2,10 +2,10 @@
 // Created by nbollom on 30/05/16.
 //
 
-#include "pq2gui.h"
+#include "pq2gui.hpp"
 
 #include <utility>
-#include "game.h"
+#include "game.hpp"
 
 using namespace std;
 using namespace game;

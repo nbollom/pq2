@@ -2,7 +2,7 @@
 // Created by nbollom on 12/11/18.
 //
 
-#include "namegenerator.h"
+#include "namegenerator.hpp"
 #include <vector>
 
 using namespace std;

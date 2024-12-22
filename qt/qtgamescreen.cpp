@@ -8,9 +8,9 @@
 #include <QScreen>
 #include <QCheckBox>
 #include <QPropertyAnimation>
-#include <utils.h>
+#include <utils.hpp>
 #include <string>
-#include "qtgamescreen.h"
+#include "qtgamescreen.hpp"
 
 #define MARGIN_AMOUNT 0
 #define TIMER_MS 100

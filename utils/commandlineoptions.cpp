@@ -2,7 +2,7 @@
 // Created by nbollom on 31/05/16.
 //
 
-#include "commandlineoptions.h"
+#include "commandlineoptions.hpp"
 
 #include <utility>
 

@@ -2,7 +2,7 @@
 // Created by nbollom on 25/05/16.
 //
 
-#include "spells.h"
+#include "spells.hpp"
 #include <vector>
 
 using namespace std;

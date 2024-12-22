@@ -2,7 +2,7 @@
 // Created by nbollom on 1/06/16.
 //
 
-#include "itemattributes.h"
+#include "itemattributes.hpp"
 #include <vector>
 
 using namespace std;

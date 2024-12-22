@@ -3,7 +3,7 @@
 //
 
 #include <array>
-#include "romannumerals.h"
+#include "romannumerals.hpp"
 
 std::array<std::pair<uint64_t, std::string>, 13> roman_numerals = {
         std::make_pair(1000, "M"),

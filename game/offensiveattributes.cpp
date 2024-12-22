@@ -2,7 +2,7 @@
 // Created by nbollom on 25/05/16.
 //
 
-#include "offensiveattributes.h"
+#include "offensiveattributes.hpp"
 #include <vector>
 
 using namespace std;

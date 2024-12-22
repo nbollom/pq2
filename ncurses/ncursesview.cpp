@@ -4,7 +4,7 @@
 
 #include <ncurses.h>
 
-#include "ncursesview.h"
+#include "ncursesview.hpp"
 
 NCursesView::NCursesView(const std::shared_ptr<Game>& game, const MessageHandler& message_handler) : View(game, message_handler) {
 

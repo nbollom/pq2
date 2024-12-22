@@ -2,8 +2,8 @@
 // Created by nbollom on 30/05/16.
 //
 
-#include "commandline.h"
-#include "commandlineexeptions.h"
+#include "commandline.hpp"
+#include "commandlineexeptions.hpp"
 #include <iostream>
 #include <utility>
 

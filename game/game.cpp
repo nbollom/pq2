@@ -2,30 +2,30 @@
 // Created by nbollom on 25/05/16.
 //
 
-#include "game.h"
-#include "spells.h"
-#include "weapons.h"
-#include "shields.h"
-#include "armors.h"
-#include "offensiveattributes.h"
-#include "defensiveattributes.h"
-#include "itemattributes.h"
-#include "specials.h"
-#include "itemofs.h"
-#include "character.h"
-#include "newgame.h"
-#include "monsters.h"
-#include "titles.h"
-#include "races.h"
-#include "classes.h"
-#include "boringitems.h"
+#include "game.hpp"
+#include "spells.hpp"
+#include "weapons.hpp"
+#include "shields.hpp"
+#include "armors.hpp"
+#include "offensiveattributes.hpp"
+#include "defensiveattributes.hpp"
+#include "itemattributes.hpp"
+#include "specials.hpp"
+#include "itemofs.hpp"
+#include "character.hpp"
+#include "newgame.hpp"
+#include "monsters.hpp"
+#include "titles.hpp"
+#include "races.hpp"
+#include "classes.hpp"
+#include "boringitems.hpp"
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
 #include <filesystem>
-#include <utils.h>
+#include <utils.hpp>
 #include <algorithm>
-#include "jsonserialiser.h"
+#include "jsonserialiser.hpp"
 
 using namespace std;
 using namespace game;
