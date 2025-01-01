@@ -25,6 +25,7 @@
 #include <filesystem>
 #include <utils.hpp>
 #include <algorithm>
+#include <sstream>
 #include "jsonserialiser.hpp"
 
 using namespace std;
@@ -311,7 +312,8 @@ void Game::WinStat() {
 
 void Game::WinSpell() {
     const auto spells = get_spells();
-    const uint64_t min_amount = min(character.WIS + character.Level, spells.size());
+    // ReSharper disable once CppRedundantCastExpression (MacOS requires this cast)
+    const uint64_t min_amount = min(character.WIS + character.Level, static_cast<uint64_t>(spells.size()));
     const uint64_t random_number = RandomLow(engine, min_amount);
     const auto& spell = spells[static_cast<int>(random_number)];
     bool existing = false;

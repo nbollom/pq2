@@ -4,6 +4,7 @@
 
 #include "charactercreator.hpp"
 #include <ranges>
+#include <algorithm>
 
 #define CONTROLS 6
 #define LEFT 2
