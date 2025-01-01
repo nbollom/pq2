@@ -24,22 +24,9 @@ MainMenu::MainMenu(const std::shared_ptr<Game>& game, const MessageHandler& mess
     });
 }
 
-void MainMenu::Resize(const int new_screen_width, const int new_screen_height) {
-    NCursesView::Resize(new_screen_width, new_screen_height);
-    delwin(win);
-    constexpr int required_width = 80;
-    constexpr int required_height = 24;
-    win = newwin(required_height, required_width, 0, 0);
-    keypad(win, true);
-    nodelay(win, true);
-    wtimeout(win, 100);
-}
-
 
 void MainMenu::Render() {
     constexpr int horizontal_middle = 40;
-    wclear(win);
-    box(win, 0, 0);
     CenterAlign(win, "Progress Quest 2", horizontal_middle, 8);
     int index = 0;
     for (const auto& label : std::views::keys(menu_options)) {
@@ -52,21 +39,21 @@ void MainMenu::Render() {
         }
         index++;
     }
-    wrefresh(win);
-    const int ch = wgetch(win);
-    if (ch != ERR) {
-        if (ch == 27) {
-            message_handler("quit");
-        }
-        else if (ch == KEY_DOWN) {
-            selected_index = std::min(selected_index + 1, static_cast<int>(menu_options.size()) - 1);
-        }
-        else if (ch == KEY_UP) {
-            selected_index = std::max(selected_index - 1, 0);
-        }
-        else if (ch == '\n' || ch == ' ') {
-            const auto [_, func] = menu_options[selected_index];
-            func();
-        }
+}
+
+void MainMenu::HandleKey(const int key) {
+    if (key == 27) {
+        message_handler("quit");
+    }
+    else if (key == KEY_DOWN) {
+        selected_index = std::min(selected_index + 1, static_cast<int>(menu_options.size()) - 1);
+    }
+    else if (key == KEY_UP) {
+        selected_index = std::max(selected_index - 1, 0);
+    }
+    else if (key == '\n' || key == ' ') {
+        const auto [_, func] = menu_options[selected_index];
+        func();
     }
 }
+

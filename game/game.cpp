@@ -374,10 +374,9 @@ void Game::WinEquip() {
     int count = 0;
     std::vector<std::string> modifiers;
     while (count < 2 && plus != 0) {
-        Attribute attr = get_better(engine);
-        int64_t qual = attr.value;
-        std::string modifier = attr.label;
-        if (std::find(modifiers.begin(), modifiers.end(), modifier) != modifiers.end()) {
+        auto [label, qual] = get_better(engine);
+        std::string modifier = label;
+        if (ranges::find(modifiers, modifier) != modifiers.end()) {
             break; //no repeats
         }
         if (abs(plus) < abs(qual)) {

@@ -3,7 +3,9 @@
 #include <iostream>
 #include "mainmenu.hpp"
 #include "charactercreator.hpp"
+#include "gamescreen.hpp"
 #include <utils.hpp>
+
 
 using namespace std;
 using namespace game;
@@ -14,6 +16,7 @@ NCursesGUI::NCursesGUI(const std::shared_ptr<Game> &game) : GUI(game), screen_wi
     message_handler = [this](const std::string &message) {
         HandleMessage(message);
     };
+    setlocale(LC_ALL, "");
     initscr();
     cbreak();
     noecho();
@@ -41,7 +44,7 @@ void NCursesGUI::Run() {
             screen_height = new_height;
             current_view->Resize(screen_width, screen_height);
         }
-        current_view->Render();
+        current_view->Update();
     }
 }
 
@@ -88,9 +91,10 @@ void NCursesGUI::ShowCharacterCreator() {
 }
 
 void NCursesGUI::ShowGameScreen() {
-    // TODO: game screen
-    // for now just go back to main menu
-    ShowMainMenu();
+    const auto game_screen = std::make_shared<GameScreen>(game, message_handler);
+    game_screen->Resize(screen_width, screen_height);
+    game_screen->Show();
+    PushView(game_screen);
 }
 
 void NCursesGUI::Close() {

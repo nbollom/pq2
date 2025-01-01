@@ -11,6 +11,8 @@ set(
         ncursesview.hpp
         charactercreator.cpp
         charactercreator.hpp
+        gamescreen.cpp
+        gamescreen.hpp
 )
 
 add_library(pq2ncurses SHARED ${SOURCE_FILES})

@@ -53,21 +53,7 @@ void CharacterCreator::ShowPopup(const std::string &label, const std::vector<std
     wrefresh(w);
 }
 
-
-void CharacterCreator::Resize(const int new_screen_width, const int new_screen_height) {
-    NCursesView::Resize(new_screen_width, new_screen_height);
-    delwin(win);
-    constexpr int required_width = 80;
-    constexpr int required_height = 24;
-    win = newwin(required_height, required_width, 0, 0);
-    keypad(win, true);
-    nodelay(win, true);
-    wtimeout(win, 100);
-}
-
 void CharacterCreator::Render() {
-    wclear(win);
-    box(win, 0, 0);
     LeftAlign(win, "Progress Quest 2", LEFT, 0);
     LeftAlign(win, "Name:", LEFT, 2);
     if (selected_control == 0) {
@@ -111,7 +97,7 @@ void CharacterCreator::Render() {
     LeftAlign(win, std::to_string(new_game->GetWIS()), COLUMN_2, 11);
     LeftAlign(win, "CHA:", LEFT, 12);
     LeftAlign(win, std::to_string(new_game->GetCHA()), COLUMN_2, 12);
-    LeftAlign(win, std::string(COLUMN_2 + 6, '-'), LEFT, 13);
+    mvwhline(win, 13, LEFT, ACS_HLINE, COLUMN_2 + 6);
     LeftAlign(win, "TOTAL:", LEFT, 14);
     LeftAlign(win, std::to_string(new_game->GetTotal()), COLUMN_2, 14);
     const auto colour = new_game->GetTotalColor();
@@ -148,131 +134,131 @@ void CharacterCreator::Render() {
     if (show_class_popup) {
         ShowPopup("Class:", classes, class_index);
     }
-    wrefresh(win);
-    const int ch = wgetch(win);
-    if (ch != ERR) {
-        if (ch == 27) {
-            if (show_race_popup) {
-                show_race_popup = false;
-            }
-            else if (show_class_popup) {
-                show_class_popup = false;
-            }
-            else {
-                message_handler("cancel");
+}
+
+void CharacterCreator::HandleKey(const int key) {
+    if (key == 27) {
+        if (show_race_popup) {
+            show_race_popup = false;
+        }
+        else if (show_class_popup) {
+            show_class_popup = false;
+        }
+        else {
+            message_handler("cancel");
+        }
+    }
+    else if (key == '\t') {
+        if (show_race_popup) {
+            race_index++;
+            if (race_index == static_cast<int>(races.size())) {
+                race_index = 0;
             }
         }
-        else if (ch == '\t') {
-            if (show_race_popup) {
-                race_index++;
-                if (race_index == static_cast<int>(races.size())) {
-                    race_index = 0;
-                }
+        else if (show_class_popup) {
+            class_index++;
+            if (class_index == static_cast<int>(classes.size())) {
+                class_index = 0;
             }
-            else if (show_class_popup) {
-                class_index++;
-                if (class_index == static_cast<int>(classes.size())) {
-                    class_index = 0;
-                }
+        }
+        else {
+            selected_control++;
+            if (selected_control > CONTROLS) {
+                selected_control = 0;
             }
-            else {
+        }
+    }
+    else if (key == KEY_DOWN) {
+        if (show_race_popup) {
+            race_index = std::min(race_index + 1, static_cast<int>(races.size()) - 1);
+        }
+        else if (show_class_popup) {
+            class_index = std::min(class_index + 1, static_cast<int>(classes.size()) - 1);
+        }
+        else {
+            selected_control = std::min(selected_control + 1, CONTROLS);
+            if (selected_control == 1 || selected_control == 5) { // 2nd column controls go down to next row
                 selected_control++;
-                if (selected_control > CONTROLS) {
-                    selected_control = 0;
-                }
             }
         }
-        else if (ch == KEY_DOWN) {
-            if (show_race_popup) {
-                race_index = std::min(race_index + 1, static_cast<int>(races.size()) - 1);
-            }
-            else if (show_class_popup) {
-                class_index = std::min(class_index + 1, static_cast<int>(classes.size()) - 1);
-            }
-            else {
-                selected_control = std::min(selected_control + 1, CONTROLS);
-                if (selected_control == 1 || selected_control == 5) { // 2nd column controls go down to next row
-                    selected_control++;
-                }
-            }
+    }
+    else if (key == KEY_UP) {
+        if (show_race_popup) {
+            race_index = std::max(race_index - 1, 0);
         }
-        else if (ch == KEY_UP) {
-            if (show_race_popup) {
-                race_index = std::max(race_index - 1, 0);
-            }
-            else if (show_class_popup) {
-                class_index = std::max(class_index - 1, 0);
-            }
-            else {
-                selected_control = std::max(selected_control - 1, 0);
-                if (selected_control == 1 || selected_control == 5) { // skip 2nd column controls
-                    selected_control--;
-                }
-            }
+        else if (show_class_popup) {
+            class_index = std::max(class_index - 1, 0);
         }
-        else if (ch == KEY_LEFT) {
-            if (!show_race_popup && !show_class_popup && (selected_control == 1 || selected_control == 5)) {
+        else {
+            selected_control = std::max(selected_control - 1, 0);
+            if (selected_control == 1 || selected_control == 5) { // skip 2nd column controls
                 selected_control--;
             }
         }
-        else if (ch == KEY_RIGHT) {
-            if (!show_race_popup && !show_class_popup && (selected_control == 0 || selected_control == 4)) {
-                selected_control++;
+    }
+    else if (key == KEY_LEFT) {
+        if (!show_race_popup && !show_class_popup && (selected_control == 1 || selected_control == 5)) {
+            selected_control--;
+        }
+    }
+    else if (key == KEY_RIGHT) {
+        if (!show_race_popup && !show_class_popup && (selected_control == 0 || selected_control == 4)) {
+            selected_control++;
+        }
+    }
+    else if (key == '\n' || key == ' ') {
+        if (show_race_popup) {
+            const auto race = races[race_index];
+            new_game->SetRace(race);
+            show_race_popup = false;
+        }
+        else if (show_class_popup) {
+            const auto cls = classes[class_index];
+            new_game->SetClass(cls);
+            show_class_popup = false;
+        }
+        else if (selected_control == 1) {
+            new_game->GenerateName();
+        }
+        else if (selected_control == 2) {
+            show_race_popup = true;
+            race_index = static_cast<int>(std::ranges::find(races, new_game->GetRace()) - races.begin());
+        }
+        else if (selected_control == 3) {
+            show_class_popup = true;
+            class_index = static_cast<int>(std::ranges::find(classes, new_game->GetClass()) - classes.begin());
+        }
+        else if (selected_control == 4) {
+            new_game->ReRoll();
+        }
+        else if (selected_control == 5) {
+            if (new_game->CanUnroll()) {
+                new_game->UnRoll();
             }
         }
-        else if (ch == '\n' || ch == ' ') {
-            if (show_race_popup) {
-                const auto race = races[race_index];
-                new_game->SetRace(race);
-                show_race_popup = false;
-            }
-            else if (show_class_popup) {
-                const auto cls = classes[class_index];
-                new_game->SetClass(cls);
-                show_class_popup = false;
-            }
-            else if (selected_control == 1) {
-                new_game->GenerateName();
-            }
-            else if (selected_control == 2) {
-                show_race_popup = true;
-                race_index = static_cast<int>(std::ranges::find(races, new_game->GetRace()) - races.begin());
-            }
-            else if (selected_control == 3) {
-                show_class_popup = true;
-                class_index = static_cast<int>(std::ranges::find(classes, new_game->GetClass()) - classes.begin());
-            }
-            else if (selected_control == 4) {
-                new_game->ReRoll();
-            }
-            else if (selected_control == 5) {
-                if (new_game->CanUnroll()) {
-                    new_game->UnRoll();
-                }
-            }
-            else if (selected_control == 6) {
-                new_game->ConfirmCharacter();
-                message_handler("start");
-            }
+        else if (selected_control == 6) {
+            new_game->ConfirmCharacter();
+            message_handler("start");
         }
-        else if (ch == KEY_BACKSPACE) {
-            if (selected_control == 0) {
-                std::string name = new_game->GetName();
-                if (!name.empty()) {
-                    name.pop_back();
-                    new_game->SetName(name);
-                }
-            }
-        }
-        else if ((ch >= 65 && ch <= 90) || (ch >= 97 && ch <= 122) || (ch >= 48 && ch <= 57)) {
-            if (selected_control == 0) {
-                std::string name = new_game->GetName();
-                if (name.length() < 30) {
-                    name += static_cast<char>(ch);
-                }
+    }
+    else if (key == KEY_BACKSPACE) {
+        if (selected_control == 0) {
+            std::string name = new_game->GetName();
+            if (!name.empty()) {
+                name.pop_back();
                 new_game->SetName(name);
             }
         }
     }
+    else if ((key >= 65 && key <= 90) || (key >= 97 && key <= 122) || (key >= 48 && key <= 57)) {
+        if (selected_control == 0) {
+            std::string name = new_game->GetName();
+            if (name.length() < 30) {
+                name += static_cast<char>(key);
+            }
+            new_game->SetName(name);
+        }
+    }
 }
+
 

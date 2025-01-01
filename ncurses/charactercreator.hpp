@@ -9,7 +9,6 @@
 #include "ncursesview.hpp"
 
 class CharacterCreator final : public NCursesView {
-    WINDOW *win = nullptr;
     int selected_control = 0;
     bool show_race_popup = false;
     std::vector<std::string> races;
@@ -24,7 +23,7 @@ class CharacterCreator final : public NCursesView {
 
 public:
     CharacterCreator(const std::shared_ptr<Game>& game, const MessageHandler& message_handler);
-    void Resize(int new_screen_width, int new_screen_height) override;
     void Render() override;
+    void HandleKey(int key) override;
 
 };
