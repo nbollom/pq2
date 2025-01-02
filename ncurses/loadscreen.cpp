@@ -4,6 +4,7 @@
 
 #include "loadscreen.hpp"
 #include <ranges>
+#include <format>
 
 #define LEFT 2
 
