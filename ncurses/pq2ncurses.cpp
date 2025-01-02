@@ -6,6 +6,8 @@
 #include "gamescreen.hpp"
 #include <utils.hpp>
 
+#include "loadscreen.hpp"
+
 
 using namespace std;
 using namespace game;
@@ -33,12 +35,10 @@ void NCursesGUI::Run() {
     GUI::Run();
     running = true;
     while (running) {
-        clear();
         const shared_ptr<NCursesView> current_view = static_pointer_cast<NCursesView>(view_stack.top());
         int new_width;
         int new_height;
         getmaxyx(stdscr, new_height, new_width);
-        refresh();
         if (new_width != screen_width || new_height != screen_height) {
             screen_width = new_width;
             screen_height = new_height;
@@ -57,6 +57,9 @@ void NCursesGUI::HandleMessage(const std::string& message) {
     }
     else if (message == "new") {
         ShowCharacterCreator();
+    }
+    else if (message == "load_screen") {
+        ShowLoadScreen();
     }
     else if (message == "cancel") {
         PopView();
@@ -96,6 +99,14 @@ void NCursesGUI::ShowGameScreen() {
     game_screen->Show();
     PushView(game_screen);
 }
+
+void NCursesGUI::ShowLoadScreen() {
+    const auto load_screen = std::make_shared<LoadScreen>(game, message_handler);
+    load_screen->Resize(screen_width, screen_height);
+    load_screen->Show();
+    PushView(load_screen);
+}
+
 
 void NCursesGUI::Close() {
     running = false;

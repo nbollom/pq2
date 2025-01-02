@@ -10,3 +10,4 @@
 #include "commandlineexeptions.hpp"
 #include "romannumerals.hpp"
 #include "namegenerator.hpp"
+#include "plural.hpp"

@@ -13,6 +13,8 @@ set(
         charactercreator.hpp
         gamescreen.cpp
         gamescreen.hpp
+        loadscreen.cpp
+        loadscreen.hpp
 )
 
 add_library(pq2ncurses SHARED ${SOURCE_FILES})

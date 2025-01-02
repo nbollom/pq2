@@ -19,41 +19,6 @@ CharacterCreator::CharacterCreator(const std::shared_ptr<Game> &game, const Mess
     classes = NewGame::GetAvailableClasses();
 }
 
-void CharacterCreator::ShowPopup(const std::string &label, const std::vector<std::string> &items, const int current_index) const {
-    const int desired_rows = static_cast<int>(items.size());
-    const int rows = std::min(24 - 4, desired_rows);
-    int skip = 0;
-    WINDOW *w = subwin(win, rows + 2, 30, 1, 4);
-    wclear(w);
-    box(w, 0, 0);
-    LeftAlign(w, label, 2, 0);
-    if (rows < desired_rows) {
-        skip = std::clamp(current_index - rows / 2, 0, desired_rows - rows);
-        wattron(w, A_REVERSE);
-        if (skip == 0) {
-            mvwaddch(w, 1, 28, ' ');
-        }
-        else if (skip + rows == desired_rows) {
-            mvwaddch(w, rows, 28, ' ');
-        }
-        else {
-            const auto scroll_pos = static_cast<int>(static_cast<float>(skip) * static_cast<float>(rows) / static_cast<float>(desired_rows - rows)) + 1;
-            mvwaddch(w, scroll_pos, 28, ' ');
-        }
-        wattroff(w, A_REVERSE);
-    }
-    int index = skip;
-    for (const auto &item: items | std::ranges::views::drop(skip) | std::ranges::views::take(rows)) {
-        if (current_index == index) {
-            wattron(w, A_STANDOUT);
-        }
-        LeftAlign(w, item, 2, 1 + index - skip);
-        wattroff(w, A_STANDOUT);
-        index++;
-    }
-    wrefresh(w);
-}
-
 void CharacterCreator::Render() {
     LeftAlign(win, "Progress Quest 2", LEFT, 0);
     LeftAlign(win, "Name:", LEFT, 2);
@@ -141,9 +106,11 @@ void CharacterCreator::HandleKey(const int key) {
     if (key == 27) {
         if (show_race_popup) {
             show_race_popup = false;
+            ClearPopup();
         }
         else if (show_class_popup) {
             show_class_popup = false;
+            ClearPopup();
         }
         else {
             message_handler("cancel");

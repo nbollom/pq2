@@ -16,6 +16,8 @@ set(
         romannumerals.hpp
         namegenerator.cpp
         namegenerator.hpp
+        plural.cpp
+        plural.hpp
 )
 
 add_library(pq2utils SHARED ${SOURCE_FILES})

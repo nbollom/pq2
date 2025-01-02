@@ -26,6 +26,7 @@ public:
     void ShowMainMenu() override;
     void ShowCharacterCreator() override;
     void ShowGameScreen() override;
+    void ShowLoadScreen();
     void Close() override;
 
 };

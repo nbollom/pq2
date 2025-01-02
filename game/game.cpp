@@ -64,26 +64,6 @@ inline uint64_t RandomLow(const std::shared_ptr<std::mt19937_64> &engine, const 
     return min(engine->operator()() % num, engine->operator()() % num);
 }
 
-inline std::string Plural(std::string s) {
-    const size_t size = s.size();
-    if (size > 1 && s.substr(size - 1) == "y") {
-        return s.replace(size - 1, NPOS, "ies");
-    }
-    if (size > 2 && s.substr(size - 2) == "us") {
-        return s.replace(size - 2, NPOS, "i");
-    }
-    if ((size > 2 && s.substr(size - 2) == "ch") || (size > 1 && (s.substr(size - 1) == "x" || s.substr(size - 1) == "s"))) {
-        return s + "es";
-    }
-    if (size > 1 && s.substr(size - 1) == "f") {
-        return s.replace(size - 1, NPOS, "ves");
-    }
-    if (size > 3 && (s.substr(size - 3) == "man" || s.substr(size - 3) == "Man")) {
-        return s.replace(size - 2, NPOS, "en");
-    }
-    return s + "s";
-}
-
 inline std::string Indefinite(const std::string &name, const uint64_t count) {
     if (count == 1) {
         static std::string characters = "AEIOUÜaeiouü";
@@ -125,15 +105,19 @@ void Game::SetDaemonMode() {
 
 LoadError Game::LoadGame(string filename_path) {
     filename = std::move(filename_path);
-    if (std::ifstream file(filename); file.is_open()) {
+    std::ifstream file(filename);
+    if (file.is_open()) {
         std::stringstream buffer;
         buffer << file.rdbuf();
         try {
             deserialize(buffer.str(), character);
         }
-        catch (const std::exception &e) {
+        catch (const std::exception&) {
             return LoadErrorNotValidSaveFile;
         }
+    }
+    else {
+        return LoadErrorFileNotFound;
     }
     game_state = GameStateReady; //if loaded successfully
     return LoadErrorNone;
@@ -275,7 +259,6 @@ void Game::LevelUp() {
     WinStat();
     WinSpell();
     character.Experience = 0;
-    // TODO: raise events (updatestats, updatespells)
     SaveGame();
 }
 
@@ -298,13 +281,13 @@ void Game::WinStat() {
     else {
         int64_t t = 0;
         for (auto i = 0; i <= 5; i++) {
-            t += Square(*stat_pointers[i]);
+            t += static_cast<int64_t>(Square(*stat_pointers[i]));
         }
         t = abs(static_cast<int8_t>(engine->operator()())) % t;
         stat = -1;
         while (t >= 0) {
             stat += 1;
-            t -= Square(*stat_pointers[stat]);
+            t -= static_cast<int64_t>(Square(*stat_pointers[stat]));
         }
     }
     *stat_pointers[stat] += 1;
@@ -369,7 +352,7 @@ void Game::WinEquip() {
     }
     std::string name = item.label;
     uint64_t quality = item.level;
-    int64_t plus = character.Level - quality;
+    auto plus = static_cast<int64_t>(character.Level - quality);
     if (plus < 0) {
         get_better = get_worse;
     }
@@ -418,8 +401,7 @@ std::string Game::InterestingItem() const {
 }
 
 void Game::InterplotCinematic() {
-    uint64_t r = engine->operator()() % 3;
-    switch (r) {
+    switch (uint64_t r = engine->operator()() % 3) {
         case 0:
             character.Queue.push_back({QueueItemTask, "Exhausted, you arrive at a friendly oasis in a hostile land", 1});
             character.Queue.push_back({QueueItemTask, "You greet old friends and meet new allies", 2});
@@ -491,9 +473,9 @@ void Game::Dequeue() {
         }
         else if (character.CurrentAction == CurrentActionMarket || character.CurrentAction == CurrentActionSelling) {
             if (character.CurrentAction == CurrentActionSelling) {
-                Stack item = character.Inventory.front();
-                uint64_t amount = item.count * character.Level;
-                if (item.name.find(" of ") != NPOS) {
+                auto [name, count] = character.Inventory.front();
+                uint64_t amount = count * character.Level;
+                if (name.find(" of ") != NPOS) {
                     amount *= (1 + RandomLow(engine, 10)) * (1 + RandomLow(engine, character.Level));
                 }
                 character.Inventory.erase(character.Inventory.begin());
@@ -554,13 +536,13 @@ void Game::Dequeue() {
 }
 
 void Game::MonsterTask() {
-    int64_t level = character.Level;
+    auto level = static_cast<int64_t>(character.Level);
     int64_t lev;
     Monster monster;
     bool definite = false;
     for (int64_t i = level; i > 0; i--) {
         if (Odds(engine, 2, 5)) {
-            level += (engine->operator()() % 2) * 2 - 1;
+            level += static_cast<int64_t>(engine->operator()() % 2) * 2 - 1;
         }
     }
     level = max(level, static_cast<int64_t>(1));
@@ -577,7 +559,7 @@ void Game::MonsterTask() {
         lev = level;
         monster = {name, static_cast<uint64_t>(level), "*"};
     }
-    else if ((!character.Quests.empty() && character.Quests.back().monster.has_value()) && Odds(engine, 1, 4)) {
+    else if (!character.Quests.empty() && character.Quests.back().monster.has_value() && Odds(engine, 1, 4)) {
         // use the quest monster
         monster = character.Quests.back().monster.value();
         lev = static_cast<int64_t>(monster.level);
@@ -597,7 +579,7 @@ void Game::MonsterTask() {
     std::string name = monster.name;
     int64_t qty = 1;
     if (level - lev > 10) {
-        qty = (level + (engine->operator()() % level)) / max(lev, static_cast<int64_t>(1));
+        qty = static_cast<int64_t>(level + (engine->operator()() % level)) / max(lev, static_cast<int64_t>(1));
         qty = max(qty, static_cast<int64_t>(1));
         level = level / qty;
     }
@@ -607,7 +589,7 @@ void Game::MonsterTask() {
     }
     else if (level - lev < -5) {
         int64_t i = 10 + (level - lev);
-        i = 5 - (engine->operator()() % (i + 1));
+        i = 5 - static_cast<int64_t>(engine->operator()() % (i + 1));
         name = Sick(i, Young((lev - level) - i, name));
     }
     else if (level - lev < 0 && engine->operator()() % 2 == 1) {
@@ -621,7 +603,7 @@ void Game::MonsterTask() {
     }
     else if (level - lev > 5) {
         int64_t i = 10 - (level - lev);
-        i = 5 - (engine->operator()() % (i + 1));
+        i = 5 - static_cast<int64_t>(engine->operator()() % (i + 1));
         name = Big(i, Special((level - lev) - i, name));
     }
     else if (level - lev > 0 && engine->operator()() % 2 == 1) {

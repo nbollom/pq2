@@ -16,8 +16,8 @@ MainMenu::MainMenu(const std::shared_ptr<Game>& game, const MessageHandler& mess
     menu_options.emplace_back("Start New Game", [message_handler] {
         message_handler("new");
     });
-    menu_options.emplace_back("Load Game", [] {
-
+    menu_options.emplace_back("Load Game", [message_handler] {
+        message_handler("load_screen");
     });
     menu_options.emplace_back("Quit", [message_handler] {
         message_handler("quit");
