@@ -17,12 +17,13 @@ jobs:
       - name: Install msys2 deps
         uses: msys2/setup-msys2@v2
         with:
+          msystem: ucrt64
           update: true
           install: >-
             git
             make
             zlib
-            qt6-base
+            qt6-static
           pacboy: >-
             toolchain:p
             cmake:p
