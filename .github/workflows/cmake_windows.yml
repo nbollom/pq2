@@ -15,7 +15,7 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: '6.6.*'
-      - name Install zlib
+      - name: Install zlib
       - run: |
           pkg-config --cflags zlib
           pkg-config --libs zlib
