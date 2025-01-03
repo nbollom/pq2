@@ -105,7 +105,7 @@ void Game::SetDaemonMode() {
 }
 
 LoadError Game::LoadGame(const string &filename_path) {
-    const auto file = gzopen64(filename_path.c_str(), "rb");
+    const auto file = gzopen(filename_path.c_str(), "rb");
     if (file == nullptr) {
         return LoadErrorFileNotFound;
     }
@@ -134,7 +134,7 @@ SaveError Game::SaveGame(const string& filename_path) {
         return SaveErrorInvalidPath;
     }
     const auto json = serialise(character);
-    const auto file = gzopen64(filename.c_str(), "wb9");
+    const auto file = gzopen(filename.c_str(), "wb9");
     if (file == nullptr) {
         return SaveErrorInvalidPath;
     }
