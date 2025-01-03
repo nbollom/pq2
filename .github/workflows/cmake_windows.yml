@@ -19,8 +19,15 @@ jobs:
         uses: msys2/setup-msys2@v2
         with:
           update: true
-          install: zlib
+          install: >-
+            git
+            make
+            zlib
+          pacboy: >-
+            toolchain:p
+            cmake:p
+            ninja:p
       - name: Configure
-        run: cmake -B windows -DCMAKE_BUILD_TYPE=Release
+        run: cmake -G Ninja -B windows -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: cmake --build windows --parallel
