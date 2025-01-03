@@ -1,0 +1,21 @@
+name: Windows
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build-macos:
+    name: Windows
+    runs-on: windows-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.6.*'
+      - name: Configure
+        run: cmake -B windows -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build windows --parallel
