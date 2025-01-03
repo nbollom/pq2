@@ -110,4 +110,5 @@ void NCursesGUI::ShowLoadScreen() {
 
 void NCursesGUI::Close() {
     running = false;
+    game->Close();
 }

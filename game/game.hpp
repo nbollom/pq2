@@ -38,7 +38,7 @@ private:
 public:
     Game();
     void SetDaemonMode();
-    file::LoadError LoadGame(std::string filename_path);
+    file::LoadError LoadGame(const std::string& filename_path);
     file::SaveError SaveGame(const std::string& filename_path = "");
     [[nodiscard]] std::shared_ptr<NewGame> StartNewGame();
     void Tick(uint64_t ms); //advances the game clock by the specified milliseconds;

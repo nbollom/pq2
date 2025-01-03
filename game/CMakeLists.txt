@@ -14,6 +14,8 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(nlohmann_json)
 
+find_package(ZLIB)
+
 set(
         SOURCE_FILES
         game.cpp
@@ -59,7 +61,7 @@ set(
 
 add_library(pq2game SHARED ${SOURCE_FILES})
 
-target_link_libraries(pq2game PRIVATE pq2utils nlohmann_json::nlohmann_json)
+target_link_libraries(pq2game PRIVATE pq2utils nlohmann_json::nlohmann_json ZLIB::ZLIB)
 target_include_directories(pq2game
         PRIVATE pq2utils nlohmann_json::nlohmann_json
         INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}

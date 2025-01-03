@@ -2,6 +2,14 @@
 // Created by nbollom on 25/05/16.
 //
 
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <filesystem>
+#include <utils.hpp>
+#include <algorithm>
+#include <sstream>
+#include <zlib.h>
 #include "game.hpp"
 #include "spells.hpp"
 #include "weapons.hpp"
@@ -19,13 +27,6 @@
 #include "races.hpp"
 #include "classes.hpp"
 #include "boringitems.hpp"
-#include <iostream>
-#include <fstream>
-#include <cstdlib>
-#include <filesystem>
-#include <utils.hpp>
-#include <algorithm>
-#include <sstream>
 #include "jsonserialiser.hpp"
 
 using namespace std;
@@ -103,22 +104,24 @@ void Game::SetDaemonMode() {
     AddSignalCallback(SIGKILL, term_callback);
 }
 
-LoadError Game::LoadGame(string filename_path) {
-    filename = std::move(filename_path);
-    std::ifstream file(filename);
-    if (file.is_open()) {
-        std::stringstream buffer;
-        buffer << file.rdbuf();
-        try {
-            deserialize(buffer.str(), character);
-        }
-        catch (const std::exception&) {
-            return LoadErrorNotValidSaveFile;
-        }
-    }
-    else {
+LoadError Game::LoadGame(const string &filename_path) {
+    const auto file = gzopen64(filename_path.c_str(), "rb");
+    if (file == nullptr) {
         return LoadErrorFileNotFound;
     }
+    char buffer[1024];
+    std::stringstream string_buffer;
+    while (const int read = gzread(file, &buffer, sizeof(buffer))) {
+        string_buffer.write(buffer, read);
+    }
+    try {
+        deserialize(string_buffer.str(), character);
+    }
+    catch (const std::exception &error) {
+        return LoadErrorNotValidSaveFile;
+    }
+    gzclose(file);
+    filename = filename_path;
     game_state = GameStateReady; //if loaded successfully
     return LoadErrorNone;
 }
@@ -130,9 +133,13 @@ SaveError Game::SaveGame(const string& filename_path) {
     if (filename.empty()) {
         return SaveErrorInvalidPath;
     }
-    std::ofstream file(filename);
-    file << serialise(character);
-    file.close();
+    const auto json = serialise(character);
+    const auto file = gzopen64(filename.c_str(), "wb9");
+    if (file == nullptr) {
+        return SaveErrorInvalidPath;
+    }
+    gzwrite(file, json.c_str(), json.size());
+    gzclose(file);
     return SaveErrorNone;
 }
 
