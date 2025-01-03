@@ -4,6 +4,7 @@
 
 #include <ncurses.h>
 #include <ranges>
+#include <format>
 
 #include "ncursesview.hpp"
 
