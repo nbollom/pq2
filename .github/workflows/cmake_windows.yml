@@ -23,7 +23,7 @@ jobs:
             git
             make
             zlib
-            qt6-static
+            mingw-w64-ucrt-x86_64-qt6-static
           pacboy: >-
             toolchain:p
             cmake:p
