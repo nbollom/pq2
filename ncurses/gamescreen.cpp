@@ -5,7 +5,6 @@
 #include "gamescreen.hpp"
 #include <format>
 #include <ranges>
-#include <bits/fs_fwd.h>
 
 #include "plural.hpp"
 #include "romannumerals.hpp"
