@@ -8,6 +8,8 @@
 #include <ncurses.h>
 #include "view.hpp"
 
+#define TIMER_MS 100
+
 class NCursesView : public View {
 
 protected:
@@ -20,6 +22,7 @@ protected:
     WINDOW *popup = nullptr;
     int last_popup_width = 0;
     int last_popup_height = 0;
+    int update_milliseconds = TIMER_MS;
 
 public:
     NCursesView(const std::shared_ptr<Game>& game, const MessageHandler& message_handler);

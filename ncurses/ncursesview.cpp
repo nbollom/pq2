@@ -95,13 +95,24 @@ void NCursesView::Update() {
     }
     else {
         box(win, 0, 0);
+        RightAlign(win, std::format("<-/+> refresh {}ms", update_milliseconds), 78, 0);
         Render();
     }
     wnoutrefresh(win);
     doupdate();
     const int ch = wgetch(win);
     if (ch != ERR) {
-        HandleKey(ch);
+        if (ch == '-') {
+            update_milliseconds = std::max(update_milliseconds - 10, 50);
+            wtimeout(win, update_milliseconds);
+        }
+        else if (ch == '+') {
+            update_milliseconds = std::min(update_milliseconds + 10, 200);
+            wtimeout(win, update_milliseconds);
+        }
+        else {
+            HandleKey(ch);
+        }
     }
 }
 

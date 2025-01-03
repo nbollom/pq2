@@ -12,7 +12,6 @@
 
 #define LEFT 2
 #define RIGHT 78
-#define TIMER_MS 100
 #define TEN_SECONDS 10000
 
 template<typename T>
