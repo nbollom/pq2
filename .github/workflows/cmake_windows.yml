@@ -14,11 +14,7 @@ jobs:
     steps:
       - name: Checkout source
         uses: actions/checkout@v4
-      - name: Install Qt
-        uses: jurplel/install-qt-action@v4
-        with:
-          version: '6.6.*'
-      - name: Install zlib
+      - name: Install msys2 deps
         uses: msys2/setup-msys2@v2
         with:
           update: true
@@ -26,6 +22,7 @@ jobs:
             git
             make
             zlib
+            qt6
           pacboy: >-
             toolchain:p
             cmake:p
