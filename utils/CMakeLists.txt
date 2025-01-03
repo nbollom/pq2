@@ -21,3 +21,4 @@ set(
 )
 
 add_library(pq2utils SHARED ${SOURCE_FILES})
+target_include_directories(pq2utils INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})

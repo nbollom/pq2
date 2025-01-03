@@ -4,7 +4,6 @@
 
 #include <QHeaderView>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QScreen>
 #include <QCheckBox>
 #include <QPropertyAnimation>

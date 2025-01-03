@@ -12,4 +12,7 @@ set(
 add_library(pq2gui SHARED ${SOURCE_FILES})
 
 target_link_libraries(pq2gui pq2game)
-include_directories(../game)
+target_include_directories(pq2gui
+        PRIVATE pq2game
+        INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
+)

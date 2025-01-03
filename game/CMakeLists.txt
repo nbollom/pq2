@@ -60,4 +60,7 @@ set(
 add_library(pq2game SHARED ${SOURCE_FILES})
 
 target_link_libraries(pq2game PRIVATE pq2utils nlohmann_json::nlohmann_json)
-include_directories(../utils nlohmann_json::nlohmann_json)
+target_include_directories(pq2game
+        PRIVATE pq2utils nlohmann_json::nlohmann_json
+        INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
+)

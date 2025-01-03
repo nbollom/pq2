@@ -7,7 +7,6 @@
 #include <QImageReader>
 #include <iostream>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QScreen>
 #include <QResizeEvent>
 #include "qtmainmenu.hpp"

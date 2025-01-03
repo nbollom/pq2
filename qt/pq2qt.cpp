@@ -23,7 +23,6 @@ void QTGUI::Run() {
     int argc = 1;
     auto argv = const_cast<char *>("pq2");
     const auto *app = new QApplication(argc, &argv);
-    QApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
     QApplication::setQuitOnLastWindowClosed(false);
     GUI::Run();
     QApplication::exec();

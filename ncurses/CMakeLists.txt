@@ -20,4 +20,7 @@ set(
 add_library(pq2ncurses SHARED ${SOURCE_FILES})
 
 target_link_libraries(pq2ncurses pq2gui pq2game pq2utils ncurses)
-include_directories(../gui ../game ../utils)
+target_include_directories(pq2ncurses
+        PRIVATE pq2gui pq2game pq2utils
+        INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}
+)
