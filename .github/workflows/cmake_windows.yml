@@ -16,7 +16,7 @@ jobs:
         with:
           version: '6.6.*'
       - name: Install zlib
-      - run: |
+        run: |
           pkg-config --cflags zlib
           pkg-config --libs zlib
       - name: Configure
