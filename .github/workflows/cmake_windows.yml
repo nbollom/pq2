@@ -16,9 +16,10 @@ jobs:
         with:
           version: '6.6.*'
       - name: Install zlib
-        run: |
-          pkg-config --cflags zlib
-          pkg-config --libs zlib
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: zlib
       - name: Configure
         run: cmake -B windows -DCMAKE_BUILD_TYPE=Release
       - name: Build
