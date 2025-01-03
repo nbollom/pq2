@@ -14,7 +14,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(nlohmann_json)
 
-find_package(ZLIB)
+find_package(ZLIB REQUIRED)
 
 set(
         SOURCE_FILES
