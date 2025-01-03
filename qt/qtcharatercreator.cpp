@@ -5,12 +5,12 @@
 #include <algorithm>
 #include <QApplication>
 #include <QScreen>
+#include <string>
 #include "qtcharatercreator.hpp"
 
 inline QString StringValue(const uint64_t value) {
-    char buffer[10];
-    sprintf(buffer, "%lu", value);
-    return {buffer};
+    const std::string string_value = std::to_string(value);
+    return {string_value.c_str()};
 }
 
 inline std::string StripShortcuts(const QString &value) {
