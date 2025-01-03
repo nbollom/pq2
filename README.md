@@ -25,8 +25,8 @@ cmake ..
 make
 ```
 
-other OS's not currently supported, although it can be compiled on osx with the QT interface:
+other OS's not currently supported, although it can be compiled on osx with the QT and ncurses interface:
 
 ```
-cmake -DNCURSES_ENABLED=OFF -DGTK_ENABLED=OFF -DCOCOA_ENABLED=OFF -DDEFAULT_GUI_LIBRARY=GUI_QT -DQt6_DIR=<PATH_TO_Qt6Config.cmake> ..
+cmake -DQt6_DIR=<PATH_TO_Qt6Config.cmake> ..
 ```
