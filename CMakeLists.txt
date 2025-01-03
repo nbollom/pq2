@@ -20,7 +20,7 @@ add_subdirectory(game)
 add_subdirectory(utils)
 add_subdirectory(gui)
 
-if(MSVC)
+if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     option(WINFORMS_ENABLED "Enable native Windows interface" ON)
     set(COCOA_ENABLED OFF)
     set(NCURSES_ENABLED OFF)
