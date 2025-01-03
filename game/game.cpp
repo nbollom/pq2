@@ -94,6 +94,7 @@ Game::Game(): character() {
     game_state = GameStateNone;
 }
 
+#ifndef _WIN32
 void Game::SetDaemonMode() {
     const function<void(int)> term_callback = [this](int){
         Close();
@@ -103,6 +104,7 @@ void Game::SetDaemonMode() {
     AddSignalCallback(SIGQUIT, term_callback);
     AddSignalCallback(SIGKILL, term_callback);
 }
+#endif
 
 LoadError Game::LoadGame(const string &filename_path) {
     const auto file = gzopen(filename_path.c_str(), "rb");

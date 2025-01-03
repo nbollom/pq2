@@ -37,7 +37,9 @@ private:
 
 public:
     Game();
+#ifndef _WIN32
     void SetDaemonMode();
+#endif
     file::LoadError LoadGame(const std::string& filename_path);
     file::SaveError SaveGame(const std::string& filename_path = "");
     [[nodiscard]] std::shared_ptr<NewGame> StartNewGame();
