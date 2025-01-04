@@ -10,7 +10,7 @@
 #include <QPushButton>
 // ReSharper disable once CppUnusedIncludeDirective
 #include <QLabel>
-#include "view.hpp"
+#include <pq2gui.hpp>
 
 class QTMainMenu final : public QMainWindow, public View {
 Q_OBJECT

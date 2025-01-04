@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+    <gresource prefix="/com/github/nbollom/pq2">
+        <file alias="pq.png">../resources/pq.png</file>
+    </gresource>
+</gresources>

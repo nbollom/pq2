@@ -16,7 +16,7 @@
 #include <QScrollArea>
 #include <QWidget>
 #include "newgame.hpp"
-#include "view.hpp"
+#include <pq2gui.hpp>
 
 class QTCharacterCreator final : public QMainWindow, public View {
 Q_OBJECT

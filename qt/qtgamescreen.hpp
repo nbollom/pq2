@@ -14,7 +14,7 @@
 #include <QProgressBar>
 #include <QTimer>
 #include <chrono>
-#include "view.hpp"
+#include <pq2gui.hpp>
 
 class QTGameScreen final : public QMainWindow, public View {
 Q_OBJECT
