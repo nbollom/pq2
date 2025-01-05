@@ -4,7 +4,6 @@
 
 #pragma once
 
-#include <iostream>
 #include <memory>
 #include <string>
 #include <gtkmm/application.h>

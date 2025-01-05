@@ -5,10 +5,14 @@ set(
         SOURCE_FILES
         pq2gtk.cpp
         pq2gtk.hpp
+        ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp
         mainmenu.cpp
         mainmenu.cpp
         mainmenu.hpp
-        ${CMAKE_CURRENT_BINARY_DIR}/resources.cpp
+        charactercreator.cpp
+        charactercreator.hpp
+        gtkview.cpp
+        gtkview.hpp
 )
 
 find_package(PkgConfig REQUIRED)
@@ -28,6 +32,7 @@ add_custom_command(
         MAIN_DEPENDENCY resources.xml
         DEPENDS
         ../resources/pq.png
+        style.css
 )
 
 add_custom_target(

@@ -37,10 +37,10 @@ void GUI::PushView(const std::shared_ptr<View>& view) {
 void GUI::PopView() {
     const std::shared_ptr<View> view = view_stack.top();
     view_stack.pop();
-    view->Close();
     if (!view_stack.empty()) {
         view_stack.top()->Show();
     }
+    view->Close();
 }
 
 void GUI::PopAllViews() {

@@ -1,0 +1,39 @@
+text {
+    color: #000000;
+    background-color: #FFFFFF;
+    border: solid #000000 1px;
+    border-radius: 5px;
+    padding: 2px 5px;
+}
+
+text:focus {
+    color: #000000;
+    border: solid #AAAAFF 1px;
+}
+
+frame {
+    border: solid #000000 1px;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+frame label:first-child {
+    margin-top: -5px;
+    margin-bottom: 10px;
+}
+
+text.red {
+    background-color: #FF0000;
+}
+
+text.yellow {
+    background-color: #FFFF00;
+}
+
+text.gray {
+    background-color: #808080;
+}
+
+text.silver {
+    background-color: #C0C0C0;
+}

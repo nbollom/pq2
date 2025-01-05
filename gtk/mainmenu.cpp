@@ -7,35 +7,33 @@
 #include <gtkmm/alertdialog.h>
 #include "mainmenu.hpp"
 
-MainMenu::MainMenu(const std::shared_ptr<Game> &game, const MessageHandler &message_handler) : View(game, message_handler) {
+MainMenu::MainMenu(const std::shared_ptr<Game> &game, const MessageHandler &message_handler) : GTKView(game, message_handler) {
     set_title("Progress Quest 2");
     set_default_size(800, 600);
-    signal_destroy().connect([this]() {
+    signal_close_request().connect([&]() {
         Close();
-    });
+        return true;
+    }, true);
 
     box.set_orientation(Gtk::Orientation::VERTICAL);
-    box.set_spacing(20);
+    box.set_spacing(10);
+    box.set_margin(20);
     box.set_homogeneous(false);
 
     set_child(box);
 
     logo.set_from_resource("/com/github/nbollom/pq2/pq.png");
-    logo.set_size_request(300, 300);
-    logo.set_margin_top(100);
+    logo.set_size_request(150, 150);
+    logo.set_expand(true);
 
     new_game.set_label("New Game");
     new_game.set_size_request(200, 60);
-    new_game.set_margin_start(100);
-    new_game.set_margin_end(100);
-    new_game.signal_clicked().connect([this]() {
+    new_game.signal_clicked().connect([&]() {
         NewGame();
     });
 
     load_game.set_label("Load Game");
     load_game.set_size_request(200, 60);
-    load_game.set_margin_start(100);
-    load_game.set_margin_end(100);
     load_game.signal_clicked().connect([&]() {
         file_dialog->open(*this, [&](const Glib::RefPtr<Gio::AsyncResult>& result) {
             const auto file = file_dialog->open_finish(result);
@@ -51,18 +49,16 @@ MainMenu::MainMenu(const std::shared_ptr<Game> &game, const MessageHandler &mess
         }, nullptr);
     });
 
-    quit.set_label("Quit");
-    quit.set_size_request(200, 60);
-    quit.set_margin_start(100);
-    quit.set_margin_end(100);
-    quit.signal_clicked().connect([this]() {
+    exit.set_label("Exit");
+    exit.set_size_request(200, 60);
+    exit.signal_clicked().connect([&]() {
         Close();
     });
 
     box.append(logo);
     box.append(new_game);
     box.append(load_game);
-    box.append(quit);
+    box.append(exit);
 
     file_dialog = Gtk::FileDialog::create();
     file_dialog->set_title("Progress Quest 2 - Load Game");
@@ -76,12 +72,8 @@ MainMenu::MainMenu(const std::shared_ptr<Game> &game, const MessageHandler &mess
     Show();
 }
 
-MainMenu::~MainMenu() {
-
-}
-
 void MainMenu::Show() {
-    show();
+    set_visible(true);
 }
 
 void MainMenu::Hide() {

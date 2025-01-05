@@ -21,7 +21,7 @@ inline std::string StripShortcuts(const QString &value) {
 
 QTCharacterCreator::QTCharacterCreator(const std::shared_ptr<Game>& game, const MessageHandler& message_handler) : View(game, message_handler) {
     new_game = game->StartNewGame();
-    setWindowTitle("ProgressQuest 2 - Create New Character");
+    setWindowTitle("Progress Quest 2 - Create New Character");
     scroll_area = new QScrollArea();
     scroll_area->setWidgetResizable(true);
     main_widget = new QWidget;
