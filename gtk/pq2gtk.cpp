@@ -8,6 +8,7 @@
 #include "gtkview.hpp"
 #include "mainmenu.hpp"
 #include "charactercreator.hpp"
+#include "gamescreen.hpp"
 
 GTKGUI::GTKGUI(const std::shared_ptr<Game> &game) : GUI(game) {
     message_handler = [this](const std::string &message) {
@@ -70,9 +71,9 @@ void GTKGUI::ShowCharacterCreator() {
 }
 
 void GTKGUI::ShowGameScreen() {
-    // const auto game_screen = std::make_shared<GameScreen>(game, message_handler);
-    // game_screen->Show();
-    // PushView(game_screen);
+    const auto game_screen = std::make_shared<GameScreen>(game, message_handler);
+    game_screen->Show();
+    PushView(game_screen);
 }
 
 void GTKGUI::Close() {

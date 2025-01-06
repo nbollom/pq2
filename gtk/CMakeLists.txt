@@ -13,6 +13,8 @@ set(
         charactercreator.hpp
         gtkview.cpp
         gtkview.hpp
+        gamescreen.cpp
+        gamescreen.hpp
 )
 
 find_package(PkgConfig REQUIRED)
