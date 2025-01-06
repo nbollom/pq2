@@ -17,7 +17,7 @@ jobs:
           version: '6.6.*'
       - name: Install GTK
         run: |
-          brew install gtk4mm4
+          brew install gtkmm4
       - name: Configure
         run: cmake -B macos -DCMAKE_BUILD_TYPE=Release
       - name: Build
