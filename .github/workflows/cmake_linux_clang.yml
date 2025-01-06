@@ -17,7 +17,7 @@ jobs:
           version: '6.6.*'
       - name: Install ncurses
         run: |
-          sudo apt install libncurses5-dev libncursesw5-dev
+          sudo apt install libncurses5-dev libncursesw5-dev libgtkmm-4.0-dev
       - name: Configure
         run: cmake -B linux_clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=Release
       - name: Build
