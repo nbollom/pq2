@@ -46,7 +46,10 @@ add_library(pq2gtk SHARED ${SOURCE_FILES})
 add_dependencies(pq2gtk dummy-resource)
 
 target_link_libraries(pq2gtk pq2gui pq2game pq2utils ${GTKMM_LIBRARIES})
-target_link_directories(pq2gtk PRIVATE ${GTKMM_LIBRARY_DIRS})
+target_link_directories(pq2gtk
+        PRIVATE ${GTKMM_LIBRARY_DIRS}
+        INTERFACE ${GTKMM_LIBRARY_DIRS}
+)
 target_include_directories(pq2gtk
         PRIVATE pq2gui pq2game pq2utils ${GTKMM_INCLUDE_DIRS}
         INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${GTKMM_INCLUDE_DIRS}
