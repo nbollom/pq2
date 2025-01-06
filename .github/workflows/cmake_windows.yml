@@ -24,6 +24,7 @@ jobs:
             make
             zlib
             mingw-w64-ucrt-x86_64-qt6-base
+            mingw-w64-gtkmm-4.0
           pacboy: >-
             toolchain:p
             cmake:p
