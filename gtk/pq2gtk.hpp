@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <string>
-#include <gtkmm/application.h>
 #include "pq2gui.hpp"
 #include "game.hpp"
 
@@ -14,7 +13,6 @@ class GTKGUI final : public GUI {
 
 private:
     MessageHandler message_handler;
-    Glib::RefPtr<Gtk::Application> app;
 
     void HandleMessage(const std::string& message);
 

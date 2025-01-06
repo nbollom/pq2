@@ -10,6 +10,8 @@
 #include "charactercreator.hpp"
 #include "gamescreen.hpp"
 
+Glib::RefPtr<Gtk::Application> app;
+
 GTKGUI::GTKGUI(const std::shared_ptr<Game> &game) : GUI(game) {
     message_handler = [this](const std::string &message) {
         HandleMessage(message);
