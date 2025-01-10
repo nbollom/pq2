@@ -2,54 +2,58 @@
 // Created by nbollom on 21/06/16.
 //
 
-#include "mainmenu.h"
+#include "mainmenu.hpp"
 #include <ncurses.h>
+#include "ncursesview.hpp"
+#include <iostream>
+#include <ranges>
 
-using namespace std;
-
-typedef pair<string, function<void()>> MenuItem;
+typedef std::pair<std::string, std::function<void()>> MenuItem;
 typedef std::vector<MenuItem>::iterator MenuItemIterator;
 
-MainMenu::MainMenu(std::shared_ptr<Game> game, std::function<bool(std::string message, void *value)> messageHandler) : NView(game, messageHandler) {
+MainMenu::MainMenu(const std::shared_ptr<Game>& game, const MessageHandler& message_handler) : NCursesView(game, message_handler) {
     selected_index = 0;
-    menu_options.emplace_back(MenuItem("New Game", [this, game](){
-        game->StartNewGame();
-    }));
-    menu_options.emplace_back(MenuItem("Load Game", [this, game](){
-
-    }));
-    menu_options.emplace_back(MenuItem("Quit", [this, game, messageHandler](){
-        messageHandler("Quit", nullptr);
-    }));
+    menu_options.emplace_back("Start New Game", [message_handler] {
+        message_handler("new");
+    });
+    menu_options.emplace_back("Load Game", [message_handler] {
+        message_handler("load_screen");
+    });
+    menu_options.emplace_back("Quit", [message_handler] {
+        message_handler("quit");
+    });
 }
 
-void MainMenu::HandleKeyPress(int key) {
-    if (key == KEY_DOWN) {
-        selected_index = min(selected_index + 1, (int)menu_options.size() - 1);
-    }
-    else if (key == KEY_UP) {
-        selected_index = max(selected_index - 1, 0);
-    }
-    else if (key == KEY_ENTER) {
-        MenuItem item = menu_options[selected_index];
-        item.second();
-    }
-}
 
 void MainMenu::Render() {
-    int horizontal_middle = screen_width / 2;
-    int menu_top = max((screen_height / 3) - (((int)menu_options.size() + 3) / 2), 0);
-    CenterAlign("Progress Quest 2", horizontal_middle, menu_top);
+    constexpr int horizontal_middle = 40;
+    CenterAlign(win, "Progress Quest 2", horizontal_middle, 8);
     int index = 0;
-    for (auto item : menu_options) {
+    for (const auto& label : std::views::keys(menu_options)) {
         if (index == selected_index) {
-            attron(A_UNDERLINE);
+            wattron(win, A_STANDOUT);
         }
-        CenterAlign(item.first, horizontal_middle, menu_top + 2 + index);
+        CenterAlign(win, label, horizontal_middle, 10 + index);
         if (index == selected_index) {
-            attroff(A_UNDERLINE);
+            wattroff(win, A_STANDOUT);
         }
         index++;
     }
-    move(0, 0); //reset cursor to top left
 }
+
+void MainMenu::HandleKey(const int key) {
+    if (key == 27) {
+        message_handler("quit");
+    }
+    else if (key == KEY_DOWN) {
+        selected_index = std::min(selected_index + 1, static_cast<int>(menu_options.size()) - 1);
+    }
+    else if (key == KEY_UP) {
+        selected_index = std::max(selected_index - 1, 0);
+    }
+    else if (key == '\n' || key == ' ') {
+        const auto [_, func] = menu_options[selected_index];
+        func();
+    }
+}
+

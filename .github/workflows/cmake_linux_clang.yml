@@ -1,0 +1,24 @@
+name: Linux (clang)
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build-linux-clang:
+    name: Linux (clang)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.6.*'
+      - name: Install ncurses
+        run: |
+          sudo apt install libncurses5-dev libncursesw5-dev libgtkmm-4.0-dev
+      - name: Configure
+        run: cmake -B linux_clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build linux_clang --parallel

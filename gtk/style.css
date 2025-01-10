@@ -1,0 +1,84 @@
+text {
+    color: #000000;
+    background-color: #FFFFFF;
+    border: solid #000000 1px;
+    border-radius: 5px;
+    padding: 2px 5px;
+}
+
+text:focus {
+    color: #000000;
+    border: solid #AAAAFF 1px;
+}
+
+frame {
+    border: solid #000000 1px;
+    border-radius: 5px;
+    padding: 10px;
+}
+
+frame > label:first-child {
+    margin-top: -5px;
+    margin-bottom: 10px;
+}
+
+text.red {
+    background-color: #FF0000;
+}
+
+text.yellow {
+    background-color: #FFFF00;
+}
+
+text.gray {
+    background-color: #808080;
+}
+
+text.silver {
+    background-color: #C0C0C0;
+}
+
+.table > label {
+    margin: 0;
+    border-left: solid #000000 1px;
+    border-bottom: solid #000000 1px;
+    background-color: #FFFFFF;
+    padding: 2px;
+}
+
+.table > checkbutton {
+    margin: 0;
+    border-left: solid #000000 1px;
+    border-bottom: solid #000000 1px;
+    background-color: #FFFFFF;
+}
+
+.table > checkbutton > label {
+    color: #000000;
+}
+
+.table > checkbutton > check {
+    color: #000000;
+    background-color: #FFFFFF;
+}
+
+.table > .top {
+    border-top: solid #000000 1px;
+}
+
+.table > .last {
+    border-right: solid #000000 1px;
+}
+
+.table > .header {
+    background-color: #E0E0E0;
+}
+
+progressbar text {
+    border: none;
+    background-color: transparent;
+}
+
+trough, progress {
+    min-height: 20px;
+}

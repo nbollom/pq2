@@ -1,89 +1,38 @@
 #include <iostream>
 #include <memory>
 #include <thread>
-#include "config.h"
-#include "utils.h"
-#include "game.h"
+#include <string>
+#include "utils.hpp"
+#include "game.hpp"
+#include "pq2gui.hpp"
 
-#ifdef GUI_ENABLED
-#include "pq2gui.h"
 #ifdef QT_ENABLED
-#include "pq2qt.h"
+#include "pq2qt.hpp"
 #endif //QT_ENABLED
 #ifdef GTK_ENABLED
-#include "pq2gtk.h"
+#include "pq2gtk.hpp"
 #endif //GTK_ENABLED
 #ifdef COCOA_ENABLED
-#include "pq2cocoa.h"
+// #include "pq2cocoa.hpp"
 #endif //COCOA_ENABLED
 #ifdef WINFORMS_ENABLED
-#include "pq2winforms.h"
+// #include "pq2winforms.hpp"
 #endif //WINFORMS_ENABLED
 #ifdef NCURSES_ENABLED
-#include "pq2ncurses.h"
+#include "pq2ncurses.hpp"
 #endif //NCURSES_ENABLED
-#endif //GUI_ENABLED
 
 using namespace std;
 
-typedef std::chrono::steady_clock Clock;
-typedef std::chrono::steady_clock::time_point TimePoint;
-
-int main(int argc, const char * const *argv) {
-    bool runWebServer = false;
-    int port = 8094;
-    string filename = "";
-    int gui = DEFAULT_GUI_LIBRARY;
-    CommandLineProcessor cmdProcessor("Progress Quest 2 - The Progression", "A streamlined RPG experience", VERSION);
+int main(const int argc, const char * const *argv) {
+    string filename;
+    CommandLineProcessor cmdProcessor("Progress Quest 2 - The Progression", "A streamlined RPG experience", "2025.0");
     try {
-        cmdProcessor.AddOption('d', "daemon", "Run as a daemon", false);
-#ifdef GUI_ENABLED
-#ifdef QT_ENABLED
-        cmdProcessor.AddOption('q', "qt", "Run QT interface", false);
-#endif //QT_ENABLED
-#ifdef GTK_ENABLED
-        cmdProcessor.AddOption('g', "gtk", "Run GTK interface", false);
-#endif //GTK_ENABLED
-#ifdef COCOA_ENABLED
-        cmdProcessor.AddOption('c', "cocoa", "Run Cocoa(Mac OS X) interface", false);
-#endif //COCOA_ENABLED
-#ifdef WINFORMS_ENABLED
-        cmdProcessor.AddOption('w', "winforms", "Run Winforms(Windows) interface", false);
-#endif //WINFORMS_ENABLED
-#ifdef NCURSES_ENABLED
-        cmdProcessor.AddOption('n', "ncurses", "Run NCurses(console) interface", false);
-#endif //NCURSES_ENABLED
-#endif //GUI_ENABLED
-#ifdef WEBSERVER_ENABLED
-        cmdProcessor.AddOption('s', "webserver", "Run web server", true, "The port to run the webserver on (default 8094)", "8094");
-#endif
-        cmdProcessor.AddValueOnlyOption("Filename", "Load a saved game");
+        cmdProcessor.AddValueOnlyOption("savefile", "Load the saved game (optional unless run in daemon mode)");
         if (cmdProcessor.Parse(argc, argv) == false) {
             return 0;
         }
-        if (cmdProcessor.IsSet('d')) {
-            gui = GUI_NONE;
-        }
-        if (cmdProcessor.IsSet('n')) {
-            gui = GUI_NCURSES;
-        }
-        if (cmdProcessor.IsSet('g')) {
-            gui = GUI_GTK;
-        }
-        if (cmdProcessor.IsSet('q')) {
-            gui = GUI_QT;
-        }
-        if (cmdProcessor.IsSet('c')) {
-            gui = GUI_COCOA;
-        }
-        if (cmdProcessor.IsSet('w')) {
-            gui = GUI_WINFORMS;
-        }
-        if (cmdProcessor.IsSet('s')) {
-            runWebServer = true;
-            port = stoi(cmdProcessor.GetOptionValue('s'));
-        }
-        filename = cmdProcessor.GetValueOnlyOptionValue("Filename");
+        filename = cmdProcessor.GetValueOnlyOptionValue("savefile");
     }
     catch (BaseOptionExistsException &ex) {
         cerr << ex.what() << endl;
@@ -99,71 +48,31 @@ int main(int argc, const char * const *argv) {
         cerr << "Unknown error: " << ex.what() << endl;
         return 1;
     }
-    shared_ptr<Game> game = make_shared<Game>();
-    if (filename.length()) {
-        file::LoadError error = game->LoadGame(filename);
-        if (error != file::LoadErrorNone) {
+    auto game = make_shared<Game>();
+    if (!filename.empty()) {
+        if (const file::LoadError error = game->LoadGame(filename); error != file::LoadErrorNone) {
             cout << "Error loading save " << filename << endl;
-            if (gui == GUI_NONE) {
-                return 1; //Daemon mode requires an existing save to run
-            }
-        }
-    }
-    if (gui == GUI_NONE) {
-        cout << "Running in daemon mode" << endl;
-        game->SetDaemonMode();
-        if (game->GetState() == game::GameStateReady) {
-            TimePoint start = Clock::now();
-            TimePoint now;
-            while (game->GetState() != game::GameStateFinished) {
-                now = Clock::now();
-                uint64_t milliseconds = (uint64_t)abs(chrono::duration_cast<chrono::milliseconds>(now - start).count());
-                game->Tick(milliseconds);
-                this_thread::sleep_for(chrono::seconds(1));
-            }
-        }
-        else {
-            cout << "Daemon mode can only be run with an existing save" << endl;
-            cout << "Please re-run with a valid save or create a new game with a GUI interface." << endl;
             return 1;
         }
     }
-#ifdef GUI_ENABLED
-    else {
-        cout << "Running with " << MODE_NAME[gui] << " gui mode" << endl;
-        unique_ptr<GUI> g;
+    unique_ptr<GUI> g;
 #ifdef QT_ENABLED
-        if (gui == GUI_QT) {
-            g = make_unique<QTGUI>(game);
-        }
+    g = make_unique<QTGUI>(game);
 #endif //QT_ENABLED
 #ifdef GTK_ENABLED
-        if (gui == GUI_GTK) {
-            g = make_unique<GTKGUI>(game);
-        }
+    g = make_unique<GTKGUI>(game);
 #endif //GTK_ENABLED
 #ifdef COCOA_ENABLED
-        if (gui == GUI_COCOA) {
-            g = make_unique<CocoaGUI>(game);
-        }
+    // g = make_unique<CocoaGUI>(game);
 #endif //COCOA_ENABLED
 #ifdef WINFORMS_ENABLED
-        if (gui == GUI_WINFORMS) {
-            g = make_unique<WinformsGUI>(game);
-        }
+     // g = make_unique<WinformsGUI>(game);
 #endif //WINFORMS_ENABLED
 #ifdef NCURSES_ENABLED
-        if (gui == GUI_NCURSES) {
-            g = make_unique<NCursesGUI>(game);
-        }
+    g = make_unique<NCursesGUI>(game);
 #endif //NCURSES_ENABLED
-        g->Run();
-        g.reset();
-    }
-#endif //GUI_ENABLED
-    if (runWebServer) {
-        cout << "Running webserver on port " << port << endl;
-    }
+    g->Run();
+    g.reset();
 
     return 0;
 }

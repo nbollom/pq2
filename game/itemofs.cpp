@@ -2,7 +2,7 @@
 // Created by nbollom on 1/06/16.
 //
 
-#include "itemofs.h"
+#include "itemofs.hpp"
 #include <vector>
 
 using namespace std;
@@ -65,8 +65,8 @@ namespace data {
 
     static uniform_int_distribution<unsigned long> distribution(0, item_ofs.size() - 1);
 
-    const string get_random_item_of(std::shared_ptr<std::mt19937_64> engine) {
-        unsigned long value = distribution(*engine);
+    string get_random_item_of(const std::shared_ptr<std::mt19937_64>& engine) {
+        const unsigned long value = distribution(*engine);
         return item_ofs[value];
     }
 

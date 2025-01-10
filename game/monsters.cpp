@@ -2,7 +2,7 @@
 // Created by nbollom on 1/06/16.
 //
 
-#include "monsters.h"
+#include "monsters.hpp"
 #include <vector>
 
 using namespace std;
@@ -245,8 +245,8 @@ namespace data {
 
     static uniform_int_distribution<unsigned long> distribution(0, monsters.size() - 1);
 
-    const Monster get_random_monster(std::shared_ptr<std::mt19937_64> engine) {
-        unsigned long value = distribution(*engine);
+    Monster get_random_monster(const std::shared_ptr<std::mt19937_64>& engine) {
+        const unsigned long value = distribution(*engine);
         return monsters[value];
     }
 

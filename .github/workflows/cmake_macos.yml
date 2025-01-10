@@ -1,0 +1,24 @@
+name: MacOS
+
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build-macos:
+    name: MacOS
+    runs-on: macos-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.6.*'
+      - name: Install GTK
+        run: |
+          brew install gtkmm4
+      - name: Configure
+        run: cmake -B macos -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build macos --parallel

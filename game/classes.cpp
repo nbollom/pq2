@@ -2,7 +2,7 @@
 // Created by nbollom on 2/06/16.
 //
 
-#include "classes.h"
+#include "classes.hpp"
 #include <vector>
 
 using namespace std;
@@ -32,12 +32,12 @@ namespace data {
 
     static uniform_int_distribution<unsigned long> distribution(0, classes.size() - 1);
 
-    const Class get_random_class(std::shared_ptr<std::mt19937_64> engine) {
-        unsigned long value = distribution(*engine);
+    Class get_random_class(const std::shared_ptr<std::mt19937_64>& engine) {
+        const unsigned long value = distribution(*engine);
         return classes[value];
     }
 
-    const vector<Class> get_class_list() {
+    vector<Class> get_class_list() {
         return classes;
     }
 

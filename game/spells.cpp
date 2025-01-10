@@ -2,7 +2,7 @@
 // Created by nbollom on 25/05/16.
 //
 
-#include "spells.h"
+#include "spells.hpp"
 #include <vector>
 
 using namespace std;
@@ -58,7 +58,7 @@ namespace data {
             "Infinite Confusion"
     };
 
-    const std::vector<std::string> get_spells() {
+    std::vector<std::string> get_spells() {
         return spells;
     }
 

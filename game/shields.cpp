@@ -2,7 +2,7 @@
 // Created by nbollom on 1/06/16.
 //
 
-#include "shields.h"
+#include "shields.hpp"
 #include <vector>
 
 using namespace std;
@@ -30,8 +30,8 @@ namespace data {
 
     static uniform_int_distribution<unsigned long> distribution(0, shields.size() - 1);
 
-    const Item get_random_shield(std::shared_ptr<std::mt19937_64> engine) {
-        unsigned long value = distribution(*engine);
+    Item get_random_shield(const std::shared_ptr<std::mt19937_64>& engine) {
+        const unsigned long value = distribution(*engine);
         return shields[value];
     }
 
