@@ -3,16 +3,17 @@
 //
 
 #include <algorithm>
-#include "cocoacharatercreator.h"
+#include "cocoacharatercreator.hpp"
 
 @interface CharacterCreatorController : NSWindowController<NSWindowDelegate> {
-	CocoaCharacterCreator *view;
+	CocoaCharacterCreator *character_creator;
 	BOOL closing;
 }
 
 - (id) initWithWindow:(NSWindow *)window andView:(CocoaCharacterCreator*)view;
 - (void)windowWillClose:(NSNotification *)notification;
 - (void)windowDidResize:(NSNotification *)notification;
+- (void)GenRandomName;
 
 @end
 
@@ -20,27 +21,31 @@
 
 - (id)initWithWindow:(NSWindow *)window andView:(CocoaCharacterCreator*)view {
 	self = [super initWithWindow:window];
-	self->view = view;
+	self->character_creator = view;
 	self->closing = NO;
 	return self;
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
 	if (!closing) {
-		view->Close();
+		character_creator->Close();
 		closing = YES;
 	}
 }
 
 - (void)windowDidResize:(NSNotification *)notification {
-	view->Resize();
+	character_creator->Resize();
+}
+
+- (void)GenRandomName {
+    character_creator->GenRandomName();
 }
 
 @end
 
-CocoaCharacterCreator::CocoaCharacterCreator(std::shared_ptr<Game> game, std::function<void(std::string, void *)> message_handler) : View(game, message_handler) {
+CocoaCharacterCreator::CocoaCharacterCreator(std::shared_ptr<Game> game, const MessageHandler& message_handler) : View(game, message_handler) {
     new_game = game->StartNewGame();
-	window = [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 600, 600) styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable) backing:NSBackingStoreBuffered defer:NO] autorelease];
+	window = [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 1200, 800) styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable) backing:NSBackingStoreBuffered defer:NO] autorelease];
 	[window setMinSize:NSMakeSize(300, 300)];
 	[window setShowsResizeIndicator:YES];
 	[window setReleasedWhenClosed:NO];
@@ -55,8 +60,16 @@ CocoaCharacterCreator::CocoaCharacterCreator(std::shared_ptr<Game> game, std::fu
 	name_label = [[[NSTextView alloc] init] autorelease];
 	[name_label setEditable:NO];
 	[name_label setDrawsBackground:NO];
-	[name_label setString:[NSString stringWithCString:new_game->GetName().c_str() encoding:NSASCIIStringEncoding]];
+	[name_label setString:@"Name:"];
 	[name_section addSubview:name_label];
+    name_text = [[[NSTextView alloc] init] autorelease];
+    [name_text setEditable:YES];
+    [name_text setDrawsBackground:YES];
+    [name_text setString:[NSString stringWithCString:new_game->GetName().c_str() encoding:NSASCIIStringEncoding]];
+	[name_section addSubview:name_text];
+    name_randomiser = [NSButton buttonWithTitle:@"?" target:controller action:@selector(GenRandomName)];
+    [name_randomiser setBezelStyle:NSBezelStyleRegularSquare];
+	[name_section addSubview:name_randomiser];
 	middle_section = [[[NSView alloc] init] autorelease];
 	[content addSubview:middle_section];
 	left_column = [[[NSView alloc] init] autorelease];
@@ -192,14 +205,14 @@ void CocoaCharacterCreator::Hide() {
 void CocoaCharacterCreator::Close() {
 	if (!closing) {
 		closing = true;
-		message_handler("cancel", nullptr);
+		message_handler("cancel");
 	}
 }
 
 void CocoaCharacterCreator::GenRandomName() {
     new_game->GenerateName();
     std::string name = new_game->GetName();
-//    name_text->setText(name.c_str());
+    [name_text setString:[NSString stringWithCString:name.c_str() encoding:NSASCIIStringEncoding] ];
 }
 
 void CocoaCharacterCreator::RaceButtonClicked() {
@@ -223,7 +236,7 @@ void CocoaCharacterCreator::UnrollStats() {
 void CocoaCharacterCreator::Start() {
 //    new_game->SetName(name_text->text().toStdString());
     new_game->ConfirmCharacter();
-    message_handler("start", nullptr);
+    message_handler("start");
 }
 
 void CocoaCharacterCreator::UpdateStats() {
@@ -255,7 +268,9 @@ void CocoaCharacterCreator::UpdateStats() {
 void CocoaCharacterCreator::Resize() {
 	NSSize content_size = content.frame.size;
 	[name_section setFrame:NSMakeRect(0, content_size.height - 50, content_size.width, 50)];
-	[name_label setFrame:NSMakeRect(0, 0, 200, 50)];
+	[name_label setFrame:NSMakeRect(0, 0, 100, 20)];
+    [name_text setFrame:NSMakeRect(100, 0, name_section.frame.size.width - 200, 20)];
+    [name_randomiser setFrame:NSMakeRect(name_section.frame.size.width - 100, 0, 100, 20)];
 //	middle_section setFrame:NSMakeRect(content_size., <#CGFloat y#>, <#CGFloat w#>, <#CGFloat h#>)
 }
 

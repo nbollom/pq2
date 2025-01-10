@@ -140,7 +140,7 @@ SaveError Game::SaveGame(const string& filename_path) {
     if (file == nullptr) {
         return SaveErrorInvalidPath;
     }
-    gzwrite(file, json.c_str(), json.size());
+    gzwrite(file, json.c_str(), static_cast<uint>(json.size()));
     gzclose(file);
     return SaveErrorNone;
 }

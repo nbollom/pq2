@@ -7,19 +7,19 @@
 #include "pq2gui.hpp"
 
 #ifdef QT_ENABLED
-#include "pq2qt.hpp"
+#include <pq2qt.hpp>
 #endif //QT_ENABLED
 #ifdef GTK_ENABLED
-#include "pq2gtk.hpp"
+#include <pq2gtk.hpp>
 #endif //GTK_ENABLED
 #ifdef COCOA_ENABLED
-// #include "pq2cocoa.hpp"
+#include <pq2mac.hpp>
 #endif //COCOA_ENABLED
 #ifdef WINFORMS_ENABLED
-// #include "pq2winforms.hpp"
+// #include <pq2win.hpp>
 #endif //WINFORMS_ENABLED
 #ifdef NCURSES_ENABLED
-#include "pq2ncurses.hpp"
+#include <pq2ncurses.hpp>
 #endif //NCURSES_ENABLED
 
 using namespace std;
@@ -63,7 +63,7 @@ int main(const int argc, const char * const *argv) {
     g = make_unique<GTKGUI>(game);
 #endif //GTK_ENABLED
 #ifdef COCOA_ENABLED
-    // g = make_unique<CocoaGUI>(game);
+    g = make_unique<MacGUI>(game);
 #endif //COCOA_ENABLED
 #ifdef WINFORMS_ENABLED
      // g = make_unique<WinformsGUI>(game);

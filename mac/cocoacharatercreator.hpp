@@ -5,8 +5,8 @@
 #ifndef PQ2_CHARATERCREATOR_H
 #define PQ2_CHARATERCREATOR_H
 
-#include "view.h"
-#include "newgame.h"
+#include <view.hpp>
+#include <newgame.hpp>
 #import <Cocoa/Cocoa.h>
 
 class CocoaCharacterCreator : public View {
@@ -64,7 +64,7 @@ private:
     void UpdateStats();
 
 public:
-    CocoaCharacterCreator(std::shared_ptr<Game> game, std::function<void(std::string, void*)> message_handler);
+    CocoaCharacterCreator(std::shared_ptr<Game> game, const MessageHandler& message_handler);
     virtual ~CocoaCharacterCreator();
 
     void Show() override;

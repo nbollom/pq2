@@ -2,10 +2,10 @@
 // Created by nbollom on 9/10/18.
 //
 
-#include "cocoamainmenu.h"
+#include "cocoamainmenu.hpp"
 
 @interface MainMenuController : NSWindowController<NSWindowDelegate> {
-	CocoaMainMenu *view;
+	CocoaMainMenu *main_menu;
 	BOOL closing;
 }
 
@@ -22,28 +22,28 @@
 
 - (id)initWithWindow:(NSWindow *)window andView:(CocoaMainMenu*)view {
 	self = [super initWithWindow:window];
-	self->view = view;
+	self->main_menu = view;
 	self->closing = NO;
 	return self;
 }
 
 - (void)windowWillClose:(NSNotification *)notification {
 	if (!closing) {
-		view->Close();
+		main_menu->Close();
 		closing = YES;
 	}
 }
 
 - (void)windowDidResize:(NSNotification *)notification {
-	view->Resize();
+	main_menu->Resize();
 }
 
 - (void)newGame {
-	view->NewGame();
+	main_menu->NewGame();
 }
 
 - (void)loadGame {
-	view->LoadGame();
+	main_menu->LoadGame();
 }
 
 - (void)exitGame {
@@ -52,7 +52,7 @@
 
 @end
 
-CocoaMainMenu::CocoaMainMenu(std::shared_ptr<Game> game, std::function<void(std::string, void*)> message_handler) : View(game, message_handler) {
+CocoaMainMenu::CocoaMainMenu(std::shared_ptr<Game> game, const MessageHandler& message_handler) : View(game, message_handler) {
 	window = [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 600, 600) styleMask:(NSWindowStyleMaskTitled | NSWindowStyleMaskClosable | NSWindowStyleMaskMiniaturizable | NSWindowStyleMaskResizable) backing:NSBackingStoreBuffered defer:NO] autorelease];
 	[window setMinSize:NSMakeSize(300, 300)];
 	[window setShowsResizeIndicator:YES];
@@ -96,12 +96,12 @@ void CocoaMainMenu::Hide() {
 
 void CocoaMainMenu::Close() {
 	if ([window isVisible]) {
-		message_handler("quit", nullptr);
+		message_handler("quit");
 	}
 }
 
 void CocoaMainMenu::NewGame() {
-    message_handler("new", nullptr);
+    message_handler("new");
 }
 
 void CocoaMainMenu::LoadGame() {
@@ -111,13 +111,13 @@ void CocoaMainMenu::LoadGame() {
 	[openDlg setCanChooseDirectories:NO];
 	if ([openDlg runModal] == NSModalResponseOK) {
 		NSArray* urls = [openDlg URLs];
-		for (int i = 0; i < [urls count]; i++)
+		for (NSUInteger i = 0; i < [urls count]; i++)
 		{
 			NSURL* url = [urls objectAtIndex:i];
 			NSLog(@"Url: %@", url);
 			dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0), dispatch_get_main_queue(), ^{
 				if (game->LoadGame(url.fileSystemRepresentation) == file::LoadErrorNone) {
-					message_handler("start", nullptr);
+					message_handler("start");
 				}
 				else {
 					NSAlert *alert = [[[NSAlert alloc] init] autorelease];

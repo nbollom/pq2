@@ -5,7 +5,7 @@
 #ifndef PQ2_COCOAMAINMENU_H
 #define PQ2_COCOAMAINMENU_H
 
-#include "view.h"
+#include <view.hpp>
 #import <Cocoa/Cocoa.h>
 
 class CocoaMainMenu : public View {
@@ -21,7 +21,7 @@ private:
 	NSButton *exit;
 
 public:
-    CocoaMainMenu(std::shared_ptr<Game> game, std::function<void(std::string, void*)> message_handler);
+    CocoaMainMenu(std::shared_ptr<Game> game, const MessageHandler& message_handler);
     virtual ~CocoaMainMenu();
 
     void Show() override;

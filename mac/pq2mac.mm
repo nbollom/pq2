@@ -2,19 +2,19 @@
 // Created by nbollom on 12/12/18.
 //
 
-#include "pq2cocoa.h"
-#include "cocoamainmenu.h"
-#include "cocoacharatercreator.h"
+#include "pq2mac.hpp"
+#include "cocoamainmenu.hpp"
+#include "cocoacharatercreator.hpp"
 
 #import <Cocoa/Cocoa.h>
 
 bool running = true;
 
 @interface AppDelegate : NSObject<NSApplicationDelegate> {
-	CocoaGUI *gui;
+	MacGUI *mac_gui;
 }
 
-- (id) initWithGui:(CocoaGUI*)gui;
+- (id) initWithGui:(MacGUI*)gui;
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender;
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender;
 
@@ -22,14 +22,15 @@ bool running = true;
 
 @implementation AppDelegate
 
-- (id)initWithGui:(CocoaGUI *)gui {
+- (id)initWithGui:(MacGUI *)gui {
 	self = [super init];
-	self->gui = gui;
+	self->mac_gui = gui;
 	return self;
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
 	if (running) {
+        mac_gui->HandleMessage("quit");
 		return NSTerminateCancel;
 	}
 	else {
@@ -46,47 +47,55 @@ bool running = true;
 NSAutoreleasePool *pool;
 AppDelegate *delegate;
 
-CocoaGUI::CocoaGUI(std::shared_ptr<Game> game) : GUI(game) {
-	message_handler = std::bind(&CocoaGUI::HandleMessage, this, std::placeholders::_1, std::placeholders::_2);
+MacGUI::MacGUI(std::shared_ptr<Game> game) : GUI(game) {
+	message_handler = std::bind(&MacGUI::HandleMessage, this, std::placeholders::_1);
 	pool = [[NSAutoreleasePool alloc] init];
 	[NSApplication sharedApplication];
-	delegate = [[AppDelegate alloc] init];
+    delegate = [[AppDelegate alloc] initWithGui:this];
 	[NSApp setDelegate:delegate];
+    id menu_bar = [[[NSMenu alloc] init] autorelease];
+    id appMenuItem = [[NSMenuItem new] autorelease];
+    [menu_bar addItem:appMenuItem];
+    [NSApp setMainMenu:menu_bar];
+    id appMenu = [[NSMenu new] autorelease];
+    id quit_item = [[[NSMenuItem alloc] initWithTitle:@"Quit PQ2" action:@selector(terminate:) keyEquivalent:@"q"] autorelease];
+    [appMenu addItem:quit_item];
+    [appMenuItem setSubmenu:appMenu];
 }
 
-CocoaGUI::~CocoaGUI() {
+MacGUI::~MacGUI() {
 	[delegate release];
 	[pool drain];
 }
 
-void CocoaGUI::Run() {
+void MacGUI::Run() {
 	GUI::Run();
 	[NSApp run];
 }
 
-void CocoaGUI::ShowMainMenu() {
+void MacGUI::ShowMainMenu() {
 	std::shared_ptr<View> main_menu = std::make_shared<CocoaMainMenu>(game, message_handler);
 	main_menu->Show();
 	PushView(main_menu);
 }
 
-void CocoaGUI::ShowCharacterCreator() {
+void MacGUI::ShowCharacterCreator() {
 	std::shared_ptr<View> character_creator = std::make_shared<CocoaCharacterCreator>(game, message_handler);
 	character_creator->Show();
 	PushView(character_creator);
 }
 
-void CocoaGUI::ShowGameScreen() {
+void MacGUI::ShowGameScreen() {
 
 }
 
-void CocoaGUI::Close() {
+void MacGUI::Close() {
 	[NSApp terminate:[NSNull null]];
 	PopAllViews();
 	game->Close();
 }
 
-void CocoaGUI::HandleMessage(std::string message, void *data) {
+void MacGUI::HandleMessage(std::string message) {
 	if (message == "quit") {
 		// Don't close if there is nothing on the stack like when we pop all views to replace them with the game screen
 		if (!view_stack.empty()) {
