@@ -82,4 +82,3 @@ if(${NCURSES_ENABLED})
     target_link_libraries(pq2-ncurses pq2game pq2utils pq2gui pq2ncurses)
     target_include_directories(pq2-ncurses PRIVATE pq2game pq2utils pq2gui pq2ncurses)
 endif ()
->>>>>>> master
