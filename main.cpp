@@ -2,15 +2,15 @@
 #include <memory>
 #include <thread>
 #include <string>
-#include "utils.hpp"
-#include "game.hpp"
-#include "pq2gui.hpp"
+#include <utils.hpp>
+#include <game.hpp>
+#include <pq2gui.hpp>
 
 #ifdef QT_ENABLED
-#include "pq2qt.hpp"
+#include <pq2qt.hpp>
 #endif //QT_ENABLED
 #ifdef GTK_ENABLED
-#include "pq2gtk.hpp"
+#include <pq2gtk.hpp>
 #endif //GTK_ENABLED
 #ifdef COCOA_ENABLED
 // #include "pq2cocoa.hpp"
@@ -19,7 +19,7 @@
 // #include "pq2winforms.hpp"
 #endif //WINFORMS_ENABLED
 #ifdef NCURSES_ENABLED
-#include "pq2ncurses.hpp"
+#include <pq2ncurses.hpp>
 #endif //NCURSES_ENABLED
 
 using namespace std;

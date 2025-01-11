@@ -6,8 +6,8 @@
 
 #include <memory>
 #include <string>
-#include "pq2gui.hpp"
-#include "game.hpp"
+#include <pq2gui.hpp>
+#include <game.hpp>
 
 class GTKGUI final : public GUI {
 
